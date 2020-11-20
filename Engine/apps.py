@@ -122,7 +122,10 @@ class LoadingScreen(MicroApp):
         self.colors = [(212, 6, 6), (238, 156, 0), (227, 255, 0), (6, 191, 0), (0, 26, 152)]
 
         # Музыка на загрузочном экране
-        self.bgmusic = pygame.mixer.Sound('Resources/music/lodingscreen.mp3')
+        try:
+            self.bgmusic = pygame.mixer.Sound('Resources/Music/lodingscreen.mp3')
+        except pygame.error:
+            self.bgmusic = pygame.mixer.Sound('Resources/Music/lodingscreen_forlinux.ogg')
 
         # Цыганская магия, которая рисует черный прямоугольник с вырезанными прозраычными буквами
         # Точнее создает трафарет
