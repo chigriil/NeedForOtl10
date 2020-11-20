@@ -1,3 +1,11 @@
+"""
+Pygame не сильно быстро рисует, пэтому оптимизация рисования важна
+Возможно стоит сделать многопоточную программу (типо io рисования операция не сверх медленная, но и не быстрая)
+TODO: прикрутить режим разработчика
+TODO: добавить анотации типов везде, или в .pyi файлы (точнее зашарить за модуль typing)
+TODO: сделать редактор уровней (ну это после прописания класса уровня, обработки игровых событий и т.д.)
+TODO: Пайгейм медленно рисует, плэтому разрешение спрайтов поменьше + их рисовать в bmp или в png (никакого jpg)
+"""
 import sys
 
 import numpy as np
@@ -21,8 +29,10 @@ DEVMODE = True
 class Game(MicroApp):
     def __init__(self, screen, clock):
         super(Game, self).__init__(screen, clock, lifetime=float('inf'))
+        self.FPS = 0
         self.scene = TestLevel(Game)
         self.camera = Camera(self.screen)
+        self.camera.start()
 
     def draw(self):
         self.scene.draw(self.camera)
@@ -49,9 +59,9 @@ class Game(MicroApp):
         self.run_tasks()
         self.step(self.clock.get_time() / 1000)
         self.draw()
-        self.clock.tick()
+        self.clock.tick(self.FPS)
         pygame.display.set_caption('{:.1f}'.format(self.clock.get_fps()))  # Вывод фпс в заголовок окна
 
 
-app = App(microapps=[Init(screen, clock), LoadingScreen(screen, clock, lifetime=3), Game(screen, clock)])
+app = App(micro_apps=[Init(screen, clock), LoadingScreen(screen, clock, lifetime=3), Game(screen, clock)])
 app.run()

@@ -1,74 +1,172 @@
+"""
+Модуль с классом камеры
+TODO: если кому не лень сделайте юниттесты, типо мы дофига работаем
+"""
 from math import pi, tan, atan
 
 import numpy as np
 import pygame
 from pygame.draw import circle, line
 
+from Engine.Scene.physical_primitives import PhysicalRect
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH, DEVMODE
 
 
+class CameraError(Exception):
+    def __init__(self, text):
+        super(CameraError, self).__init__(text)
+        self.txt = text
+
+
 class Camera:
+    """
+    Класс камеры, она смотрит на плоскость, с некоторого расстояния
+    TODO: сделать функцию слежки за игроком (не чтобы игрок бы всегда в центре, небольшой гистерезис надо)
+    TODO: сделать отключаемую проверку на границу уровня (функцию возврата камеры при пересечении грпницы)
+    TODO: при надобности прикрутить несколько планоа камеры (передний, задний, несколько промежуточных)
+    Это ^^^ скорее всего сохрёт 8173924787 фпс, поэтому вряд ли
+    """
+
     def __init__(self, screen: pygame.Surface, x=0, y=0, h_fov=pi / 2, distance=15):
+        # Экран, на который будет выводиться изображение
         self.screen = screen
-        self.tempsurface = pygame.Surface(screen.get_rect().size)
+        # Временная поверхность для рисования, потом блитится на экран
+        self.temp_surface = pygame.Surface(screen.get_rect().size)
+
+        # Далее физические характеристики камеры
+        # Физические координаты центра камеры
         self.__position = np.array([float(x), float(y)])
+        # Горизонтальный угол обзора камеры
         self.h_fov = h_fov
+        # Расстояние от камеры до поверхности экрана
+        self.__distance = distance
+        # Физическая ширина области вилимости камеры
+        self.window_width = 2 * self.__distance * tan(self.h_fov / 2)
+        # Физическая высота области вилимости камеры
+        self.window_height = self.window_width * SCREEN_HEIGHT / SCREEN_WIDTH
+        # Вертикальный угол обзора камеры
+        self.v_fov = atan(self.window_height / self.__distance / 2)
+        # Физическая область видимости камеры
+        self.camera_rect = PhysicalRect(
+            self.__position[0] - self.window_width / 2,
+            self.__position[1] - self.window_height / 2,
+            self.window_width,
+            self.window_height
+        )
 
-        self.v_fov = None  # h_fov * SCREEN_HEIGHT / SCREEN_WIDTH
-        self.__distance = None
-        self.window_width = None
-        self.window_height = None
         # Коэффициент, на который умножаются координаты, чтобы отрисовать объекты на экране на экране
-        self.scale_factor = None
-        self.camera_rect = None
-        self.distance = distance
-        self.devfont = pygame.font.SysFont(pygame.font.get_fonts()[0], 50)
+        self.scale_factor = SCREEN_WIDTH / self.window_width
+        self.dev_font = pygame.font.SysFont(pygame.font.get_fonts()[0], 50)
 
-    def view(self, gameobject):
-        gameobject.__view__(self)
+    def view(self, game_object):
+        """
+        Вызывает отрисовыку объекта на поверхности self.temp_surface
+        :param game_object: сам объект, который отрисовывается
+        :return:
+        """
+        game_object.__view__(self)
 
     def show(self):
+        """
+        Вызывает отрисовку того, что было нарисованно на камере на экране
+        :return: None
+        """
         # Отражение по оси y, потомучто лень писать преобразования координат вообще везде
         # Предлагаю оставить это как есть
         # TODO: Если кто хочет сделайте нормально, т.к трансформации отнимают осень много фпс
         if DEVMODE:
             self.DEVMODE_OVERLAY()
 
-        self.screen.blit(pygame.transform.flip(self.tempsurface, False, True), (0, 0))
-        # self.screen.blit(self.tempsurface,  (0, 0))
-        self.tempsurface.fill((0, 0, 0))
+        # Отрисовка поверхности камеры на экране
+        # Поворот нужен, чтобы не возиться с перевёрнутолй СК pygame по оси y
+        self.screen.blit(pygame.transform.flip(self.temp_surface, False, True), (0, 0))
+        # self.screen.blit(self.temp_surface,  (0, 0))
+        # Очистка поверхности камеры
+        self.temp_surface.fill((0, 0, 0))
 
     def DEVMODE_OVERLAY(self):
-        tempsurfacerect = self.tempsurface.get_rect()
-        self.project_line(np.array([0, -100]), np.array([0, 100]), (0, 0, 255), 3)
-        self.project_line(np.array([-100, 0]), np.array([100, 0]), (255, 0, 0), 3)
-        circle(self.tempsurface, (255, 0, 0), tempsurfacerect.center, 10)
-        line(self.tempsurface, (255, 0, 0), tempsurfacerect.midleft, tempsurfacerect.midright)
-        line(self.tempsurface, (255, 0, 0), tempsurfacerect.midtop, tempsurfacerect.midbottom)
-        text_surf = self.devfont.render("Привет", True, (255, 255, 0))
-        self.tempsurface.blit(text_surf, text_surf.get_rect().center)
+        """
+        Девмод на камере
+        :return:
+        """
+        temp_surface_rect = self.temp_surface.get_rect()
+        circle(self.temp_surface, (255, 0, 0), temp_surface_rect.center, 10)
+        line(self.temp_surface, (255, 0, 0), temp_surface_rect.midleft, temp_surface_rect.midright)
+        line(self.temp_surface, (255, 0, 0), temp_surface_rect.midtop, temp_surface_rect.midbottom)
+        # text_surf = self.dev_font.render("Привет", True, (255, 255, 0))
+        # self.temp_surface.blit(text_surf, text_surf.get_rect().center)
 
     def projection_of_point(self, point):
+        """
+        Считает проекцию точки на поверхность камеры
+        :param point: точка, для которой считается проекция
+        :return:
+        """
+        # Перевод в массив numpy
+        if not isinstance(point, np.ndarray):
+            point = np.array(point)
+
         return (point + [self.window_width / 2 - self.__position[0],
                          self.window_height / 2 - self.__position[1]]) * self.scale_factor
 
     def projection_of_length(self, length):
+        """
+        Считает проекцию физической длины на экран
+        :param length: физическая длина
+        :return: длину проекции
+        """
         return length * self.scale_factor
 
-    def project_line(self, start, end, color, width=1):
-        line(self.tempsurface, color,
+    def projection_of_lengths(self, lengths):
+        """
+        Считает проекции списка физических длин на экран
+        :param lengths: физические длины
+        :return: список длин проекций
+        """
+        return [self.projection_of_length(length) for length in lengths]
+
+    def projection_of_rect(self, physical_rect: PhysicalRect) -> pygame.Rect:
+        """
+        Считает проекцию физического прямоугольника на поверхность камеры
+        :param physical_rect: физический прямоугольник
+        :return: экземпляр класса pygame.Rect, который есть проекция на экран
+        """
+        point = self.projection_of_point(physical_rect.bottomleft)
+        return pygame.Rect(point, self.projection_of_lengths(physical_rect.size))
+
+    def project_line_on_camera(self, start, end, color, width=1):
+        """
+        Рисует проекцию линии на поверхности камеры
+        :param start: начальная физическая точка
+        :param end: конечная физическая точка
+        :param color: цвет
+        :param width: ширина проекции
+        :return:
+        """
+        line(self.temp_surface, color,
              self.projection_of_point(start),
              self.projection_of_point(end),
              width=width)
 
     @property
     def position(self):
+        """
+        Возращает физические координаты центра обзора
+        :return: физические координаты центра камеры
+        """
         return self.__position
 
     @position.setter
-    def position(self, newposition):
-        self.__position = newposition
-        self.camera_rect = (
+    def position(self, new_position):
+        """
+        Устанавливает новые физические координаты центра обзора
+        :param new_position: новые физические координаты центра камеры
+        :return: физические координаты центра камеры
+        """
+        # Изменение позиции
+        self.__position = new_position
+        # Пересчёт физической области видимости
+        self.camera_rect = PhysicalRect(
             self.__position[0] - self.window_width / 2,
             self.__position[1] - self.window_height / 2,
             self.window_width,
@@ -77,23 +175,43 @@ class Camera:
 
     @property
     def distance(self):
+        """
+        Возращает физическое расстояние от камеры до сцены
+        :return:
+        """
         return self.__distance
 
     @distance.setter
-    def distance(self, newdistance):
-        if newdistance <= 0:
+    def distance(self, new_distance):
+        """
+        Возращает физическое расстояние от камеры до сцены
+        :return:
+        """
+        if new_distance <= 0:
             # raise CameraError("Distance became negative")
             return
-        self.__distance = newdistance
+
+        # Расстояние от камеры до поверхности экрана
+        self.__distance = new_distance
+        # Физическая ширина области вилимости камеры
         self.window_width = 2 * self.__distance * tan(self.h_fov / 2)
+        # Физическая высота области вилимости камеры
         self.window_height = self.window_width * SCREEN_HEIGHT / SCREEN_WIDTH
+        # Вертикальный угол обзора камеры
         self.v_fov = atan(self.window_height / self.__distance / 2)
-        self.scale_factor = SCREEN_WIDTH / self.window_width
-        self.camera_rect = (
+        # Физическая область видимости камеры
+        self.camera_rect = PhysicalRect(
             self.__position[0] - self.window_width / 2,
             self.__position[1] - self.window_height / 2,
             self.window_width,
             self.window_height
         )
-        print('Width = {:.2f}\nHeight = {:.2f}\nDistance = {:.2f}\n'.format(self.window_width, self.window_height,
-                                                                            self.__distance))
+        # Коэффициент, на который умножаются координаты, чтобы отрисовать объекты на экране на экране
+        self.scale_factor = SCREEN_WIDTH / self.window_width
+
+        # Выводит в консоль основные параметры камеры
+        # print('Width = {:.2f}\nHeight = {:.2f}\nDistance = {:.2f}\n'.format(self.window_width, self.window_height,
+        #                                                                     self.__distance))
+
+    def start(self):
+        self.distance = self.__distance

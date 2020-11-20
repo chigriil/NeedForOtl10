@@ -1,3 +1,7 @@
+"""
+Модуль с разными исключениями
+"""
+
 from random import choice
 
 phrases = ["Ты как это вообще сделал?",
@@ -8,13 +12,11 @@ phrases = ["Ты как это вообще сделал?",
 
 
 class YouAreTeapot(Exception):
+    """
+    Исключения, высмеивающее програмиста
+    """
+
     def __init__(self, text):
         super(YouAreTeapot, self).__init__(text)
         print(choice(phrases))
-        self.txt = text
-
-
-class CameraError(Exception):
-    def __init__(self, text):
-        super(CameraError, self).__init__(text)
         self.txt = text
