@@ -6,10 +6,11 @@ from math import pi, tan, atan
 
 import numpy as np
 import pygame
-from pygame.draw import circle, line
+from pygame import Rect
+from pygame.draw import circle, line, polygon, rect
 
 from Engine.Scene.physical_primitives import PhysicalRect
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, DEVMODE
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH
 
 
 class CameraError(Exception):
@@ -63,10 +64,15 @@ class Camera:
         Вызывает отрисовыку объекта на поверхности self.temp_surface
         :param game_object: сам объект, который отрисовывается
         :return:
+        TODO: add devview
         """
         game_object.__view__(self)
 
-    def show(self):
+    def devview(self, game_object):
+        if hasattr(game_object, '__devview__'):
+            game_object.__devview__(self)
+
+    def show(self, devmode=False):
         """
         Вызывает отрисовку того, что было нарисованно на камере на экране
         :return: None
@@ -74,7 +80,7 @@ class Camera:
         # Отражение по оси y, потомучто лень писать преобразования координат вообще везде
         # Предлагаю оставить это как есть
         # TODO: Если кто хочет сделайте нормально, т.к трансформации отнимают осень много фпс
-        if DEVMODE:
+        if devmode:
             self.DEVMODE_OVERLAY()
 
         # Отрисовка поверхности камеры на экране
@@ -134,7 +140,10 @@ class Camera:
         point = self.projection_of_point(physical_rect.bottomleft)
         return pygame.Rect(point, self.projection_of_lengths(physical_rect.size))
 
-    def project_line_on_camera(self, start, end, color, width=1):
+    def project_point(self, coords, radius, color=(0, 255, 0)):
+        circle(self.temp_surface, color, self.projection_of_point(coords), radius)
+
+    def project_line(self, start, end, color, width=1):
         """
         Рисует проекцию линии на поверхности камеры
         :param start: начальная физическая точка
@@ -147,6 +156,26 @@ class Camera:
              self.projection_of_point(start),
              self.projection_of_point(end),
              width=width)
+
+    def project_poly(self, vertices, color):
+        vertices = [self.projection_of_point(vert) for vert in vertices]
+        polygon(self.temp_surface, color, vertices)
+
+    def project_rect(self, rect_: PhysicalRect, color, width=0):
+        rect(self.temp_surface, color,
+             Rect(
+                 self.projection_of_point(rect_.bottomleft),
+                 (self.projection_of_length(rect_.width), self.projection_of_length(rect_.height))
+             ),
+             int(self.projection_of_length(width)))
+
+    def dev_rect(self, rect_: PhysicalRect, color, width=2):
+        rect(self.temp_surface, color,
+             Rect(
+                 self.projection_of_point(rect_.bottomleft),
+                 (self.projection_of_length(rect_.width), self.projection_of_length(rect_.height))
+             ),
+             width)
 
     @property
     def position(self):

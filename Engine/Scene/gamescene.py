@@ -3,9 +3,12 @@
 100% поменяется в будущих версиях
 """
 import numpy as np
+import pymunk
 from pygame.draw import rect, circle
 
-from settings import DEVMODE
+from Engine.Scene.physical_primitives import PhysicalRect
+
+GRAVITY = np.array([0, -9.81])
 
 
 class Background:
@@ -73,6 +76,24 @@ class SunnyField(Background):
         circle(camera.temp_surface, (255, 255, 0), pt, camera.projection_of_length(1))
 
 
+class GameEvent:
+    """
+    Класс игровый событий, вызываемых по условию
+    """
+
+    def __init__(self, condition, action):
+        """
+        :param condition: условия срабатывания
+        :param action: действие
+        """
+        self.contition = condition
+        self.action = action
+
+    def hadle(self):
+        if self.contition():
+            self.action()
+
+
 class Scene:
     """
     Класс игровой сцены, он же симулиция
@@ -82,33 +103,95 @@ class Scene:
     TODO: придумать, как сохранять состояние уровня
     """
 
-    def __init__(self, game_app):
+    def __init__(self, game_app, border=PhysicalRect(-10, -5, 20, 10)):
         """
         :param game_app: приложение игры, нужно для управления сценой
         """
         self.game_app = game_app
+        # Игровые события
+        self.game_events: list[GameEvent] = []
         # Предметы на игровом поле, например летающие ножи, частицы и т.д.
-        self.subjects = []
-        # Живые сущности, например игрок и враги
+        self.objects = []
+        # Живые сущности, например враги
         self.entities = []
         # Задний фон
         self.bg = SunnyField()
 
-    def draw(self, camera):
+        # Сама физика
+        # физическое пространство
+        self.physical_space = pymunk.Space()
+        self.physical_space.gravity = GRAVITY
+
+        # Граница уровня
+        self.border = border
+        top = pymunk.Segment(self.physical_space.static_body, self.border.topleft, self.border.topright, 0)
+        bottom = pymunk.Segment(self.physical_space.static_body, self.border.bottomright, self.border.bottomleft, 0)
+        right = pymunk.Segment(self.physical_space.static_body, self.border.topright, self.border.bottomright, 0)
+        left = pymunk.Segment(self.physical_space.static_body, self.border.bottomleft, self.border.topleft, 0)
+
+        bottom.friction = 1  # трение на полу
+
+        self.physical_space.add(top)
+        self.physical_space.add(bottom)
+        self.physical_space.add(right)
+        self.physical_space.add(left)
+
+    def __view__(self, camera):
         """
         Отрисовка
         :param camera: камера, на поверхности которой рисуем
         :return:
         """
         camera.view(self.bg)
-        for sub in self.subjects:
+        for sub in self.objects:
             camera.view(sub)
         for ent in self.entities:
             camera.view(ent)
-        if DEVMODE:
-            # координатные оси
-            camera.project_line_on_camera(np.array([0, -100]), np.array([0, 100]), (0, 0, 255), 3)
-            camera.project_line_on_camera(np.array([-100, 0]), np.array([100, 0]), (255, 0, 0), 3)
+
+    def __devview__(self, camera):
+        """
+        Отрисовка параметров для разработчиков
+        :param camera: камера, на поверхности которой рисуем
+        :return:
+        """
+        camera.devview(self.bg)
+        for sub in self.objects:
+            camera.devview(sub)
+        for ent in self.entities:
+            camera.devview(ent)
+
+        # координатные оси
+        camera.project_line(np.array([0, -100]), np.array([0, 100]), (0, 0, 255), 3)
+        camera.project_line(np.array([-100, 0]), np.array([100, 0]), (255, 0, 0), 3)
+
+        # Границы уровня
+        camera.project_line(
+            self.border.topleft,
+            self.border.topright,
+            (139, 69, 19),
+            3
+        )
+
+        camera.project_line(
+            self.border.topright,
+            self.border.bottomright,
+            (139, 69, 19),
+            3
+        )
+
+        camera.project_line(
+            self.border.bottomright,
+            self.border.bottomleft,
+            (139, 69, 19),
+            3
+        )
+
+        camera.project_line(
+            self.border.bottomleft,
+            self.border.topleft,
+            (139, 69, 19),
+            3
+        )
 
     def step(self, dt):
         """
@@ -116,7 +199,13 @@ class Scene:
         :param dt: квант времени
         :return:
         """
-        for sub in self.subjects:
+        for game_event in self.game_events:
+            game_event.hadle()
+
+        # Расчёт физики
+        self.physical_space.step(dt)
+
+        for sub in self.objects:
             sub.step(dt)
         for ent in self.entities:
             ent.step(dt)

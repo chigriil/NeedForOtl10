@@ -1,3 +1,4 @@
 pygame==2.0.0
 
 numpy~=1.19.4
+pymunk~=5.7.0
