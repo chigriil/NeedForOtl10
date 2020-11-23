@@ -6,11 +6,16 @@ TODO: сделать редактор уровней (ну это после п�
 TODO: Пайгейм медленно рисует, плэтому разрешение спрайтов поменьше + их рисовать в bmp или в png (никакого jpg)
 """
 
+import sys
+
 import pygame
 
 from Engine.apps import App, Init
 from settings import *
 from src.game import Game, LoadingScreen
+
+if sys.hexversion < 0x30900f0:
+    raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
 
 pygame.font.init()
 pygame.mixer.pre_init()

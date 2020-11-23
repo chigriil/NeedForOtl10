@@ -14,6 +14,7 @@ from .Levels.testlevel import TestLevel
 
 def dev_message():
     print('Включение оверлея разработчика F3')
+    print('Перезапуск камеры R')
 
 
 class LoadingScreen(MicroApp):
