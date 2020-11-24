@@ -5,7 +5,8 @@ TODO: чем-нибудь напольникть уровень
 import pygame
 import pymunk
 
-from Engine.Scene.game_objects import StaticRectangularObject, DynamicRectangularObject, GameObject
+from Engine.Scene.game_objects import StaticRectangularObject, DynamicRectangularObject, GameObject, \
+    DynamicCircularObject
 from Engine.Scene.gamescene import Scene, SunnyField
 from Engine.Scene.physical_primitives import PhysicalRect
 from src.persons import Player
@@ -44,6 +45,7 @@ class TestLevel(Scene):
                                      physical_space=self.physical_space))
 
         self.objects.append(DynamicRectangularObject(2, 5, 1, 0.7, physical_space=self.physical_space, angle=0.8))
+        self.objects.append(DynamicCircularObject(1, 5, 0.7, physical_space=self.physical_space))
 
     def step(self, dt):
         """
@@ -78,11 +80,12 @@ class TestLevel(Scene):
         super(TestLevel, self).__devview__(camera)
 
         camera.temp_surface.blit(
-            pygame.transform.flip(pygame.font.SysFont("Arial", 20).render(str(self.player.body.position), True, (255, 0, 0)),
-                                  False, True), (0, 0))
+            pygame.transform.flip(
+                pygame.font.SysFont("Arial", 20).render(str(self.player.body.position), True, (255, 0, 0)),
+                False, True), (0, 0))
 
         camera.temp_surface.blit(
             pygame.transform.flip(
-                pygame.font.SysFont("Arial", 20).render(str(self.player.body.shapes.pop().get_vertices()), True, (255, 0, 0)),
+                pygame.font.SysFont("Arial", 20).render(str(self.player.body.shapes.pop().get_vertices()), True,
+                                                        (255, 0, 0)),
                 False, True), (0, 50))
-

@@ -133,7 +133,7 @@ class PhysicalRect:
             self.bottomleft
         ]
 
-    def get_rotated(self, angle):
+    def get_rotated(self, angle) -> list[Vec2d]:
         return [(vertex - self.centre).rotated(angle) + self.centre
                 for vertex in self.vertices()]
 

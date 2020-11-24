@@ -98,8 +98,8 @@ class PhysicalGameObject(GameObject):
     """
 
     def __init__(self, x, y, width=1, height=1, sprite=None,
-                 physical_space=None, shape: pymunk.Shape = None, angle=0,
-                 mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
+                 physical_space=None, body: pymunk.Body = None, shape: pymunk.Shape = None,
+                 angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
         """
         Небольшое пояснение, у объекта есть два описанных прямоугольника
         1) Начальный self.body_rect, на него натягиваются спрайты
@@ -140,9 +140,14 @@ class PhysicalGameObject(GameObject):
         if moment is None:
             moment = pymunk.moment_for_box(mass, (self.width, self.height))
 
-        self.body = pymunk.Body(mass, moment, type_)
-        self.body.angle = angle
-        self.body.position = x + width / 2, y + height / 2
+        if body is None:
+            body = pymunk.Body(mass, moment, type_)
+
+        body.moment = moment
+        body.angle = angle
+        body.position = x + width / 2, y + height / 2
+
+        self.body = body
 
         # Если форма не задана, то используем прямоугольник
         if shape is None:
@@ -157,6 +162,14 @@ class PhysicalGameObject(GameObject):
     def step(self, dt):
         # пересчитываем позицию описанного прямоугольника
         self.body_rect.centre = self.body.position
+
+    def no_sprite_view(self, camera):
+        """
+        Рисует образ объекта, если нет спрайта
+        :param camera: камера
+        :return:
+        """
+        camera.project_poly(self.boundingbox, (100, 100, 100))
 
     def __view__(self, camera):
         """
@@ -175,7 +188,7 @@ class PhysicalGameObject(GameObject):
         # Рисование спрайта
         # Рисуем серый прямоугольник и прекращаем рисование, если нет спрайта
         if self.sprite is None:
-            camera.project_poly(self.boundingbox, (100, 100, 100))
+            self.no_sprite_view(camera)
             return
 
         # Если преобразованный спрайт считался для другой дистанции от камеры до сцены
@@ -211,7 +224,7 @@ class PhysicalGameObject(GameObject):
         return BoundingBox(self.body_shape.bb)
 
     @property
-    def boundingbox(self) -> BoundingBox:
+    def boundingbox(self) -> list[Vec2d]:
         """
         :return: описанный прямоугольник, на который натягивается спрайт
         """
@@ -234,3 +247,19 @@ class DynamicRectangularObject(PhysicalGameObject):
                                                        physical_space=physical_space, angle=angle,
                                                        mass=mass, moment=moment, elasticity=elasticity,
                                                        friction=friction, type_=pymunk.Body.DYNAMIC)
+
+
+class DynamicCircularObject(PhysicalGameObject):
+    def __init__(self, x, y, radius=0.3, sprite=None,
+                 physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
+        body = pymunk.Body(mass, 1)
+        shape = pymunk.Circle(body, radius=radius)
+        super(DynamicCircularObject, self).__init__(x=x, y=y, width=radius, height=radius, sprite=sprite,
+                                                    physical_space=physical_space,
+                                                    body=body, shape=shape,
+                                                    angle=angle, mass=mass, moment=moment, elasticity=elasticity,
+                                                    friction=friction, type_=pymunk.Body.DYNAMIC)
+        self.body_rect = PhysicalRect(x - radius / 2, y - radius / 2, 2 * radius, 2 * radius)
+
+    def no_sprite_view(self, camera):
+        camera.project_circle(self.boundingbox2.centre, self.body_shape.radius, (100, 100, 100))

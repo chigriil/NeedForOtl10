@@ -176,6 +176,19 @@ class Camera:
              ),
              int(self.projection_of_length(width)))
 
+    def project_circle(self, centre, radius, color, width=0):
+        """
+        Проецирует круг на поверхность камеры
+        :param centre: центр круга
+        :param radius: радиус круга
+        :param color: цвет круга
+        :param width: толщина обводки. Если width = 0, то закрашивается весь круг
+        """
+        circle(self.temp_surface, color,
+               self.projection_of_point(centre),
+               self.projection_of_length(radius),
+               int(width))
+
     def dev_rect(self, rect_: PhysicalRect, color, width=2):
         rect(self.temp_surface, color,
              Rect(
