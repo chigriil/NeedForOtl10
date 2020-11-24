@@ -21,15 +21,7 @@ class TestLevel(Scene):
 
         self.entities.append(self.player)
 
-        # ball_moment = pymunk.moment_for_circle(10, 0, 0.4)
-        # self.ball = pymunk.Body(10, ball_moment)
-        # self.ball.position = -1, 1
-        #
-        # self.ball_shape = pymunk.Circle(self.ball, 0.4)
-        # self.ball_shape.elasticity = 0
-        # self.ball_shape.friction = 1
-        # self.physical_space.add(self.ball, self.ball_shape)
-
+        # граница горизонта (чтобы человек не проваливался под землю)
         hl = pymunk.Segment(self.physical_space.static_body,
                             (self.border.x, 0),
                             (self.border.x + self.border.width, 0),
@@ -46,6 +38,9 @@ class TestLevel(Scene):
 
         self.objects.append(DynamicRectangularObject(2, 5, 1, 0.7, physical_space=self.physical_space, angle=0.8))
         self.objects.append(DynamicCircularObject(1, 5, 0.7, physical_space=self.physical_space))
+        self.objects.append(DynamicCircularObject(1, 5, 0.7, physical_space=self.physical_space,
+                                                  sprite=pygame.image.load(
+                                                      'src/Levels/582ab5e93efcb_smaylik.png').convert_alpha()))
 
     def step(self, dt):
         """
@@ -63,18 +58,6 @@ class TestLevel(Scene):
             sub.step(dt)
         for ent in self.entities:
             ent.step(dt)
-
-    def __view__(self, camera):
-        """
-        Отрисовка
-        :param camera: камера, на поверхности которой рисуем
-        :return:
-        """
-        super(TestLevel, self).__view__(camera)
-        # circle(camera.temp_surface,
-        #        (255, 255, 0),
-        #        camera.projection_of_point(self.ball.position),
-        #        camera.projection_of_length(self.ball_shape.radius))
 
     def __devview__(self, camera):
         super(TestLevel, self).__devview__(camera)

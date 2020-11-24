@@ -101,6 +101,12 @@ class PhysicalGameObject(GameObject):
                  physical_space=None, body: pymunk.Body = None, shape: pymunk.Shape = None,
                  angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
         """
+        Если вы хотите установить свою фарму объекта, то при наследовании перед вызовом super().__init__
+        нужно определить body и shape, чтобы всё корректно работало.
+        Это нужно сделать, т.к. выяснилось, что в конструктор класса Circle обязательно надо передать body, т.к.
+        c None, он отказывается работать
+        пример кода можно посмотреть в классе DynamicCircularObject
+
         Небольшое пояснение, у объекта есть два описанных прямоугольника
         1) Начальный self.body_rect, на него натягиваются спрайты
         2) Временной self.bounding, его стороны параллельны осям координат, пока нужен только для девмода
@@ -143,7 +149,6 @@ class PhysicalGameObject(GameObject):
         if body is None:
             body = pymunk.Body(mass, moment, type_)
 
-        body.moment = moment
         body.angle = angle
         body.position = x + width / 2, y + height / 2
 
@@ -252,13 +257,18 @@ class DynamicRectangularObject(PhysicalGameObject):
 class DynamicCircularObject(PhysicalGameObject):
     def __init__(self, x, y, radius=0.3, sprite=None,
                  physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
-        body = pymunk.Body(mass, 1)
+        if moment is None:
+            moment = pymunk.moment_for_box(mass, (radius, radius))
+
+        body = pymunk.Body(mass, moment)
         shape = pymunk.Circle(body, radius=radius)
+
         super(DynamicCircularObject, self).__init__(x=x, y=y, width=radius, height=radius, sprite=sprite,
                                                     physical_space=physical_space,
                                                     body=body, shape=shape,
                                                     angle=angle, mass=mass, moment=moment, elasticity=elasticity,
                                                     friction=friction, type_=pymunk.Body.DYNAMIC)
+
         self.body_rect = PhysicalRect(x - radius / 2, y - radius / 2, 2 * radius, 2 * radius)
 
     def no_sprite_view(self, camera):
