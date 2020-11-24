@@ -1,5 +1,5 @@
 """
-Тут хранять классы игрока и антогонистов
+Тут храняться классы игрока и антогонистов
 TODO: Подобрать более подходлящитее имя файлу
 """
 import pygame
@@ -27,6 +27,11 @@ class Player(Entity):
         self.jump_speed = 4.5
 
     def keyboard_handler(self, pressed_keys: list[int]):
+        """
+        TODO: Вынести этот метод из класса игрока
+        :param pressed_keys:
+        :return:
+        """
         velocity = self.body.velocity
 
         # Если игрок не в свободном падении

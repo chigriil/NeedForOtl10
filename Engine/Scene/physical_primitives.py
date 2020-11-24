@@ -1,7 +1,7 @@
 """
 Класс содержащий геометрическое примитивы из физической реализации сцены
 """
-from pymunk import Vec2d
+from pymunk import Vec2d, BB
 
 
 class PhysicalRect:
@@ -22,45 +22,54 @@ class PhysicalRect:
         self.__height = height
 
     @property
-    def centre(self):
+    def centre(self) -> Vec2d:
         return Vec2d(self.__x + self.__width / 2,
                      self.__y + self.__height / 2)
 
+    @centre.setter
+    def centre(self, newcentre):
+        self.__x, self.__y = newcentre - (self.__width / 2, self.__height / 2)
+
     @property
-    def bottomleft(self):
+    def bottomleft(self) -> Vec2d:
         """
         Возвращает координаты левого нижнего угла прямоугольника
         :return: координаты левого нижнего угла прямоугольника
         """
-        return Vec2d(self.x,
-                self.y)
+        return Vec2d(self.x, self.y)
+
+    @bottomleft.setter
+    def bottomleft(self, newbottomleft):
+        """
+        Устанавлявает координаты левого нижнего угла прямоугольника
+        :param newbottomleft: новые координаты левого нижнего угла прямоугольника
+        """
+        self.__x, self.__y = newbottomleft
 
     @property
-    def topleft(self):
+    def topleft(self) -> Vec2d:
         """
         Возвращает координаты левого верхнего угла прямоугольника
         :return: координаты левого верхнего угла прямоугольника
         """
-        return Vec2d(self.x,
-                self.y + self.__height)
+        return Vec2d(self.x, self.y + self.__height)
 
     @property
-    def bottomright(self):
+    def bottomright(self) -> Vec2d:
         """
         Возвращает координаты правого нижнего нижнего угла прямоугольника
         :return: координаты правого нижнего угла прямоугольника
         """
-        return Vec2d(self.x + self.__width,
-                self.y)
+        return Vec2d(self.x + self.__width, self.y)
 
     @property
-    def topright(self):
+    def topright(self) -> Vec2d:
         """
         Возвращает координаты правого нижнего верхнего угла прямоугольника
         :return: координаты правого верхнего угла прямоугольника
         """
         return Vec2d(self.x + self.__width,
-                self.y + self.__height)
+                     self.y + self.__height)
 
     @property
     def width(self):
@@ -123,3 +132,20 @@ class PhysicalRect:
             self.bottomright,
             self.bottomleft
         ]
+
+    def get_rotated(self, angle):
+        return [(vertex - self.centre).rotated(angle) + self.centre
+                for vertex in self.vertices()]
+
+
+class BoundingBox(PhysicalRect):
+    """
+    Синтаксический сахар
+    Нужен, для удобного консертирования pymunk.BB в PhysicalRect
+    """
+
+    def __init__(self, bb: BB):
+        super().__init__(x=bb.left,
+                         y=bb.bottom,
+                         width=bb.right - bb.left,
+                         height=bb.top - bb.bottom)

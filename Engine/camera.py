@@ -157,9 +157,16 @@ class Camera:
              self.projection_of_point(end),
              width=width)
 
-    def project_poly(self, vertices, color):
+    def project_poly(self, vertices, color, width=0):
+        """
+        Проецирует физический прямоугольник на поверхность камеры
+        :param vertices: вершины
+        :param color: цвет
+        :param width: толщина границы. Если = 0, то заполняется полностью
+        :return:
+        """
         vertices = [self.projection_of_point(vert) for vert in vertices]
-        polygon(self.temp_surface, color, vertices)
+        polygon(self.temp_surface, color, vertices, width=width)
 
     def project_rect(self, rect_: PhysicalRect, color, width=0):
         rect(self.temp_surface, color,
