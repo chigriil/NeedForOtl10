@@ -21,15 +21,15 @@ class Player(Entity):
     TODO: разделить толо игрока на само тело, ноги, руки, голову (нужно для удобной анимации ударов)
     """
 
-    def __init__(self, physical_space, x=0, y=0, width=0.9, height=1.8, img: Surface = None):
-        super(Player, self).__init__(physical_space, x, y, width, height, img)
+    def __init__(self, physical_space, x=0, y=0, width=0.9, height=1.8, sprite: Surface = None):
+        super(Player, self).__init__(physical_space, x, y, width, height, sprite, mass=75)
         self.walk_speed = 1.5
         self.jump_speed = 4.5
 
     def keyboard_handler(self, pressed_keys: list[int]):
         """
         TODO: Вынести этот метод из класса игрока
-        :param pressed_keys:
+        :param pressed_keys: список нажатых клавиш
         :return:
         """
         velocity = self.body.velocity
@@ -50,10 +50,11 @@ class Player(Entity):
             # Бег
             if pressed_keys[pygame.K_LSHIFT]:
                 velocity[0] *= self.run_speed / self.walk_speed
+                self.state = State.RUNNING
 
             # Прыжок
             if pressed_keys[pygame.K_SPACE]:
-                self.state = State.FLYING
                 velocity[1] = self.jump_speed
+                self.state = State.FLYING
 
         self.body.velocity = velocity

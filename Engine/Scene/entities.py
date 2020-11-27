@@ -2,24 +2,19 @@
 Модуль реализующий классы живых сущностей
 Например игрока и врагов
 """
-from enum import Enum
+from math import degrees
+from os import PathLike
+from typing import Union
 
+import pygame
 import pymunk
 from pygame import Surface
 from pymunk import Space
 
-from Engine.Scene.game_objects import PhysicalGameObject
+from settings import critical_speed
+from .animations import EntityAnimations, State
+from .game_objects import PhysicalGameObject
 from .physical_primitives import PhysicalRect
-
-
-class State(Enum):
-    """
-    Класс сотояний игрока, названия говорят сами за себя
-    """
-    IDLE = 0  # ничего не делает
-    WALKING = 1  # идёт
-    RUNNING = 2  # бежит
-    FLYING = 3  # летит(в свободном падении)
 
 
 class Entity(PhysicalGameObject):
@@ -51,12 +46,57 @@ class Entity(PhysicalGameObject):
         # Если всегда на сущность будет смотреть лишь одна камера
 
         # Далее флаги, нужные для удобной обработки
-        self.flying = False  # Находится ли игрок в свободном падении
 
-        # Cостояние игрока
+        # Cостояние сущности
         self.state = State.IDLE
+        # Горизонтальное направление взгляда (влево, вправо)
+        self.horizontal_view_direction = 'right'
+        # Вертикальное направление взгляда (вверх, вниз)
+        self.vertical_view_direction = 'up'
+
+        # Сами анимации
+        self.animations = EntityAnimations()
+
+    def load_animations(self, file_with_names: Union[str, bytes, PathLike[str], PathLike[bytes], int]):
+        """
+        Загружает анимации согласно конфигурационному файлу
+        подробное описание структуры этого файла в readme (будет, а пока только пример)
+
+        animations = {
+        'idle': {
+            'filename': 'src/Levels/player.png',
+            'coords': [
+                [80, 15, 155, 155],
+                [160, 15, 235, 155]
+            ],
+            'animation_period': 1,
+            'direction':'right'
+        },
+
+        'walking': {
+            'filename': 'src/Levels/player.png',
+            'coords': [
+                [240, 12, 315, 154],
+                [335, 12, 410, 154],
+                [423, 12, 498, 154],
+                [515, 12, 590, 154]
+            ],
+            'animation_period': 1,
+            'direction': 'right'
+            }
+        }
+
+        :param file_with_names: путь к конфигурационному файлу
+        :return: None
+        """
+        self.animations.load_animations(file_with_names)
 
     def check_scene_border(self, border: PhysicalRect):
+        """
+        Возвращает сущности в заданые границы
+        :param border: border
+        :return: None
+        """
         x, y = self.body.position
 
         x = max(x, border.leftborder + self.width / 2)
@@ -66,6 +106,56 @@ class Entity(PhysicalGameObject):
 
         self.body.position = x, y
 
+    def update_animation_state(self):
+        """
+        Обновляет состояние анимации сущности
+        :return: None
+        """
+        if self.state != State.FLYING:
+            self.animations.current_animation = f'{self.state.value}_{self.horizontal_view_direction}'
+        else:
+            self.animations.current_animation = f'{self.state.value}_{self.vertical_view_direction}_{self.horizontal_view_direction}'
+
+    def check_directions(self):
+        """
+        Проверяет направление взгляда, и меняет параметры
+        vertical_view_direction и horizontal_view_direction если нужно
+        :return: None
+        """
+        # Проверяем направление взгляда
+        # т.к. вычисления с плавующей точкой не до конца точны, то ноль это небольшой диапозон
+        # в данном случае интервал (-critical_speed, critical_speed)
+
+        # Если вертикальная скорость больше "нуля", то смотрим вверх
+        # Если меньше "нули", то смотрим вниз
+        if self.body.velocity.y > critical_speed:
+            self.vertical_view_direction = 'up'
+        elif self.body.velocity.y < -critical_speed:
+            self.vertical_view_direction = 'down'
+
+        # Если горизонтальная скорость больше "нуля", то смотрим вправо
+        # Если меньше "нули", то смотрим влево
+        if self.body.velocity.x > critical_speed:
+            self.horizontal_view_direction = 'right'
+        elif self.body.velocity.x < -critical_speed:
+            self.horizontal_view_direction = 'left'
+
+    def check_status(self):
+        """
+        Проверяем статус сущности
+        в частности проверяем на FLYING и IDLE
+        TODO: поправить проверку статуса FLYING, т. к. она слишком примитивная
+        :return:
+        """
+        if abs(self.body.velocity.y) < 1e-3 and self.state == State.FLYING:
+            self.state = State.IDLE
+
+        elif abs(self.body.velocity.y) > 1e-1:
+            self.state = State.FLYING
+
+        if self.body.velocity.length <= critical_speed:
+            self.state = State.IDLE
+
     def step(self, dt):
         """
         Реализует эволюцию сущности во времени
@@ -74,14 +164,39 @@ class Entity(PhysicalGameObject):
         """
         # Обрабатываем приземление и падение
         # вероятность двойного прыжка есть, TODO: норсально обработать приземление
-        if abs(self.body.velocity.y) < 1e-3:
-            self.state = State.IDLE
 
-        elif abs(self.body.velocity.y) > 1e-1:
-            self.state = State.FLYING
+        # Проверяем статус сущности
+        self.check_status()
+        # Проверяем направление взгляда сущности
+        self.check_directions()
 
-        self.body_rect = PhysicalRect(*self.body.position - (self.width / 2, self.height / 2), self.width, self.height)
+        # Обновляем статус анимации
+        self.update_animation_state()
 
-    @property
-    def position(self):
-        return self.body.position - (self.width / 2, self.height / 2)
+        # Пересчитываем описанный прямоугольник с учётом позиции сущности
+        self.body_rect.centre = self.body.position
+
+        # Шаг анимации
+        self.animations.step(dt)
+
+    def __view__(self, camera):
+        """
+        Рисует сущность на поверхности камеры
+        :param camera: сама камера
+        :return:
+        """
+        # TODO: ОПТИМИЗАЦИЯ
+        # Проекция описанного прямоугольника на камеру
+        rect_for_camera: pygame.Rect = camera.projection_of_rect(self.boundingbox2)
+
+        # Если не пересекается с экраном, то не рисуем
+        if not rect_for_camera.colliderect(camera.screen.get_rect()):
+            return
+
+        self.scaled_sprite = self.animations.get(camera.distance, camera.projection_of_rect(self.body_rect).size)
+
+        # Рисуем спрайт сущности
+        # Поворачиваем
+        prepared_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
+        # Рисуем
+        camera.temp_surface.blit(prepared_sprite, prepared_sprite.get_rect(center=rect_for_camera.center).topleft)

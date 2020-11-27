@@ -1,0 +1,100 @@
+idle:
+  animation_period: 1
+  coords:
+  - - 80
+    - 15
+    - 155
+    - 155
+  - - 160
+    - 15
+    - 235
+    - 155
+  direction: right
+  filename: src/Levels/player.png
+walking:
+  animation_period: 1
+  coords:
+  - - 240
+    - 12
+    - 315
+    - 154
+  - - 335
+    - 12
+    - 410
+    - 154
+  - - 423
+    - 12
+    - 498
+    - 154
+  - - 515
+    - 12
+    - 590
+    - 154
+  direction: right
+  filename: src/Levels/player.png
+
+running:
+  animation_period: 0.25
+  coords:
+  - - 240
+    - 12
+    - 315
+    - 154
+  - - 335
+    - 12
+    - 410
+    - 154
+  - - 423
+    - 12
+    - 498
+    - 154
+  - - 515
+    - 12
+    - 590
+    - 154
+  direction: right
+  filename: src/Levels/player.png
+
+flying_up:
+  animation_period: 1.5
+  coords:
+  - - 240
+    - 12
+    - 315
+    - 154
+  - - 335
+    - 12
+    - 410
+    - 154
+  - - 423
+    - 12
+    - 498
+    - 154
+  - - 515
+    - 12
+    - 590
+    - 154
+  direction: right
+  filename: src/Levels/player.png
+
+flying_down:
+  animation_period: 1.5
+  coords:
+  - - 240
+    - 12
+    - 315
+    - 154
+  - - 335
+    - 12
+    - 410
+    - 154
+  - - 423
+    - 12
+    - 498
+    - 154
+  - - 515
+    - 12
+    - 590
+    - 154
+  direction: right
+  filename: src/Levels/player.png

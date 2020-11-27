@@ -20,3 +20,14 @@ class YouAreTeapot(Exception):
         super(YouAreTeapot, self).__init__(text)
         print(choice(phrases))
         self.txt = text
+
+
+class NotSupportedConfig(Exception):
+    """
+    Неподерживаемый кофигурационный файл
+    """
+
+    def __init__(self, text):
+        super(NotSupportedConfig, self).__init__(text)
+        print(choice(phrases))
+        self.txt = text

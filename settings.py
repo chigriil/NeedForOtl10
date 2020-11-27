@@ -1,4 +1,6 @@
 SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 900
 
+critical_speed = 1e-3
+
 DEVMODE = True

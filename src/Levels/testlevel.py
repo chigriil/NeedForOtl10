@@ -5,8 +5,7 @@ TODO: чем-нибудь напольникть уровень
 import pygame
 import pymunk
 
-from Engine.Scene.game_objects import StaticRectangularObject, DynamicRectangularObject, GameObject, \
-    DynamicCircularObject
+from Engine.Scene.game_objects import StaticRectangularObject, DynamicRectangularObject, DynamicCircularObject
 from Engine.Scene.gamescene import Scene, SunnyField
 from Engine.Scene.physical_primitives import PhysicalRect
 from src.persons import Player
@@ -17,7 +16,8 @@ class TestLevel(Scene):
         super(TestLevel, self).__init__(game_app, PhysicalRect(-16, -9, 32, 18))
         self.bg = SunnyField()
 
-        self.player = Player(self.physical_space, 0, 0.1, img=pygame.image.load('src/Levels/Boxer2_Idle_000.png'))
+        self.player = Player(self.physical_space, 0, 0.1, sprite=pygame.image.load('src/Levels/Boxer2_Idle_000.png'))
+        self.player.load_animations('src/Levels/test.yaml')
 
         self.entities.append(self.player)
 
@@ -29,7 +29,6 @@ class TestLevel(Scene):
         hl.friction = 1
         self.physical_space.add(hl)
 
-        self.objects.append(GameObject(1, 1, sprite=pygame.image.load('src/Levels/monalisa.jpg')))
         self.objects.append(StaticRectangularObject(2, 0, 1, 0.7, sprite=pygame.image.load('src/Levels/monalisa.jpg'),
                                                     physical_space=self.physical_space))
         self.objects.append(
@@ -53,11 +52,12 @@ class TestLevel(Scene):
 
         self.physical_space.step(dt)
 
-        self.player.check_scene_border(self.border)
         for sub in self.objects:
             sub.step(dt)
         for ent in self.entities:
             ent.step(dt)
+
+        self.player.check_scene_border(self.border)
 
     def __devview__(self, camera):
         super(TestLevel, self).__devview__(camera)
@@ -72,3 +72,11 @@ class TestLevel(Scene):
                 pygame.font.SysFont("Arial", 20).render(str(self.player.body.shapes.pop().get_vertices()), True,
                                                         (255, 0, 0)),
                 False, True), (0, 50))
+
+        camera.temp_surface.blit(
+            pygame.transform.flip(
+                pygame.font.SysFont("Arial", 20).render(
+                    f'{self.player.state}, {self.player.horizontal_view_direction}, {self.player.vertical_view_direction}',
+                    True,
+                    (255, 0, 0)),
+                False, True), (0, 75))
