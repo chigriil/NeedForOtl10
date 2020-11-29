@@ -3,32 +3,20 @@
 TODO: Подобрать более подходлящитее имя файлу
 """
 import pygame
-from pygame import Surface
 
-from Engine.Scene.entities import Entity, State
+from Engine.Scene.animations import State
+from Engine.Scene.entities import Entity
 
 
 class Player(Entity):
     """
     Класс игрока
-    TODO: прикрутить атрибуты игрока, например здоровье, уклонение, и т.д.
-    TODO: добавить объект кулаков и ног, чтобы можно было легко реализовать засчитывание урона
-    TODO: очень желателдьно добавить подсчёт очков, нужно если вруг мы решим завести ии от OpenAI
-    TODO: придумать, как сериализовать игрока и как делать конфиг
-    TODO: прикрутить анимацию удара
-    TODO: прикрутить анимацию кидания
-    TODO: придумать, как сохранять состояние игрока
-    TODO: разделить толо игрока на само тело, ноги, руки, голову (нужно для удобной анимации ударов)
     """
-
-    def __init__(self, physical_space, x=0, y=0, width=0.9, height=1.8, sprite: Surface = None):
-        super(Player, self).__init__(physical_space, x, y, width, height, sprite, mass=75)
-        self.walk_speed = 1.5
-        self.jump_speed = 4.5
 
     def keyboard_handler(self, pressed_keys: list[int]):
         """
-        TODO: Вынести этот метод из класса игрока
+        TODO: Вынести этот метод из класса игрока, лучше сделать класс типо конроллера, чтобы была база для ии
+        TODO: разрешить менять игроку взгляд и направление вдоль x во время полёта
         :param pressed_keys: список нажатых клавиш
         :return:
         """

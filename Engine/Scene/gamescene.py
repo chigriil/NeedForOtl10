@@ -2,11 +2,14 @@
 Отвечающий за симулицию
 100% поменяется в будущих версиях
 """
+
 import numpy as np
+import pygame
 import pymunk
 from pygame.draw import rect, circle
 
 from Engine.Scene.physical_primitives import PhysicalRect
+from src.persons import Player
 
 GRAVITY = np.array([0, -9.81])
 
@@ -32,9 +35,6 @@ class SunnyField(Background):
     Солнце + небо + земля
     Горизонт на линии y = 0
     """
-
-    def __init__(self):
-        pass
 
     def __view__(self, camera):
 
@@ -103,7 +103,7 @@ class Scene:
     TODO: придумать, как сохранять состояние уровня
     """
 
-    def __init__(self, game_app, border=PhysicalRect(-10, -5, 20, 10)):
+    def __init__(self, game_app, background=SunnyField(), border=PhysicalRect(-10, -5, 20, 10)):
         """
         :param game_app: приложение игры, нужно для управления сценой
         """
@@ -115,7 +115,7 @@ class Scene:
         # Живые сущности, например враги
         self.entities = []
         # Задний фон
-        self.bg = SunnyField()
+        self.bg = background
 
         # Сама физика
         # физическое пространство
@@ -209,3 +209,62 @@ class Scene:
             sub.step(dt)
         for ent in self.entities:
             ent.step(dt)
+
+
+class Level(Scene):
+    """
+    Класс игрового уровня
+    TODO: добавить методы сохранения и считывания из файла
+    """
+
+    def __init__(self, game_app, background=SunnyField(), border=PhysicalRect(-10, -5, 20, 10)):
+        super(Level, self).__init__(game_app, background, border)
+
+        # Выносим игрока отдельно, чтобы был удобный доступ к нему
+        # Возможно так придётся вынести и антогонистов
+        # Инициализируется в отдельном методе init_player
+        self.player = None
+
+    def init_player(self, x=0, y=0, width=0.9, height=1.8, sprite=None, animations_config=None):
+        """
+        Инициализирует игрока
+        :param x:
+        :param y:
+        :param width:
+        :param height:
+        :param sprite:
+        :param animations_config:
+        :return:
+        """
+        self.player = Player(self.physical_space, x, y, width, height, sprite)
+        self.player.load_animations(animations_config)
+        self.entities.append(self.player)
+
+    def step(self, dt):
+        super(Level, self).step(dt)
+
+        # Возвращаем игрока в границы уровня
+        self.player.check_scene_border(self.border)
+
+    def __devview__(self, camera):
+        super(Level, self).__devview__(camera)
+
+        # Всякий текст, который передет в класс оверлея
+        camera.temp_surface.blit(
+            pygame.transform.flip(
+                pygame.font.SysFont("Arial", 20).render(str(self.player.body.position), True, (255, 0, 0)),
+                False, True), (0, 0))
+
+        camera.temp_surface.blit(
+            pygame.transform.flip(
+                pygame.font.SysFont("Arial", 20).render(str(self.player.body.shapes.pop().get_vertices()), True,
+                                                        (255, 0, 0)),
+                False, True), (0, 50))
+
+        camera.temp_surface.blit(
+            pygame.transform.flip(
+                pygame.font.SysFont("Arial", 20).render(
+                    f'{self.player.state}, {self.player.horizontal_view_direction}, {self.player.vertical_view_direction}',
+                    True,
+                    (255, 0, 0)),
+                False, True), (0, 75))

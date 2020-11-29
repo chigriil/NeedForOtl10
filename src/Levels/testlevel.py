@@ -6,20 +6,17 @@ import pygame
 import pymunk
 
 from Engine.Scene.game_objects import StaticRectangularObject, DynamicRectangularObject, DynamicCircularObject
-from Engine.Scene.gamescene import Scene, SunnyField
+from Engine.Scene.gamescene import SunnyField, Level
 from Engine.Scene.physical_primitives import PhysicalRect
-from src.persons import Player
 
 
-class TestLevel(Scene):
+class TestLevel(Level):
     def __init__(self, game_app):
-        super(TestLevel, self).__init__(game_app, PhysicalRect(-16, -9, 32, 18))
-        self.bg = SunnyField()
+        super(TestLevel, self).__init__(game_app, SunnyField(), PhysicalRect(-16, -9, 32, 18))
 
-        self.player = Player(self.physical_space, 0, 0.1, sprite=pygame.image.load('src/Levels/Boxer2_Idle_000.png'))
-        self.player.load_animations('src/Levels/test.yaml')
-
-        self.entities.append(self.player)
+        # Инициализация игрока
+        self.init_player(0, 0.1, sprite=pygame.image.load('src/Levels/Boxer2_Idle_000.png'),
+                         animations_config="src/Levels/test.yaml")
 
         # граница горизонта (чтобы человек не проваливался под землю)
         hl = pymunk.Segment(self.physical_space.static_body,
@@ -27,6 +24,7 @@ class TestLevel(Scene):
                             (self.border.x + self.border.width, 0),
                             0)
         hl.friction = 1
+
         self.physical_space.add(hl)
 
         self.objects.append(StaticRectangularObject(2, 0, 1, 0.7, sprite=pygame.image.load('src/Levels/monalisa.jpg'),
@@ -40,43 +38,3 @@ class TestLevel(Scene):
         self.objects.append(DynamicCircularObject(1, 5, 0.7, physical_space=self.physical_space,
                                                   sprite=pygame.image.load(
                                                       'src/Levels/582ab5e93efcb_smaylik.png').convert_alpha()))
-
-    def step(self, dt):
-        """
-        Эволюция системы во времени
-        :param dt: квант времени
-        :return:
-        """
-        for game_event in self.game_events:
-            game_event.hadle()
-
-        self.physical_space.step(dt)
-
-        for sub in self.objects:
-            sub.step(dt)
-        for ent in self.entities:
-            ent.step(dt)
-
-        self.player.check_scene_border(self.border)
-
-    def __devview__(self, camera):
-        super(TestLevel, self).__devview__(camera)
-
-        camera.temp_surface.blit(
-            pygame.transform.flip(
-                pygame.font.SysFont("Arial", 20).render(str(self.player.body.position), True, (255, 0, 0)),
-                False, True), (0, 0))
-
-        camera.temp_surface.blit(
-            pygame.transform.flip(
-                pygame.font.SysFont("Arial", 20).render(str(self.player.body.shapes.pop().get_vertices()), True,
-                                                        (255, 0, 0)),
-                False, True), (0, 50))
-
-        camera.temp_surface.blit(
-            pygame.transform.flip(
-                pygame.font.SysFont("Arial", 20).render(
-                    f'{self.player.state}, {self.player.horizontal_view_direction}, {self.player.vertical_view_direction}',
-                    True,
-                    (255, 0, 0)),
-                False, True), (0, 75))
