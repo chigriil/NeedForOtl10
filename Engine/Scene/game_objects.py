@@ -98,7 +98,7 @@ class PhysicalGameObject(GameObject):
     """
 
     def __init__(self, x, y, width=1, height=1, sprite=None,
-                 physical_space=None, body: pymunk.Body = None, shape: pymunk.Shape = None,
+                 physical_space: pymunk.Space = None, body: pymunk.Body = None, shape: pymunk.Shape = None,
                  angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
         """
         Если вы хотите установить свою фарму объекта, то при наследовании перед вызовом super().__init__

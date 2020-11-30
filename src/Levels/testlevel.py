@@ -15,17 +15,17 @@ class TestLevel(Level):
         super(TestLevel, self).__init__(game_app, SunnyField(), PhysicalRect(-16, -9, 32, 18))
 
         # Инициализация игрока
-        self.init_player(0, 0.1, sprite=pygame.image.load('src/Levels/Boxer2_Idle_000.png'),
+        self.init_player(0, 0.1, 0.96, 1.8, sprite=pygame.image.load('src/Levels/Boxer2_Idle_000.png'),
                          animations_config="src/Levels/test.yaml")
 
         # граница горизонта (чтобы человек не проваливался под землю)
-        hl = pymunk.Segment(self.physical_space.static_body,
+        self.hl = pymunk.Segment(self.physical_space.static_body,
                             (self.border.x, 0),
                             (self.border.x + self.border.width, 0),
                             0)
-        hl.friction = 1
+        self.hl.friction = 1
 
-        self.physical_space.add(hl)
+        self.physical_space.add(self.hl)
 
         self.objects.append(StaticRectangularObject(2, 0, 1, 0.7, sprite=pygame.image.load('src/Levels/monalisa.jpg'),
                                                     physical_space=self.physical_space))

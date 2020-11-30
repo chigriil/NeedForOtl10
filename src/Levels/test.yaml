@@ -1,100 +1,89 @@
-idle:
-  animation_period: 1
+flying_up:
   coords:
-  - - 80
+  - - 75
+    - 173
+    - 175
+    - 313
+  - - 195
+    - 173
+    - 295
+    - 313
+  - - 415
+    - 173
+    - 515
+    - 313
+  - - 535
+    - 173
+    - 635
+    - 313
+  - - 645
+    - 173
+    - 745
+    - 313
+  direction: right
+  file: src/Levels/player.png
+  non_periodic_time: 1
+  period: 0.75
+  type: semiperiodic
+idle:
+  coords:
+  - - 79
     - 15
-    - 155
+    - 154
     - 155
   - - 160
     - 15
     - 235
     - 155
   direction: right
-  filename: src/Levels/player.png
-walking:
-  animation_period: 1
-  coords:
-  - - 240
-    - 12
-    - 315
-    - 154
-  - - 335
-    - 12
-    - 410
-    - 154
-  - - 423
-    - 12
-    - 498
-    - 154
-  - - 515
-    - 12
-    - 590
-    - 154
-  direction: right
-  filename: src/Levels/player.png
-
+  file: src/Levels/player.png
+  period: 1
+  type: periodic
 running:
-  animation_period: 0.25
+  coords:
+  - - 75
+    - 179
+    - 175
+    - 313
+  - - 195
+    - 179
+    - 295
+    - 313
+  - - 415
+    - 179
+    - 515
+    - 313
+  - - 535
+    - 179
+    - 635
+    - 313
+  - - 645
+    - 179
+    - 745
+    - 313
+  direction: right
+  file: src/Levels/player.png
+  period: 0.75
+  type: periodic
+walking:
   coords:
   - - 240
-    - 12
+    - 13
     - 315
-    - 154
+    - 153
   - - 335
-    - 12
+    - 13
     - 410
-    - 154
+    - 153
   - - 423
-    - 12
+    - 13
     - 498
-    - 154
+    - 153
   - - 515
     - 12
     - 590
-    - 154
+    - 152
   direction: right
-  filename: src/Levels/player.png
-
-flying_up:
-  animation_period: 1.5
-  coords:
-  - - 240
-    - 12
-    - 315
-    - 154
-  - - 335
-    - 12
-    - 410
-    - 154
-  - - 423
-    - 12
-    - 498
-    - 154
-  - - 515
-    - 12
-    - 590
-    - 154
-  direction: right
-  filename: src/Levels/player.png
-
-flying_down:
-  animation_period: 1.5
-  coords:
-  - - 240
-    - 12
-    - 315
-    - 154
-  - - 335
-    - 12
-    - 410
-    - 154
-  - - 423
-    - 12
-    - 498
-    - 154
-  - - 515
-    - 12
-    - 590
-    - 154
-  direction: right
-  filename: src/Levels/player.png
+  file: src/Levels/player.png
+  period: 1
+  type: periodic
