@@ -3,6 +3,7 @@ import sys
 
 from Engine.apps import MicroApp
 from settings import *
+from src.game import Game
 
 
 class InputBox:
@@ -158,7 +159,7 @@ class MainMenu(Menu):
         pygame.display.flip()
 
     def atexit(self):
-        CustomisationMenu(self.screen, self.clock).run()
+        return CustomisationMenu(self.screen, self.clock).run()
 
 
 class CustomisationMenu(Menu):
@@ -189,6 +190,9 @@ class CustomisationMenu(Menu):
         self.draw()
         self.clock.tick(self.FPS)
         pygame.display.flip()
+
+    def atexit(self):
+        return Game(self.screen, self.clock).run()
 
 
 class GameMenu(Menu):

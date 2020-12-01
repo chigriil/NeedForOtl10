@@ -10,7 +10,6 @@ from Engine.apps import MicroApp
 from Engine.camera import Camera
 from settings import *
 from .Levels.testlevel import TestLevel
-from src.menu import MainMenu, GameMenu
 
 
 def dev_message():
@@ -151,9 +150,6 @@ class Game(MicroApp):
         self.scene.player.keyboard_handler(pressed_keys=pygame.key.get_pressed())
         self.scene.step(dt)
 
-    def run_once(self):
-        MainMenu(self.screen, self.clock).run()
-
     def on_iteration(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -170,8 +166,9 @@ class Game(MicroApp):
                     self.camera.distance = 14
                 if pygame.key.get_pressed()[pygame.K_F3]:
                     self.DEVMODE = not self.DEVMODE
-                if pygame.key.get_pressed()[pygame.K_ESCAPE]:
-                    GameMenu(self.screen, self.clock).run()
+                # TODO: An in-game menu:
+                #  if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                #  GameMenu(self.screen, self.clock).run()
 
         self.run_tasks()
         self.step(self.clock.get_time() / 1000)
