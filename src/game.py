@@ -131,6 +131,7 @@ class Game(MicroApp):
         super(Game, self).__init__(screen, clock, lifetime=float('inf'))
         self.FPS = 0
         self.scene = TestLevel(Game)
+        self.scene.primary_init()
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
         self.DEVMODE = DEVMODE
@@ -172,3 +173,9 @@ class Game(MicroApp):
         self.draw()
         self.clock.tick(self.FPS)
         pygame.display.set_caption('{:.1f}'.format(self.clock.get_fps()))  # Вывод фпс в заголовок окна
+    def atexit(self):
+        """
+        Действия при выходе из приложения
+        :return: следущеее приложение, которое запустится сразу или None, если не предусмотрено следущее
+        """
+        self.scene.save_level()

@@ -17,7 +17,7 @@ from ..utils import load_yaml, load_json, load_image, pil_to_pygame
 
 class State(Enum):
     """
-    Класс сотояний игрока, названия говорят сами за себя
+    Класс соcтояний игрока, названия говорят сами за себя
     """
     IDLE = 'idle'  # ничего не делает
 
@@ -26,6 +26,13 @@ class State(Enum):
     RUNNING = 'running'  # бежит
 
     FLYING = 'flying'  # летит(в свободном падении)
+
+#
+#class _Sprite(pygame.Surface):
+#    def __init__(self, path):
+#        img = pygame.image.load(path).convert_alpha()
+#        super(_Sprite, self).__init__(img.get_size())
+#        self.path = path
 
 
 class AnimationLoader:

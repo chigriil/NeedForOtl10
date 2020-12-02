@@ -3,10 +3,12 @@
 100% поменяется в будущих версиях
 """
 
+import yaml
 import numpy as np
 import pygame
 import pymunk
 from pygame.draw import rect, circle
+#from Engine.Scene.animations import _Sprite
 
 from Engine.Scene.physical_primitives import PhysicalRect
 from src.persons import Player
@@ -225,7 +227,7 @@ class Level(Scene):
         # Инициализируется в отдельном методе init_player
         self.player = None
 
-    def init_player(self, x=0, y=0, width=0.9, height=1.8, sprite=None, animations_config=None):
+    def init_player(self, x=0, y=0, width=0.9, height=1.8, sprite=None, sprite_adress = None, animations_config=None, location = None):
         """
         Инициализирует игрока
         :param x:
@@ -236,6 +238,7 @@ class Level(Scene):
         :param animations_config:
         :return:
         """
+        self.location = location
         self.player = Player(self.physical_space, x, y, width, height, sprite)
         self.player.load_animations(animations_config)
         self.entities.append(self.player)
@@ -268,3 +271,38 @@ class Level(Scene):
                     True,
                     (255, 0, 0)),
                 False, True), (0, 75))
+
+    """
+    Методы для помещения сущностей и объектов в уровень
+    Хардкодить подвижные объекты в класс уровня = быдлокодить
+    """
+    def add_to_level(self, type, coords = None):
+        pass
+
+    """
+    Функция сохранения уровня в ямл файл
+    На вход принимает имя сохранения, если оно есть
+    Иначе файл сохраняется как defaultName_save.yml
+    """
+    def save_level(self, username = "defaultName"):
+        with open(username + '_save', 'w') as write_file:
+            save_data_dict = {}
+            for counter, object_ in enumerate(self.objects):
+                save_data_dict[counter] = object_.save_data()
+            save_data_final = {'objects': save_data_dict}
+            yaml.dump(save_data_final, write_file)
+            save_data_dict = {}
+            for counter, entity in enumerate(self.entities):
+                save_data_dict[counter] = entity.save_data()
+            save_data_final = {'entities': save_data_dict}
+            yaml.dump(save_data_final, write_file)
+
+    """
+    Функция загрузки уровня из файла
+    На вход принимает название сейва
+    Если названия нет, подгружает резервный сейв под именем DefaultName_save
+    P.S. такого резервного сейва еще нет
+    """
+
+    def load_level(self, username):
+        pass

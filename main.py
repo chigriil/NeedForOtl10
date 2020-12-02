@@ -8,6 +8,8 @@ TODO: Пайгейм медленно рисует, плэтому разреш�
 
 import sys
 
+from settings import *
+from src.Levels.testlevel import *
 import pygame
 
 from Engine.apps import App, Init
@@ -24,5 +26,10 @@ pygame.font.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 
+saveTester = TestLevel(Game)
+saveTester.primary_init()
+saveTester.save_level('hui')
+
 app = App(micro_apps=[Init(screen, clock), LoadingScreen(screen, clock, lifetime=0), Game(screen, clock)])
 app.run()
+
