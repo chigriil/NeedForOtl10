@@ -12,7 +12,8 @@ import pygame
 
 from Engine.apps import App, Init
 from settings import *
-from src.game import MainMenu, LoadingScreen
+from src.game import LoadingScreen
+from src.menu import MainMenu
 
 if sys.hexversion < 0x30900f0:
     raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
