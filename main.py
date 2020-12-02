@@ -29,6 +29,7 @@ clock = pygame.time.Clock()
 saveTester = TestLevel(Game)
 saveTester.primary_init()
 saveTester.save_level('hui')
+saveTester.load_level('hui')
 
 app = App(micro_apps=[Init(screen, clock), LoadingScreen(screen, clock, lifetime=0), Game(screen, clock)])
 app.run()
