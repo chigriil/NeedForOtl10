@@ -4,8 +4,6 @@
 """
 
 import numpy as np
-import pygame
-import pymunk
 import yaml
 from pygame.draw import rect, circle
 
@@ -243,7 +241,7 @@ class Level(Scene):
         :return:
         """
         self.location = location
-        self.player = Player(self.physical_space, x, y, width, height, sprite)
+        self.player = Player(self.physical_space, x, y, width, height, sprite_adress)
         self.player.load_animations(animations_config)
         self.entities.append(self.player)
 
@@ -281,20 +279,22 @@ class Level(Scene):
     Немного быдлокод, но рабочий
     """
 
-    def add_to_level(self, type_, x, y, width = None, height = None, sprite_adress = None):
+    def add_to_level(self, type_, x, y, width=None, height=None, sprite_adress=None):
         if type_ == 'StaticRectangularObject':
-            self.objects.append(StaticRectangularObject(width = width, height = height,
+            self.objects.append(StaticRectangularObject(width=width, height=height,
                                                         sprite_adress=sprite_adress, x=x, y=y,
                                                         physical_space=self.physical_space))
         elif type_ == 'DynamicRectangularObject':
-            self.objects.append(DynamicRectangularObject(width = width, height = height,
-                                                        sprite_adress=sprite_adress, x=x, y=y,
+            self.objects.append(DynamicRectangularObject(width=width, height=height,
+                                                         sprite_adress=sprite_adress, x=x, y=y,
                                                          physical_space=self.physical_space))
         elif type_ == 'DynamicCircularObject':
-            self.objects.append(DynamicCircularObject(radius = width,
-                                                        sprite_adress=sprite_adress, x=x, y=y,
-                                                         physical_space=self.physical_space))
-
+            self.objects.append(DynamicCircularObject(radius=width,
+                                                      sprite_adress=sprite_adress, x=x, y=y,
+                                                      physical_space=self.physical_space))
+        elif type_ == 'Player':
+            self.init_player(width=width, height=height,
+                             sprite_adress=sprite_adress, x=x, y=y, animations_config="src/Levels/test.yaml")
 
     """
     Функция сохранения уровня в ямл файл
@@ -331,5 +331,23 @@ class Level(Scene):
                 for number in data[type_].keys():
                     object_ = data[type_][number]
                     self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][0],
-                                                        height=object_['height'], width=object_['width'],
-                                                        sprite_adress=object_['sprite_adress'])
+                                      height=object_['height'], width=object_['width'],
+                                      sprite_adress=object_['sprite_adress'])
+
+    """
+    Функция инициализации уровня 
+    На вход принимает локацию и сейв
+    если сейва нет - юзает дефолтный сейв
+    """
+
+    def create_level(self, location, save_name='hui'):
+        self.background = location.bg
+        self.border = location.border
+        self.load_level(save_name)
+        hl = pymunk.Segment(self.physical_space.static_body,
+                            (self.border.x, 0),
+                            (self.border.x + self.border.width, 0),
+                            0)
+        hl.friction = 1
+
+        self.physical_space.add(hl)

@@ -15,9 +15,7 @@ class TestLevel(Level):
     def __init__(self, game_app):
         super(TestLevel, self).__init__(game_app, SunnyField(), PhysicalRect(-16, -9, 32, 18))
 
-        # Инициализация игрока
-        self.init_player(0, 0.1, sprite=pygame.image.load('src/Levels/Boxer2_Idle_000.png'),
-                         animations_config="src/Levels/test.yaml")
+
 
         # граница горизонта (чтобы человек не проваливался под землю)
         hl = pymunk.Segment(self.physical_space.static_body,
@@ -33,6 +31,10 @@ class TestLevel(Level):
         """
 
     def primary_init(self):
+        # Инициализация игрока
+        self.init_player(0, 0.1, sprite=pygame.image.load('src/Levels/Boxer2_Idle_000.png'),
+                         animations_config="src/Levels/test.yaml")
+
         self.objects.append(StaticRectangularObject(2, 0, 1, 0.7, sprite_adress='src/Levels/monalisa.jpg',
                                                     physical_space=self.physical_space))
         self.objects.append(DynamicRectangularObject(2, 3, 1, 0.7, sprite_adress='src/Levels/monalisa.jpg',
