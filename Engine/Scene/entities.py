@@ -11,7 +11,7 @@ import pymunk
 from pygame import Surface
 from pymunk import Space
 
-from settings import critical_speed
+from settings import critical_speed, critical_ground_collision, bounce_correction_speed
 from .animations import EntityAnimations, State
 from .game_objects import PhysicalGameObject
 from .physical_primitives import PhysicalRect
@@ -100,6 +100,11 @@ class Entity(PhysicalGameObject):
         # Если новое состояние равно старому, то выходим из функции
         if new_state == self.__state:
             return
+
+        # print(f'Old state: {self.state}\nNew state: {new_state}')
+        # print(f'Velocity = {self.body.velocity}')
+        # print('#' * 20)
+
         # Устанавливаем новое состояние
         self.__state = new_state
         # Меняем геометрию
@@ -212,6 +217,14 @@ class Entity(PhysicalGameObject):
         elif self.body.velocity.x < -critical_speed:
             self.horizontal_view_direction = 'left'
 
+    def is_foothold(self, shape):
+        """
+        Проверят, стоит ли сущность ногами на этой форме
+        :param shape: там форма
+        :return:
+        """
+        return self.body_shape.shapes_collide(shape).normal.y < -critical_ground_collision
+
     def check_status(self):
         """
         Проверяем статус сущности
@@ -219,14 +232,33 @@ class Entity(PhysicalGameObject):
         TODO: поправить проверку статуса FLYING, т. к. она слишком примитивная
         :return:
         """
-        if abs(self.body.velocity.y) < 1e-3 and self.state == State.FLYING:
-            self.state = State.IDLE
 
-        elif abs(self.body.velocity.y) > 1e-1:
-            self.state = State.FLYING
+        # новое состояние
+        new_state = State.FLYING
 
-        if self.body.velocity.length <= critical_speed:
-            self.state = State.IDLE
+        for shape in self.physical_space.shapes:
+            # Приземление
+            if self.is_foothold(shape):
+                new_state = State.IDLE
+                break
+
+        # Фильтруем отскоки при приземлении
+        if self.state != State.FLYING and new_state == State.FLYING and \
+                abs(self.body.velocity.y) < bounce_correction_speed:
+            new_state = self.state
+
+        # Если приземлён
+        if new_state != State.FLYING:
+            if abs(self.body.velocity.x) > self.walk_speed / 2:
+                new_state = State.WALKING
+            if abs(self.body.velocity.x) > (self.walk_speed + self.run_speed) / 2:
+                new_state = State.RUNNING
+
+            # не летит и скорость = 0, значит бездействует
+            if self.body.velocity.length < critical_speed:
+                new_state = State.IDLE
+
+        self.state = new_state
 
     def step(self, dt):
         """
