@@ -11,15 +11,17 @@ class InputBox:
     Class creating a name writing box.
     """
 
-    def __init__(self, x=0, y=0, w=0, h=0, text=''):
+    def __init__(self, screen, x=0, y=0, w=0, h=0, text=''):
+        self.screen = screen
         self.name_recorded = False
         self.name = ''
+        self.username = ''
         self.text = text
         self.rect = pygame.Rect(x, y, w, h)
         self.color = (255, 255, 255)  # The non-active color
         self.font = pygame.font.SysFont('arial', 50)
         self.txt_surface = self.font.render(self.text, True, self.color)
-        self.active = False
+        self.active = True
 
     def handle_event(self, event):
         """
@@ -29,7 +31,7 @@ class InputBox:
         """
         if event.type == pygame.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
-            if self.rect.collidepoint(event.pos[0], event.pos[1]):
+            if self.rect.collidepoint(event.pos):
                 # Toggle the active variable.
                 self.active = not self.active
             else:
@@ -54,19 +56,28 @@ class InputBox:
         :return: None
         """
         # Resize the box if the text is too long.
-        width = max(200, self.txt_surface.get_width() + 10)
+        width = max(self.rect.w, self.txt_surface.get_width() + 10)
         self.rect.w = width
 
-    def draw(self, screen):
+    def draw(self):
         """
         A procedure to display the text on the screen.
         :object screen: pygame.Surface
         :return: None
         """
         # Blit the text.
-        screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
+        self.screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
         # Blit the rect.
-        pygame.draw.rect(screen, self.color, self.rect, 2)
+        pygame.draw.rect(self.screen, self.color, self.rect, 2)
+
+    def run(self):
+        for event in pygame.event.get():
+            self.draw()
+            self.handle_event(event)
+            # Checks for the end of writing
+            if self.name_recorded:
+                self.username = self.name
+            self.update()
 
 
 class Menu(MicroApp):
@@ -114,6 +125,7 @@ class MainMenu(Menu):
 
     def draw(self):
         self.screen.fill(self.background_color)
+
         self.pretty_text_button(self.titlefont, "Need for Otl(10)", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height // 7)
         self.pretty_text_button(self.font, "Выжившие", self.buttoncolor, self.fontcolor,
@@ -174,13 +186,16 @@ class LeaderBoard(Menu):
 
     def on_iteration(self):
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.pretty_text_button(self.font, "Обратно в меню",
                                            self.buttoncolor,
                                            self.fontcolor,
                                            self.screen_width // 2,
                                            self.screen_height * 7 // 12).collidepoint(event.pos):
-                    self.alive = False
+                    self.active = False
 
 
 class CustomisationMenu(Menu):
@@ -191,18 +206,19 @@ class CustomisationMenu(Menu):
         self.buttoncolor = (15, 29, 219)
         self.font = pygame.font.SysFont('Comic Sans MS', 50)
         self.titlefont = pygame.font.SysFont('ariel', 100)
-        self.name_input = InputBox(self.screen_width * 4 // 12 - 500 // 2,
-                                   self.screen_height * 3 // 24 - 50 // 2, 500, 50)
+        self.name_input = InputBox(self.screen,
+                                   self.screen_width * 1 // 2 - 500 // 2,
+                                   self.screen_height * 9 // 24 - 50 // 2,
+                                   500, 50)
 
     def draw(self):
         self.screen.fill(self.background_color)
+
         self.pretty_text_button(self.font, "Меню кастомизации", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height * 3 // 12)
 
         self.pretty_text_button(self.font, "Начать игру", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height * 7 // 12)
-
-        #  self.name_input.draw(self.screen)
 
     def on_iteration(self):
         for event in pygame.event.get():
@@ -216,7 +232,15 @@ class CustomisationMenu(Menu):
                                            self.screen_width // 2,
                                            self.screen_height * 7 // 12).collidepoint(event.pos):
                     self.alive = False
+
+            self.name_input.handle_event(event)
+            # Checks for the end of writing
+            if self.name_input.name_recorded:
+                self.name_input.username = self.name_input.name
+            self.name_input.update()
+
         self.draw()
+        self.name_input.draw()
         self.clock.tick(self.FPS)
         pygame.display.flip()
 
