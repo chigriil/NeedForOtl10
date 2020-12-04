@@ -61,7 +61,9 @@ class Entity(PhysicalGameObject):
         self.crawling_rect = PhysicalRect(0, 0, height, width)
 
         self.soaring_rect = PhysicalRect(0, 0, width, height)
+        self.jumping_rect = PhysicalRect(0, 0, width, height)
         self.flying_rect = PhysicalRect(0, 0, width, height)
+        self.landing_rect = PhysicalRect(0, 0, width, height)
 
         self.walk_speed = 1.5  # Скорость ходьбы сущности
         self.run_speed = 4  # Скорость бега сущности
@@ -73,7 +75,7 @@ class Entity(PhysicalGameObject):
 
         # Далее флаги, нужные для удобной обработки
 
-        # Cостояние сущности
+        # Состояние сущности
         self.__state = State.IDLE
         # Горизонтальное направление взгляда (влево, вправо)
         self.horizontal_view_direction = 'right'
@@ -81,7 +83,7 @@ class Entity(PhysicalGameObject):
         self.vertical_view_direction = 'up'
 
         # Сами анимации
-        self.animations = EntityAnimations()
+        self.animations = EntityAnimations(self)
 
     @property
     def state(self):
@@ -97,13 +99,18 @@ class Entity(PhysicalGameObject):
         :param new_state: новое состояние
         :return: None
         """
+
+        # Если передан кортеж, то считаем, что второе значение это имя вызывающей функции
+        calling_function = None
+        if hasattr(new_state, '__getitem__'):
+            new_state, calling_function = new_state
+
         # Если новое состояние равно старому, то выходим из функции
         if new_state == self.__state:
             return
 
-        # print(f'Old state: {self.state}\nNew state: {new_state}')
-        # print(f'Velocity = {self.body.velocity}')
-        # print('#' * 20)
+        # # Выводим в консоль вызывающую функцию (ДЛЯ ДЕБАГА)
+        # print(f'State: {self.__state} -> {new_state}, Calling function = {calling_function}')
 
         # Устанавливаем новое состояние
         self.__state = new_state
@@ -225,6 +232,13 @@ class Entity(PhysicalGameObject):
         """
         return self.body_shape.shapes_collide(shape).normal.y < -critical_ground_collision
 
+    def can_lean_on_feet(self):
+        """
+        Проверяет, может ли сущность опереться ногами на что-нибудь
+        :return:
+        """
+        return any(map(self.is_foothold, self.physical_space.shapes))
+
     def check_status(self):
         """
         Проверяем статус сущности
@@ -236,19 +250,27 @@ class Entity(PhysicalGameObject):
         # новое состояние
         new_state = State.FLYING
 
-        for shape in self.physical_space.shapes:
-            # Приземление
-            if self.is_foothold(shape):
-                new_state = State.IDLE
-                break
+        foothold = self.can_lean_on_feet()
+
+        # Есть ли опора для ног
+        if foothold:
+            new_state = State.IDLE
+            # начал приземление
+            if self.state == State.FLYING:
+                self.state = State.LANDING, 'check_status'
+                return
+
+        # Если персонаж прыгает
+        elif self.state == State.JUMPING and not foothold:
+            return
 
         # Фильтруем отскоки при приземлении
         if self.state != State.FLYING and new_state == State.FLYING and \
                 abs(self.body.velocity.y) < bounce_correction_speed:
-            new_state = self.state
+            new_state = new_state if new_state == State.LANDING else self.state
 
         # Если приземлён
-        if new_state != State.FLYING:
+        if foothold:
             if abs(self.body.velocity.x) > self.walk_speed / 2:
                 new_state = State.WALKING
             if abs(self.body.velocity.x) > (self.walk_speed + self.run_speed) / 2:
@@ -258,7 +280,11 @@ class Entity(PhysicalGameObject):
             if self.body.velocity.length < critical_speed:
                 new_state = State.IDLE
 
-        self.state = new_state
+        # Конец статуса приземления будет, если игрок начинает двигать или закончилась анимация
+        if new_state == State.IDLE and self.state == State.LANDING:
+            return
+
+        self.state = new_state, 'check_status'
 
     def step(self, dt):
         """
@@ -266,13 +292,12 @@ class Entity(PhysicalGameObject):
         :param dt: квант времени
         :return:
         """
-        # Обрабатываем приземление и падение
-        # вероятность двойного прыжка есть, TODO: норсально обработать приземление
+
+        # Проверяем направление взгляда сущности
+        self.check_directions()
 
         # Проверяем статус сущности
         self.check_status()
-        # Проверяем направление взгляда сущности
-        self.check_directions()
 
         # Обновляем статус анимации
         self.update_animation_state()

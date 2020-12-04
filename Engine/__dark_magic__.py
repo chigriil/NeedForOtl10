@@ -22,7 +22,8 @@ class ExDataLoader(importlib.abc.Loader):
     # Расширение файла
     ext = '.none'
 
-    def repack(self, module, data):
+    @staticmethod
+    def repack(module, data):
         """
         Выполняет запись данных в модуль
         :param module:
@@ -36,7 +37,7 @@ class ExDataLoader(importlib.abc.Loader):
                 if key.startswith('__') and key.endswith('__') or hasattr(module, key):
                     continue
                 setattr(module, key, value)
-        module.raw_data = data
+        # module.raw_data = data
 
     def exec_module(self, module: ModuleType) -> None:
         """

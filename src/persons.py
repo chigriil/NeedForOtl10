@@ -25,9 +25,8 @@ class Player(Entity):
         new_state = self.state
         velocity = self.body.velocity
 
-        # Если игрок не в свободном падении
-        if self.state != State.FLYING:
-
+        # Если сущность имеет опору под ногами
+        if self.can_lean_on_feet():
             # Ходьба
             if pressed_keys[pygame.K_a] ^ pressed_keys[pygame.K_d]:
                 new_state = State.WALKING
@@ -41,13 +40,10 @@ class Player(Entity):
                     velocity[0] = copysign(self.run_speed, velocity[0])
                     new_state = State.RUNNING
 
-            else:
-                velocity[0] = 0
-
                 # Прыжок
             if pressed_keys[pygame.K_SPACE]:
                 velocity[1] = self.jump_speed
-                new_state = State.FLYING
+                new_state = State.JUMPING
 
         self.body.velocity = velocity
-        self.state = new_state
+        self.state = new_state, 'keyboard handler'

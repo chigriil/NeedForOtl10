@@ -1,7 +1,7 @@
 import sys
 from math import pi, cos
 from time import perf_counter
-
+from Engine.overlays import FPS
 import numpy as np
 import pygame
 from pygame.draw import polygon
@@ -133,6 +133,7 @@ class Game(MicroApp):
         self.scene = TestLevel(Game)
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
+        self.overlays = [FPS(self.screen, self.clock)]
         self.DEVMODE = DEVMODE
         if DEVMODE:
             dev_message()
@@ -144,11 +145,17 @@ class Game(MicroApp):
             self.camera.devview(self.scene)
 
         self.camera.show(self.DEVMODE)
+
+        for overlay in self.overlays:
+            overlay.draw()
+
         pygame.display.update()
 
     def step(self, dt):
         self.scene.player.keyboard_handler(pressed_keys=pygame.key.get_pressed())
         self.scene.step(dt)
+        for overlay in self.overlays:
+            overlay.update(dt)
 
     def on_iteration(self):
         for event in pygame.event.get():
@@ -174,4 +181,3 @@ class Game(MicroApp):
         self.step(self.clock.get_time() / 1000)
         self.draw()
         self.clock.tick(self.FPS)
-        pygame.display.set_caption('{:.1f}'.format(self.clock.get_fps()))  # Вывод фпс в заголовок окна
