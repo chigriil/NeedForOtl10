@@ -12,7 +12,7 @@ class GameObject:
     Базовый класс игровго объекта
     """
 
-    def __init__(self, x, y, width=0.3, height=0.3, sprite=None):
+    def __init__(self, x, y, width=0.3, height=0.3, sprite_adress=None, sprite=None):
         """
 
         :param x: x координата левого нижнего угла объекта
@@ -36,6 +36,9 @@ class GameObject:
         # Нужно для оптимизации
         self.scaled_image = self.sprite
         self.last_camera_distance = -1  # Дистанция от камеры да сцены
+
+    def __repr__(self):
+        return self.__class__.__name__
 
     def step(self, dt):
         """
@@ -97,7 +100,7 @@ class PhysicalGameObject(GameObject):
     Базовый класс физического игрового объекта
     """
 
-    def __init__(self, x, y, width=1, height=1, sprite=None,
+    def __init__(self, x, y, width=1, height=1, sprite=None, sprite_adress = None,
                  physical_space: pymunk.Space = None, body: pymunk.Body = None, shape: pymunk.Shape = None,
                  angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
         """
@@ -134,7 +137,7 @@ class PhysicalGameObject(GameObject):
         :param friction: коэффициент трения
         :param type_: тип объекта (DYNAMIC, KINEMATIC, STATIC)
         """
-        super(PhysicalGameObject, self).__init__(x, y, width, height, sprite)
+        super(PhysicalGameObject, self).__init__(x, y, width, height, sprite=sprite, sprite_adress= sprite_adress)
 
         if physical_space is None:
             raise AttributeError("Нужно задать обязательно физическое пространство physical_space")
@@ -163,6 +166,10 @@ class PhysicalGameObject(GameObject):
         self.body_shape.friction = friction
 
         self.physical_space.add(self.body, self.body_shape)
+
+    def save_data(self):
+        return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
+                'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1]}
 
     def step(self, dt):
         # пересчитываем позицию описанного прямоугольника
@@ -237,25 +244,34 @@ class PhysicalGameObject(GameObject):
 
 
 class StaticRectangularObject(PhysicalGameObject):
-    def __init__(self, x, y, width=0.3, height=0.3, sprite=None, physical_space=None,
+    def __init__(self, x, y, width=0.3, height=0.3, sprite_adress=None,  sprite = None, physical_space=None,
                  angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
-        super(StaticRectangularObject, self).__init__(x=x, y=y, width=width, height=height, sprite=sprite,
-                                                      physical_space=physical_space, angle=angle,
+        super(StaticRectangularObject, self).__init__(x=x, y=y, width=width, height=height, sprite_adress=sprite_adress,
+                                                      sprite = sprite, physical_space=physical_space, angle=angle,
                                                       mass=mass, moment=moment, elasticity=elasticity,
                                                       friction=friction, type_=pymunk.Body.STATIC)
 
+    def save_data(self):
+        return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
+                'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1]}
+
 
 class DynamicRectangularObject(PhysicalGameObject):
-    def __init__(self, x, y, width=0.3, height=0.3, sprite=None,
+    def __init__(self, x, y, width=0.3, height=0.3, sprite_adress=None, sprite = None,
                  physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
-        super(DynamicRectangularObject, self).__init__(x=x, y=y, width=width, height=height, sprite=sprite,
+        super(DynamicRectangularObject, self).__init__(x=x, y=y, width=width, height=height,
+                                                       sprite_adress=sprite_adress,sprite = sprite,
                                                        physical_space=physical_space, angle=angle,
                                                        mass=mass, moment=moment, elasticity=elasticity,
                                                        friction=friction, type_=pymunk.Body.DYNAMIC)
 
+    def save_data(self):
+        return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
+                'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1]}
+
 
 class DynamicCircularObject(PhysicalGameObject):
-    def __init__(self, x, y, radius=0.3, sprite=None,
+    def __init__(self, x, y, radius=0.3, sprite_adress=None, sprite = None,
                  physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
         if moment is None:
             moment = pymunk.moment_for_box(mass, (radius, radius))
@@ -263,8 +279,8 @@ class DynamicCircularObject(PhysicalGameObject):
         body = pymunk.Body(mass, moment)
         shape = pymunk.Circle(body, radius=radius)
 
-        super(DynamicCircularObject, self).__init__(x=x, y=y, width=radius, height=radius, sprite=sprite,
-                                                    physical_space=physical_space,
+        super(DynamicCircularObject, self).__init__(x=x, y=y, width=radius, height=radius, sprite_adress=sprite_adress,
+                                                    physical_space=physical_space, sprite = sprite,
                                                     body=body, shape=shape,
                                                     angle=angle, mass=mass, moment=moment, elasticity=elasticity,
                                                     friction=friction, type_=pymunk.Body.DYNAMIC)
@@ -273,3 +289,7 @@ class DynamicCircularObject(PhysicalGameObject):
 
     def no_sprite_view(self, camera):
         camera.project_circle(self.boundingbox2.centre, self.body_shape.radius, (100, 100, 100))
+
+    def save_data(self):
+         return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
+                 'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1]}

@@ -4,6 +4,7 @@ from math import pi, cos
 from time import perf_counter
 from typing import Union
 
+import atexit
 import pygame
 from pygame.draw import polygon
 
@@ -87,6 +88,7 @@ class MicroApp:
             return
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self.atexit()
                 pygame.quit()
                 sys.exit()
         self.run_tasks()

@@ -32,7 +32,7 @@ class Entity(PhysicalGameObject):
     TODO: сделать так, чтобы отображался спрайт по умолчанию если не анимации, а если его нет, то тогда зелёный квадрат
     """
 
-    def __init__(self, physical_space: Space, x=0, y=0, width=0.7, height=1.8, sprite: Surface = None, mass=75):
+    def __init__(self, physical_space: Space, x=0, y=0, width=0.7, height=1.8, sprite: Surface = None, sprite_adress = None, mass=75):
         """
         :param physical_space: физическое пространство
         :param x: x координата левого нижнего края сущности
@@ -41,7 +41,8 @@ class Entity(PhysicalGameObject):
         :param width: ширина сущности
         :param sprite: спрайт сущности
         """
-        super(Entity, self).__init__(x=x, y=y, width=width, height=height, sprite=sprite,
+
+        super(Entity, self).__init__(x=x, y=y, width=width, height=height, sprite=sprite, sprite_adress = sprite_adress,
                                      physical_space=physical_space,
                                      mass=mass, moment=float('inf'), elasticity=0,
                                      friction=0.6, type_=pymunk.Body.DYNAMIC)
