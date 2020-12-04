@@ -5,10 +5,11 @@ from time import perf_counter
 import numpy as np
 import pygame
 from pygame.draw import polygon
-
 from Engine.apps import MicroApp
 from Engine.camera import Camera
 from settings import *
+from src.locations import *
+from Engine.Scene.gamescene import Level
 from .Levels.testlevel import TestLevel
 
 
@@ -130,7 +131,11 @@ class Game(MicroApp):
     def __init__(self, screen, clock):
         super(Game, self).__init__(screen, clock, lifetime=float('inf'))
         self.FPS = 0
-        self.scene = TestLevel(Game)
+        #self.scene = te
+        self.scene = Level(Game)
+        self.scene.create_level(test_location)
+        #self.scene.load_level('hui')
+        #self.scene.primary_init()
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
         self.DEVMODE = DEVMODE
@@ -175,3 +180,9 @@ class Game(MicroApp):
         self.draw()
         self.clock.tick(self.FPS)
         pygame.display.set_caption('{:.1f}'.format(self.clock.get_fps()))  # Вывод фпс в заголовок окна
+    def atexit(self):
+        """
+        Действия при выходе из приложения
+        :return: следущеее приложение, которое запустится сразу или None, если не предусмотрено следущее
+        """
+        self.scene.save_level()

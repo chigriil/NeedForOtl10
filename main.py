@@ -8,11 +8,13 @@ TODO: Пайгейм медленно рисует, плэтому разреш�
 
 import sys
 
+from settings import *
+from src.Levels.testlevel import *
 import pygame
 
 from Engine.apps import App, Init
 from settings import *
-from src.game import LoadingScreen
+from src.game import LoadingScreen, Game
 from src.menu import MainMenu
 
 if sys.hexversion < 0x30900f0:
@@ -27,3 +29,4 @@ clock = pygame.time.Clock()
 
 app = App(micro_apps=[Init(screen, clock), LoadingScreen(screen, clock, lifetime=0), MainMenu(screen, clock)])
 app.run()
+

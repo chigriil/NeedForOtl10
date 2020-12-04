@@ -4,12 +4,14 @@
 """
 
 import numpy as np
-import pygame
-import pymunk
+import yaml
 from pygame.draw import rect, circle
 
+from Engine.Scene.game_objects import *
 from Engine.Scene.physical_primitives import PhysicalRect
 from src.persons import Player
+
+# from Engine.Scene.animations import _Sprite
 
 GRAVITY = np.array([0, -9.81])
 
@@ -215,6 +217,7 @@ class Level(Scene):
     """
     Класс игрового уровня
     TODO: добавить методы сохранения и считывания из файла
+
     """
 
     def __init__(self, game_app, background=SunnyField(), border=PhysicalRect(-10, -5, 20, 10)):
@@ -225,7 +228,8 @@ class Level(Scene):
         # Инициализируется в отдельном методе init_player
         self.player = None
 
-    def init_player(self, x=0, y=0, width=0.9, height=1.8, sprite=None, animations_config=None):
+    def init_player(self, x=0, y=0, width=0.9, height=1.8, sprite=None, sprite_adress=None, animations_config=None,
+                    location=None):
         """
         Инициализирует игрока
         :param x:
@@ -236,7 +240,8 @@ class Level(Scene):
         :param animations_config:
         :return:
         """
-        self.player = Player(self.physical_space, x, y, width, height, sprite)
+        self.location = location
+        self.player = Player(self.physical_space, x, y, width, height, sprite_adress)
         self.player.load_animations(animations_config)
         self.entities.append(self.player)
 
@@ -268,3 +273,81 @@ class Level(Scene):
                     True,
                     (255, 0, 0)),
                 False, True), (0, 75))
+
+    """
+    Методы для помещения сущностей и объектов в уровень
+    Немного быдлокод, но рабочий
+    """
+
+    def add_to_level(self, type_, x, y, width=None, height=None, sprite_adress=None):
+        if type_ == 'StaticRectangularObject':
+            self.objects.append(StaticRectangularObject(width=width, height=height,
+                                                        sprite_adress=sprite_adress, x=x, y=y,
+                                                        physical_space=self.physical_space))
+        elif type_ == 'DynamicRectangularObject':
+            self.objects.append(DynamicRectangularObject(width=width, height=height,
+                                                         sprite_adress=sprite_adress, x=x, y=y,
+                                                         physical_space=self.physical_space))
+        elif type_ == 'DynamicCircularObject':
+            self.objects.append(DynamicCircularObject(radius=width,
+                                                      sprite_adress=sprite_adress, x=x, y=y,
+                                                      physical_space=self.physical_space))
+        elif type_ == 'Player':
+            self.init_player(width=width, height=height,
+                             sprite_adress=sprite_adress, x=x, y=y, animations_config="src/Levels/test.yaml")
+
+    """
+    Функция сохранения уровня в ямл файл
+    На вход принимает имя сохранения, если оно есть
+    Иначе файл сохраняется как defaultName_save.yml
+    На данный момент сохраняет только основные х-тики объектов,
+    но реализовать сохранение доп х-тик довольно просто
+    """
+
+    def save_level(self, username="defaultName"):
+        with open(username + '_save', 'w') as write_file:
+            save_data_dict = {}
+            for counter, object_ in enumerate(self.objects):
+                save_data_dict[counter] = object_.save_data()
+            save_data_final = {'objects': save_data_dict}
+            yaml.dump(save_data_final, write_file)
+            save_data_dict = {}
+            for counter, entity in enumerate(self.entities):
+                save_data_dict[counter] = entity.save_data()
+            save_data_final = {'entities': save_data_dict}
+            yaml.dump(save_data_final, write_file)
+
+    """
+    Функция загрузки уровня из файла
+    На вход принимает название сейва
+    Если названия нет, подгружает резервный сейв под именем DefaultName_save
+    P.S. такого резервного сейва еще нет
+    """
+
+    def load_level(self, username):
+        with open(username + '_save') as readfile:
+            data = yaml.load(readfile, Loader=yaml.FullLoader)
+            for type_ in data.keys():
+                for number in data[type_].keys():
+                    object_ = data[type_][number]
+                    self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][0],
+                                      height=object_['height'], width=object_['width'],
+                                      sprite_adress=object_['sprite_adress'])
+
+    """
+    Функция инициализации уровня 
+    На вход принимает локацию и сейв
+    если сейва нет - юзает дефолтный сейв
+    """
+
+    def create_level(self, location, save_name='hui'):
+        self.background = location.bg
+        self.border = location.border
+        self.load_level(save_name)
+        hl = pymunk.Segment(self.physical_space.static_body,
+                            (self.border.x, 0),
+                            (self.border.x + self.border.width, 0),
+                            0)
+        hl.friction = 1
+
+        self.physical_space.add(hl)
