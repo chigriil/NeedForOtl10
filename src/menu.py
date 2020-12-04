@@ -21,7 +21,7 @@ class InputBox:
         self.color = (255, 255, 255)  # The non-active color
         self.font = pygame.font.SysFont('arial', 50)
         self.txt_surface = self.font.render(self.text, True, self.color)
-        self.active = True
+        self.active = False
 
     def handle_event(self, event):
         """
@@ -201,7 +201,7 @@ class LeaderBoard(Menu):
 class CustomisationMenu(Menu):
     def __init__(self, screen, clock):
         super(CustomisationMenu, self).__init__(screen, clock)
-        self.FPS = 10
+        self.FPS = 30
         self.fontcolor = (255, 255, 255)
         self.buttoncolor = (15, 29, 219)
         self.font = pygame.font.SysFont('Comic Sans MS', 50)
