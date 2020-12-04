@@ -106,7 +106,6 @@ class MainMenu(Menu):
     def __init__(self, screen, clock):
         super(MainMenu, self).__init__(screen, clock)
         self.FPS = 10
-        self.leaderboard = LeaderBoard(self.screen, self.clock)
         self.customisationmenu = CustomisationMenu(self.screen, self.clock)
         self.fontcolor = (255, 255, 255)
         self.buttoncolor = (15, 29, 219)
@@ -139,7 +138,7 @@ class MainMenu(Menu):
                     self.pretty_text_button(self.font, "Выжившие", self.buttoncolor, self.fontcolor,
                                             self.screen_width // 2,
                                             self.screen_height * 5 // 12).collidepoint(event.pos):  # Кнопка Выжившие
-                self.leaderboard.run()
+                LeaderBoard(self.screen, self.clock).run()
             if event.type == pygame.MOUSEBUTTONDOWN and \
                     self.pretty_text_button(self.font, "Начать", self.buttoncolor, self.fontcolor,
                                             self.screen_width // 2,
@@ -190,16 +189,13 @@ class CustomisationMenu(Menu):
         self.FPS = 10
         self.fontcolor = (255, 255, 255)
         self.buttoncolor = (15, 29, 219)
-
         self.font = pygame.font.SysFont('Comic Sans MS', 50)
         self.titlefont = pygame.font.SysFont('ariel', 100)
-
         self.name_input = InputBox(self.screen_width * 4 // 12 - 500 // 2,
                                    self.screen_height * 3 // 24 - 50 // 2, 500, 50)
 
     def draw(self):
         self.screen.fill(self.background_color)
-
         self.pretty_text_button(self.font, "Меню кастомизации", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height * 3 // 12)
 
