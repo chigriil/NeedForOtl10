@@ -48,6 +48,22 @@ class Entity(PhysicalGameObject):
                                      friction=0.6, type_=pymunk.Body.DYNAMIC)
         # float('inf'), чтобы исключить вращение
 
+        # Описанные прямоугольники для разных состояний игрока
+        # Нужны для пересчёта геометрии при смене состояния игрока
+        # Названия говорят сами за себяф
+        self.idle_rect = PhysicalRect(0, 0, width, height)
+        self.walking_rect = PhysicalRect(0, 0, width, height)
+        self.running_rect = PhysicalRect(0, 0, width * 4 / 3, height * 134 / 140)
+
+        self.sitting_rect = PhysicalRect(0, 0, width, height / 2)
+        self.squatting_rect = PhysicalRect(0, 0, width, height / 2)
+
+        self.lying_rect = PhysicalRect(0, 0, height, width)
+        self.crawling_rect = PhysicalRect(0, 0, height, width)
+
+        self.soaring_rect = PhysicalRect(0, 0, width, height)
+        self.flying_rect = PhysicalRect(0, 0, width, height)
+
         self.walk_speed = 1.5  # Скорость ходьбы сущности
         self.run_speed = 4  # Скорость бега сущности
         self.jump_speed = 4.5  # Скорость прыжка
@@ -59,7 +75,7 @@ class Entity(PhysicalGameObject):
         # Далее флаги, нужные для удобной обработки
 
         # Cостояние сущности
-        self.state = State.IDLE
+        self.__state = State.IDLE
         # Горизонтальное направление взгляда (влево, вправо)
         self.horizontal_view_direction = 'right'
         # Вертикальное направление взгляда (вверх, вниз)
@@ -68,6 +84,51 @@ class Entity(PhysicalGameObject):
         # Сами анимации
         self.animations = EntityAnimations()
 
+    @property
+    def state(self):
+        """
+        :return: Текущее состояние игрока
+        """
+        return self.__state
+
+    @state.setter
+    def state(self, new_state):
+        """
+        Устанавливает новое состояние игрока
+        :param new_state: новое состояние
+        :return: None
+        """
+        # Если новое состояние равно старому, то выходим из функции
+        if new_state == self.__state:
+            return
+        # Устанавливаем новое состояние
+        self.__state = new_state
+        # Меняем геометрию
+        self.set_new_shape(new_state.value)
+
+    def set_new_shape(self, shape: str):
+        """
+        Меняет физическое тело
+        Нужно для корретной обрабьотки физики при приседаниях и беге
+        TODO: написать документацию
+        :param shape: новая форма
+        :return:
+        """
+        # Удаляем старое тело
+        self.physical_space.remove(self.body)
+        self.physical_space.remove(self.body_shape)
+
+        # Новое тело
+        self.body_shape = pymunk.Poly.create_box(self.body, self.__dict__[f'{shape}_rect'].size)
+        self.body_shape.friction = 0.6
+        self.body_shape.elasticity = 0
+        self.body_rect = self.__dict__[f'{shape}_rect']
+        self.body_rect.centre = self.body.position
+
+        # считаем, что нижняя граница человека остаётся постоянной, типо он отталкивается ногами
+        self.body.position += ((self.__dict__[f'{shape}_rect'].height - self.body_rect.height) / 2, 0)
+
+        self.physical_space.add(self.body, self.body_shape)
 
     def load_animations(self, file_with_names: Union[str, bytes, PathLike[str], PathLike[bytes], int]):
         """

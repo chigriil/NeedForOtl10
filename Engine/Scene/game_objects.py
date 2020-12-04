@@ -5,7 +5,6 @@ import pymunk
 from pymunk import Vec2d
 
 from Engine.Scene.physical_primitives import PhysicalRect, BoundingBox
-#from .animations import _Sprite
 
 
 class GameObject:
@@ -25,11 +24,7 @@ class GameObject:
         self._position = Vec2d(x, y)
         self.width = width
         self.height = height
-        self.sprite_adress = sprite_adress
-        if self.sprite_adress is not None:
-            self.sprite = pygame.image.load(self.sprite_adress).convert_alpha()
-        else:
-            self.sprite = None
+        self.sprite = sprite
         if self.sprite is not None:
             # Переворачиваем спрайт
             self.sprite = pygame.transform.flip(self.sprite, False, True)
@@ -105,8 +100,8 @@ class PhysicalGameObject(GameObject):
     Базовый класс физического игрового объекта
     """
 
-    def __init__(self, x, y, width=1, height=1, sprite = None, sprite_adress = None,
-                 physical_space=None, body: pymunk.Body = None, shape: pymunk.Shape = None,
+    def __init__(self, x, y, width=1, height=1, sprite=None, sprite_adress = None,
+                 physical_space: pymunk.Space = None, body: pymunk.Body = None, shape: pymunk.Shape = None,
                  angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
         """
         Если вы хотите установить свою фарму объекта, то при наследовании перед вызовом super().__init__

@@ -3,6 +3,7 @@
 TODO: Подобрать более подходлящитее имя файлу
 """
 import pygame
+import pymunk
 
 from Engine.Scene.animations import State
 from Engine.Scene.entities import Entity
@@ -39,7 +40,7 @@ class Player(Entity):
             if pressed_keys[pygame.K_LSHIFT]:
                 velocity[0] *= self.run_speed / self.walk_speed
                 self.state = State.RUNNING
-
+                self.set_new_shape('running')
             # Прыжок
             if pressed_keys[pygame.K_SPACE]:
                 velocity[1] = self.jump_speed

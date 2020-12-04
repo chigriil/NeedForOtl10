@@ -171,6 +171,9 @@ class Game(MicroApp):
                     self.camera.distance = 14
                 if pygame.key.get_pressed()[pygame.K_F3]:
                     self.DEVMODE = not self.DEVMODE
+                # TODO: An in-game menu:
+                #  if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                #  GameMenu(self.screen, self.clock).run()
 
         self.run_tasks()
         self.step(self.clock.get_time() / 1000)
