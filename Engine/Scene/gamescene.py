@@ -306,6 +306,7 @@ class Level(Scene):
 
     def save_level(self, username="defaultName"):
         with open(username + '_save', 'w') as write_file:
+            # сохранение подвижных объектов вместе со спрайтами
             save_data_dict = {}
             for counter, object_ in enumerate(self.objects):
                 save_data_dict[counter] = object_.save_data()
@@ -316,6 +317,27 @@ class Level(Scene):
                 save_data_dict[counter] = entity.save_data()
             save_data_final = {'entities': save_data_dict}
             yaml.dump(save_data_final, write_file)
+            # Функция роется в движке и сохраняет все неподвижные физические тела без спрайтов
+            counter = 0
+            save_data_dict = {}
+            for i in self.physical_space.shapes:
+                if i.body.__repr__() == 'Body(Body.STATIC)':
+                    if (str(i.__class__) == "<class 'pymunk.shapes.Segment'>"):
+                        save_data_dict[counter] = {'type': 'Segment','position': i.body.position, 'a': i._get_a(), 'b': i._get_b(), 'r':
+                            i._get_radius()}
+                        counter += 1
+                    if (str(i.__class__) == "<class 'pymunk.shapes.Poly'>"):
+                        save_data_dict[counter] = {'type': 'Poly', 'position': i.body.position}
+                        counter += 1
+                    if (str(i.__class__) == "<class 'pymunk.shapes.Circle'>"):
+                        save_data_dict[counter] = {'type': 'Circle', 'offset': i._get_a(), 'position': i.body.position, 'r': i._get_radius()}
+                        counter += 1
+            save_data_final = {'invisible_shit': save_data_dict}
+            yaml.dump(save_data_final, write_file)
+            # print(i.body.position)
+            # print(str(i.__class__) == "<class 'pymunk.shapes.Poly'>")
+            # print(str(i.__class__) == "<class 'pymunk.shapes.Segment'>")
+            # print(str(i.__class__) == "<class 'pymunk.shapes.Circle'>")
 
     """
     Функция загрузки уровня из файла
@@ -326,13 +348,22 @@ class Level(Scene):
 
     def load_level(self, username):
         with open(username + '_save') as readfile:
-            data = yaml.load(readfile, Loader=yaml.FullLoader)
+            data = yaml.load(readfile, Loader=yaml.Loader)
             for type_ in data.keys():
-                for number in data[type_].keys():
-                    object_ = data[type_][number]
-                    self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][0],
-                                      height=object_['height'], width=object_['width'],
-                                      sprite_adress=object_['sprite_adress'])
+                if type_ == 'invisible_shit':
+                    for number in data[type_].keys():
+                        object_ = data[type_][number]
+                        if object_['type'] == 'Segment':
+                            print('hey')
+                            self.physical_space.add(pymunk.Segment(self.physical_space.static_body,
+                            object_['a'], object_['b'], object_['r']))
+
+                else:
+                    for number in data[type_].keys():
+                        object_ = data[type_][number]
+                        self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][0],
+                                        height=object_['height'], width=object_['width'],
+                                        sprite_adress=object_['sprite_adress'])
 
     """
     Функция инициализации уровня 

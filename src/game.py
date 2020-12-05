@@ -132,9 +132,9 @@ class Game(MicroApp):
         super(Game, self).__init__(screen, clock, lifetime=float('inf'))
         self.FPS = 0
         #self.scene = te
-        self.scene = Level(Game)
-        self.scene.create_level(test_location)
-        #self.scene.load_level('hui')
+        self.scene = TestLevel(Game)
+        #self.scene.create_level(test_location)
+        self.scene.load_level('pizda')
         #self.scene.primary_init()
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()

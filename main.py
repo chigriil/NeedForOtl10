@@ -16,6 +16,7 @@ from Engine.apps import App, Init
 from settings import *
 from src.game import LoadingScreen, Game
 from src.menu import MainMenu
+from src.Levels.testlevel import  TestLevel
 
 if sys.hexversion < 0x30900f0:
     raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
@@ -26,6 +27,10 @@ pygame.init()
 pygame.font.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
+
+saveTester = TestLevel(Game)
+saveTester.primary_init()
+saveTester.save_level('pizda')
 
 app = App(micro_apps=[Init(screen, clock), LoadingScreen(screen, clock, lifetime=0), MainMenu(screen, clock)])
 app.run()

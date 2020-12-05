@@ -17,6 +17,14 @@ class TestLevel(Level):
 
 
         # граница горизонта (чтобы человек не проваливался под землю)
+
+
+        """
+        Первичная инициализация уровня
+        """
+
+    def primary_init(self):
+        # Инициализация игрока
         hl = pymunk.Segment(self.physical_space.static_body,
                             (self.border.x, 0),
                             (self.border.x + self.border.width, 0),
@@ -25,17 +33,12 @@ class TestLevel(Level):
 
         self.physical_space.add(hl)
 
-        """
-        Первичная инициализация уровня
-        """
-
-    def primary_init(self):
-        # Инициализация игрока
         self.init_player(0, 0.1, sprite=pygame.image.load('src/Levels/Boxer2_Idle_000.png'),
                          animations_config="src/Levels/test.yaml")
 
         self.objects.append(StaticRectangularObject(2, 0, 1, 0.7, sprite_adress='src/Levels/monalisa.jpg',
                                                     physical_space=self.physical_space))
+
         self.objects.append(DynamicRectangularObject(2, 3, 1, 0.7, sprite_adress='src/Levels/monalisa.jpg',
                                                      physical_space=self.physical_space))
         self.objects.append(DynamicRectangularObject(2, 5, 1, 0.7, physical_space=self.physical_space, angle=0.8))

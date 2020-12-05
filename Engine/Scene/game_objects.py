@@ -164,6 +164,7 @@ class PhysicalGameObject(GameObject):
         self.body_shape = shape
         self.body_shape.elasticity = elasticity
         self.body_shape.friction = friction
+        self.sprite_adress = sprite_adress
 
         self.physical_space.add(self.body, self.body_shape)
 
