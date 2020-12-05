@@ -18,7 +18,7 @@ from ..utils import load_yaml, load_json, load_image, pil_to_pygame
 
 class State(Enum):
     """
-    Класс соcтояний игрока, названия говорят сами за себя
+    Класс сотояний игрока, названия говорят сами за себя
     """
     IDLE = 'idle'  # ничего не делает
 
@@ -36,55 +36,164 @@ class State(Enum):
 
     SOARING = 'soaring'  # парит в воздухе
 
+    JUMPING = 'jumping'  # прыжок
+
     FLYING = 'flying'  # летит(в свободном падении)
 
-#
-#class _Sprite(pygame.Surface):
-#    def __init__(self, path):
-#        img = pygame.image.load(path).convert_alpha()
-#        super(_Sprite, self).__init__(img.get_size())
-#        self.path = path
+    LANDING = 'landing'  # приземление
+
+    # TODO: удалить следущие поля и методы
+    # непропускемые
+    non_permeable = [JUMPING, LANDING]
+
+    # Группа воздушная
+    air_group = SOARING, JUMPING, FLYING, LANDING
+
+    @classmethod
+    def is_air_group(cls, state):
+        return state in cls.air_group
+
+
+class IncorrectConfig(Exception):
+    """
+    Исключение, вызывающиеся при неправильном конфиге анимации
+    """
+
+    def __init__(self, text):
+        super(IncorrectConfig, self).__init__(text)
+        self.txt = text
+
+
+def crop_image(picture, crops, flip_x, flip_y) -> list[pygame.Surface]:
+    """
+    Кропает изображение
+    :param picture: изображение
+    :param crops: список координат для кропа
+        кроп имеет структуру:
+                (x1, y1, x2, y2), где
+                (x1, y1) это координаты левой верхней вершины описанного прямоугольника,
+                (x2, y2) это координаты правой нижней вершины описанного прямоугольника
+    :param flip_x: нужно ли отразить по оси x
+    :param flip_y: нужно ли отразить по оси y
+    :return: список pygame.Surface с кропами изображения
+    """
+    return [pygame.transform.flip(pil_to_pygame(picture.crop(coord)), flip_x, flip_y) for coord in crops]
 
 
 class AnimationLoader:
     """
     Загрузчик анимаций
     Содержит много статических методов, которые загружают разные анимации
+    TODO: дописать загрузчики
+
+    :raises :
     """
 
-    # @staticmethod
-    # def load_periodic_animation(source, coords, period, flip_x, flip_y=True):
-    #     """
-    #     Создаёт периодическую анимацию
-    #     интервал времени между картинками одинаковый
-    #     :param source: картика со спрайтами
-    #     :param coords: координаты спрайтов
-    #     :param period: период анимации
-    #     :param flip_x: нужно ли отразить по оси x
-    #     :param flip_y: нужно ли отразить по оси y
-    #     :return: экземпляр класса периодической анимации
-    #     """
-    #     return PeriodicAnimation([
-    #         pygame.transform.flip(pil_to_pygame(source.crop(coord)), flip_x, flip_y)
-    #         for coord in coords], period)
-
     @staticmethod
-    def load_periodic_animation(config, flip_x=False, flip_y=True):
+    def load_periodic_animation(config, flip_x=False, flip_y=True, adaptive_width=True, adaptive_height=False):
         """
-        TODO: добавть описание структуры конфига
+        Конфигурация должна быть словарём со следущими ключами:
+
+        'type': 'periodic' # вот тут строго
+        'file': путь до файла со спрайтами
+        'period': период анимации
+        'coords': список кропов картинки
+
         :param config: файл с конфигом анимации
         :param flip_x: нужно ли отразить по оси x
         :param flip_y: нужно ли отразить по оси y
+        :param adaptive_width: адаптивная ширина (подробнее в документации в классе анимации)
+        :param adaptive_height: адаптивная высота (подробнее в документации в классе анимации)
         :return:
         """
-        # source = source,
-        #     coords=animation['coords'],
-        #     period=animation['period'],
-        #     flip_x=True
+
+        if config['type'] != 'periodic':
+            raise IncorrectConfig('Не верный тип анимации, должен быть periodic, а передан {}'.format(config['type']))
+
+        # Загружаем картинку со спрайтами
         source = load_image(config['file'])
-        return PeriodicAnimation([
-            pygame.transform.flip(pil_to_pygame(source.crop(coord)), flip_x, flip_y)
-            for coord in config['coords']], config['period'])
+
+        try:
+            return PeriodicAnimation(
+                crop_image(source, config['coords'], flip_x, flip_y),
+                config['period'],
+                adaptive_width=adaptive_width, adaptive_height=adaptive_height
+            )
+        except KeyError as e:
+            raise IncorrectConfig(f'Нет нужного параметра для загрузки анимации: {e}')
+
+    @staticmethod
+    def load_semi_periodic_animation(config, flip_x=False, flip_y=True, adaptive_width=True, adaptive_height=False):
+        """
+        Конфигурация должна быть словарём со следущими ключами:
+
+        'type': 'semi_periodic' # вот тут строго
+        'file': путь до файла со спрайтами
+        'non_periodic_time': время непериодической части анимации
+        'period': период периодической части анимации
+        'non_periodic_coords': список кропов картинки для непериодической части
+
+        :param config: файл с конфигом анимации
+        :param flip_x: нужно ли отразить по оси x
+        :param flip_y: нужно ли отразить по оси y
+        :param adaptive_width: адаптивная ширина (подробнее в документации в классе анимации)
+        :param adaptive_height: адаптивная высота (подробнее в документации в классе анимации)
+        :return:
+        """
+
+        if config['type'] != 'semi_periodic':
+            raise IncorrectConfig(
+                'Не верный тип анимации, должен быть semi_periodic, а передан {}'.format(config['type']))
+
+        # Загружаем картинку со спрайтами
+        source = load_image(config['file'])
+
+        try:
+            return SemiPeriodicAnimation(
+                crop_image(source, config['non_periodic_coords'], flip_x, flip_y),
+                crop_image(source, config['coords'], flip_x, flip_y),
+                config['non_periodic_time'],
+                config['period'],
+                adaptive_width=adaptive_width,
+                adaptive_height=adaptive_height
+            )
+        except KeyError as e:
+            raise IncorrectConfig(f'Нет нужного параметра для загрузки анимации: {e}')
+
+    @staticmethod
+    def load_non_periodic_animation(config, flip_x=False, flip_y=True, adaptive_width=True, adaptive_height=False):
+        """
+        Конфигурация должна быть словарём со следущими ключами:
+
+        'type': 'periodic' # вот тут строго
+        'file': путь до файла со спрайтами
+        'time_length': время анимации
+        'coords': список кропов картинки
+
+        :param config: файл с конфигом анимации
+        :param flip_x: нужно ли отразить по оси x
+        :param flip_y: нужно ли отразить по оси y
+        :param adaptive_width: адаптивная ширина (подробнее в документации в классе анимации)
+        :param adaptive_height: адаптивная высота (подробнее в документации в классе анимации)
+        :return:
+        """
+
+        if config['type'] != 'non_periodic':
+            raise IncorrectConfig(
+                'Не верный тип анимации, должен быть non_periodic, а передан {}'.format(config['type']))
+
+        # Загружаем картинку со спрайтами
+        source = load_image(config['file'])
+
+        try:
+            return PeriodicAnimation(
+                crop_image(source, config['coords'], flip_x, flip_y),
+                config['time_length'],
+                adaptive_width=adaptive_width,
+                adaptive_height=adaptive_height
+            )
+        except KeyError as e:
+            raise IncorrectConfig(f'Нет нужного параметра для загрузки анимации: {e}')
 
 
 @dataclass
@@ -95,7 +204,7 @@ class PeriodicAnimation:
     интервал времени между картинками одинаковый
     """
 
-    def __init__(self, frames: list[pygame.Surface] = None, period=1, adaptive_width=True, adaptive_height=False):
+    def __init__(self, frames: list[pygame.Surface] = None, period=1., adaptive_width=True, adaptive_height=False):
         """
         Конструктор без параметров создаеёт пустой класс,
         который выдаёт зелёный прямоугольник при запросе картинки
@@ -197,6 +306,11 @@ class PeriodicAnimation:
 
 @dataclass
 class SemiPeriodicAnimation(PeriodicAnimation):
+    """
+    Полупериодичская анимация
+    Сначала проигрывается непериодическая часть (один раз), потом периодическая (сколько надо)
+    """
+
     def __init__(self, non_frames_periodic=None, frames=None, non_periodic_time=1, period=1, adaptive_width=True,
                  adaptive_height=False):
         super(SemiPeriodicAnimation, self).__init__(frames, period, adaptive_width, adaptive_height)
@@ -214,17 +328,47 @@ class SemiPeriodicAnimation(PeriodicAnimation):
 
 
 @dataclass
-class OneRunAnimation(PeriodicAnimation):
+class NonPeriodicAnimation(PeriodicAnimation):
     """
-    TODO: вообзе хз как нормально писать блокирующий режим, и выход из анимации
+    Класс периодической анимации
+    Хранит в себе спрайты и содержит методы, для выдачи нужных в нужное время
+    интервал времени между картинками одинаковый
     """
+
+    def __init__(self, frames: list[pygame.Surface] = None, time_length=0.5, adaptive_width=True,
+                 adaptive_height=False):
+        super(NonPeriodicAnimation, self).__init__(frames=frames,
+                                                   period=time_length,
+                                                   adaptive_width=adaptive_width,
+                                                   adaptive_height=adaptive_height)
+
+        self.time_length = time_length
+        self.finished = False
+
+    def reset(self):
+        """
+        Сбрасывает счётчик времени анимации в ноль
+        :return: None
+        """
+        self.animation_time = 0
+        self.finished = False
+
+    def step(self, dt):
+        """
+        Инкрементирует счётчик времени на dt
+        :param dt: квант времени
+        :return: None
+        """
+        self.animation_time += dt
+        if self.animation_time > self.time_length:
+            self.finished = True
 
     def __str__(self):
         """
         Псевдопреобразовние в строку
         :return: общее сотояние классая
         """
-        return f'OneRunAnimation: Frametime = {self.frame_time}, Frames = {str(self.frames)}'
+        return f'RunOnceAnimation: Time length = {self.time_length}, Frames = {str(self.frames)}'
 
     def get(self, distance, size):
         """
@@ -232,7 +376,7 @@ class OneRunAnimation(PeriodicAnimation):
         если картинок нет, то возвращает зелёный прямоугольник
         :param distance: дистаниця до камеры
         :param size: размер окна, под который надо подгонять
-        :return: картинку из анимации или None, если картинки закончились
+        :return: картинку из анимации
         """
 
         # если нет, картинок возращам зелёный прямоугольник
@@ -244,10 +388,8 @@ class OneRunAnimation(PeriodicAnimation):
         # Проверяем маштаб картинок
         self.check_camera_distance(distance, size)
 
-        if int(self.animation_time // self.frame_time) < len(self.frames):
-            return self.scaled_frames[int(self.animation_time // self.frame_time)]
-
-        return None
+        # Если анимация закончилась, то выдаём последний кадр
+        return self.scaled_frames[min(self.animation_time // self.frame_time, len(self.frames))]
 
 
 @dataclass
@@ -256,25 +398,58 @@ class EntityAnimations:
     Класс содержащий все возможные анимации сущности
     """
 
-    def __init__(self, current_animation='idle_right'):
+    def __init__(self, player, current_animation='idle_right'):
         """
         иницаилизируется либо без параметров, либо с желаемой начальной анимацие
         но это не важно, т.к. состояние почти сразу пересчитается
-        :param current_animation:
+
+        Дублирование атрибутов нажно, чтобы не пересчитывать направление каждый кадр,
+        возможно в следубщих весиях будет убрано для уменьшения использования озу, но пока так удобнее
+        :param current_animation: начальное состояние ангимации
         """
+        # TODO: добавить  анимации удара и пинка, прописать их физику
+
+        # Сущность, к которой привязана анимация
+        self.player = player
+
         # название анимации, которая проигрывается сейчас
         self.__current_animation = current_animation
 
         self.idle_left = PeriodicAnimation()  # ничего неделание влево
         self.idle_right = PeriodicAnimation()  # ничего неделание вправо
+
         self.walking_left = PeriodicAnimation()  # ходьба влево
         self.walking_right = PeriodicAnimation()  # ходьба вправо
+
         self.running_left = PeriodicAnimation()  # бег влево
         self.running_right = PeriodicAnimation()  # бег вправо
+
+        self.sitting_left = PeriodicAnimation()  # сидение на кортах влево
+        self.sitting_right = PeriodicAnimation()  # сидение на кортах вправо
+
+        self.squatting_left = PeriodicAnimation()  # движение на кортах влево
+        self.squatting_right = PeriodicAnimation()  # движение на кортах вправо
+
+        self.lying_left = PeriodicAnimation()  # лежание влево
+        self.lying_right = PeriodicAnimation()  # лежание вправо
+
+        self.crawling_left = PeriodicAnimation()  # ползание влево
+        self.crawling_right = PeriodicAnimation()  # ползание вправо
+
+        # Эту пару анимаций, возможно, удалим, т.к. полёт для персонажей не планируется
+        self.soaring_left = PeriodicAnimation()  # парение в воздухе влево
+        self.soaring_right = PeriodicAnimation()  # парение в воздухе вправо
+
+        self.jumping_left = NonPeriodicAnimation()  # прыжок влево
+        self.jumping_right = NonPeriodicAnimation()  # прыжок вправо
+
         self.flying_up_right = PeriodicAnimation()  # полёт вверх вправо
         self.flying_up_left = PeriodicAnimation()  # полёт вверх влево
         self.flying_down_right = PeriodicAnimation()  # полёт вниз вправо
         self.flying_down_left = PeriodicAnimation()  # полёт вниз влево
+
+        self.landing_left = NonPeriodicAnimation()  # приземление влево
+        self.landing_right = NonPeriodicAnimation()  # приземлениеф вправо
 
     @property
     def current_animation(self) -> str:
@@ -304,10 +479,20 @@ class EntityAnimations:
     def step(self, dt):
         """
         Эволюционируем анимацию во времени
+        TODO: добавить обработку непериодических анимаций
         :param dt: квант времени
         :return: None
         """
-        self.__dict__[self.__current_animation].step(dt)
+        animation = self.__dict__[self.__current_animation]
+        if isinstance(animation, NonPeriodicAnimation) and animation.finished:
+            animation_name = self.__current_animation.split('_')[0]
+            if animation_name == State.JUMPING.value:
+                self.player.state = State.FLYING, 'animation_step'
+            else:
+                self.player.state = State.IDLE, 'animation_step'
+
+        else:
+            animation.step(dt)
 
     def get(self, distance, size) -> pygame.Surface:
         """
@@ -333,10 +518,85 @@ class EntityAnimations:
         """
         Загружает анимацию с соответствии с конфигурационным файлом
         поодерживаются yaml и json
-        :param file_with_names: конфигурационный файл
+        Файл конфигурации должен иметь следующую структуру:
+
+        {
+        'name_1': {/*params_1*/},
+        'name_2': {/*params_2*/},
+        ...
+        'name_n': {/*params_n*/}
+        }
+
+        name_i это имя анимации, в случаи игрока это:
+        'idle'  # ничего не делает
+        'walking'  # идёт
+        'running'  # бежит
+        'sitting'  # сидит на кортах
+        'squatting'  # двигается на кортах
+        'lying'  # лежит
+        'crawling'  # ползёт лёжа
+        'soaring'  # парит в воздухе
+        'jumping'  # прыжок
+        'flying'  # летит(в свободном падении)
+
+        params_i зависит от типа анимации:
+        periodic - периодическая анимация (PeriodicAnimation)
+        semi_periodic - полупериодическая анимация (SemiPeriodicAnimation)
+        non_periodic - непериодическая анимация (NonPeriodicAnimation)
+
+        Для каждого вида анимации свои параметры,
+        их можно посмотреть в документации соответсвующего метода в классе AnimationLoader
+
+        Для этого метода нужно name,type и direction, все остальные параметры уже относятся к кокретному типу анимации
+
+        Пример файла с конфигом:
+
+        'walking': {
+            'type': 'periodic',
+            'period': 1,
+            'file': 'src/Levels/player.png',
+            'coords': [
+                [240, 13, 315, 153],
+                [335, 13, 410, 153],
+                [423, 13, 498, 153],
+                [515, 12, 590, 152]
+            ],
+            'direction': 'right'
+        },
+
+        'flying_up': {
+            'type': 'semi_periodic',
+            'non_periodic_time': 1,
+            'period': 0.75,
+            'file': 'src/Levels/player.png',
+            'coords': [
+                [75, 173, 175, 313],
+                [195, 173, 295, 313],
+                [415, 173, 515, 313],
+                [535, 173, 635, 313],
+                [645, 173, 745, 313]
+            ],
+            'non_periodic_coords': [
+                [75, 173, 175, 313],
+                [195, 173, 295, 313],
+                [415, 173, 515, 313],
+                [535, 173, 635, 313],
+                [645, 173, 745, 313]
+            ],
+            'direction': 'right'
+        }
+        :param file_with_names: путь до конфигурационного файла
         :return: None
         """
-        # TODO: долбавить проверку корректности всего
+
+        # Словарь подбирает подходящий загрузчик по типу анимации
+        loader = {
+            'periodic': AnimationLoader.load_periodic_animation,
+            'semi_periodic': AnimationLoader.load_semi_periodic_animation,
+            'non_periodic': AnimationLoader.load_non_periodic_animation
+        }
+
+        # TODO: долбавить проверку корректности всего (тут надо задолбаться)
 
         # Считывание файлов с диска
         # Поддерживаются yaml и json
@@ -347,17 +607,8 @@ class EntityAnimations:
         else:
             raise NotSupportedConfig('Поддерживаются только файлы json и yaml')
 
-        # Итерируетмся по нозваниям анимаций
-        for animation_name in animations:
-
-            # Выбираем анимацию с названием animation_name
-            animation: dict = animations[animation_name]
-
-            # Тип анимации
-            type_ = animation['type']
-
-            # Загружаем картинку со спрайтами
-            source = load_image(animation['file'])
+        # Итерируетмся по анимациям
+        for animation_name, animation in animations.items():
 
             # Если анимации ориентированны влево или вправо
             if direction := animation['direction'].lower() in ('right', 'left'):
@@ -366,15 +617,14 @@ class EntityAnimations:
                 else:
                     directions = ('left', 'right')
 
-                if type_ == 'periodic':
-                    # Анимация в прямом направлении
-                    self.__dict__[f'{animation_name}_{directions[0]}'] = AnimationLoader.load_periodic_animation(
-                        animation,
-                        flip_x=True
-                    )
+                # Анимация в прямом направлении
+                self.__dict__[f'{animation_name}_{directions[0]}'] = loader[animation['type']](
+                    animation,
+                    flip_x=True
+                )
 
-                    # Анимация в зеркальном направлении
-                    self.__dict__[f'{animation_name}_{directions[1]}'] = AnimationLoader.load_periodic_animation(
-                        animation,
-                        flip_x=False
-                    )
+                # Анимация в зеркальном направлении
+                self.__dict__[f'{animation_name}_{directions[1]}'] = loader[animation['type']](
+                    animation,
+                    flip_x=False
+                )
