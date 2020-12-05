@@ -433,6 +433,7 @@ class EntityAnimations:
         self.lying_left = PeriodicAnimation()  # лежание влево
         self.lying_right = PeriodicAnimation()  # лежание вправо
 
+        # ползанье влево не будет реализовано
         self.crawling_left = PeriodicAnimation()  # ползание влево
         self.crawling_right = PeriodicAnimation()  # ползание вправо
 
