@@ -2,6 +2,8 @@ import sys
 from math import pi, cos
 from time import perf_counter
 from Engine.overlays import FPS
+from Engine.overlays import HealthBar
+from Engine.overlays import SaveButton
 import numpy as np
 import pygame
 from pygame.draw import polygon
@@ -136,7 +138,9 @@ class Game(MicroApp):
         #self.scene.primary_init()
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
-        self.overlays = [FPS(self.screen, self.clock)]
+        self.overlays = [FPS(self.screen, self.clock),
+                         HealthBar(self.screen, self.clock, self.scene.player, self.camera)]
+        self.buttons = [SaveButton(self.screen, self.clock)]
         self.DEVMODE = DEVMODE
         if DEVMODE:
             dev_message()
@@ -151,6 +155,8 @@ class Game(MicroApp):
 
         for overlay in self.overlays:
             overlay.draw()
+        for button in self.buttons:
+            button.draw()
 
         pygame.display.update()
 
@@ -166,6 +172,9 @@ class Game(MicroApp):
                 pygame.quit()
                 sys.exit()
 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for button in self.buttons:
+                    button.activate(event)
             if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[0]:
                 self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
             if event.type == pygame.MOUSEWHEEL:
