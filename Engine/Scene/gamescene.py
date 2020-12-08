@@ -354,7 +354,6 @@ class Level(Scene):
                     for number in data[type_].keys():
                         object_ = data[type_][number]
                         if object_['type'] == 'Segment':
-                            print('hey')
                             self.physical_space.add(pymunk.Segment(self.physical_space.static_body,
                             object_['a'], object_['b'], object_['r']))
 

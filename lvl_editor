@@ -1,0 +1,76 @@
+"""
+Редактор уровней
+
+Задание фона уровня:
+Написать в консоль background_adress = *название пикчи*
+!!!Пикча должна лежать в папке background_pics!!!
+
+Создание границы уровня:
+Зажать Y
+ЛКМ - первая точка границы уровня
+ПКМ - вторая точка границы уровня
+Отжать Y - граница сохраняется
+
+Размещение объектов
+Нажать O
+В консоль (если будет не лень, то и куда-то в само окне pygame)
+будет выведено название объекта
+Стрелка вправо - следующий объект
+Стрелка влево - *WOW, HOW  CAN IT BE????* предыдущий объект
+Нажать ЛКМ - разместить объект
+Нажать O - выйти из режима размещения объектов
+
+Размещение персонажей
+Нажать P
+В консоль (если будет не лень, то и куда-то в само окне pygame)
+будет выведено название персонажа
+Стрелка вправо - следующий персонаж
+Стрелка влево - *WOW, HOW  CAN IT BE????* предыдущий персонаж
+Нажать ЛКМ - разместить персонажа
+Нажать P - выйти из режима размещения персонажей
+
+Убрать последний созданный объект
+CTRL + Z
+
+"""
+
+import sys
+
+from settings import *
+from src.Levels.testlevel import *
+import pygame
+
+import Engine.__dark_magic__ as dark_magic
+from Engine.apps import App, Init
+from settings import *
+from src.game import LoadingScreen, Game
+from src.menu import MainMenu
+from src.Levels.testlevel import  TestLevel
+from Engine.apps import MicroApp
+from Engine.camera import Camera
+
+if sys.hexversion < 0x30900f0:
+    raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
+dark_magic.init()
+pygame.mixer.pre_init()
+pygame.init()
+pygame.font.init()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+clock = pygame.time.Clock()
+
+saveTester = TestLevel(Game)
+saveTester.primary_init()
+saveTester.save_level('pizda')
+
+class Lvl_editor(MicroApp):
+    def __init__(self, screen, clock):
+        super(Lvl_editor, self).__init__(screen, clock, lifetime=float('inf'))
+        self.FPS = 0
+        self.scene = TestLevel(Game)
+        self.scene.load_level('pizda')
+        self.camera = Camera(self.screen, distance=16)
+        self.camera.start()
+
+
+app = App(micro_apps=[Lvl_editor(screen, clock)])
+app.run()
