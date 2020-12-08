@@ -120,8 +120,8 @@ class MainMenu(Menu):
         self.customisationmenu = CustomisationMenu(self.screen, self.clock)
         self.fontcolor = (255, 255, 255)
         self.buttoncolor = (15, 29, 219)
-        self.font = pygame.font.SysFont('Comic Sans MS', 70)
-        self.titlefont = pygame.font.SysFont('ariel', 300)
+        self.font = pygame.font.SysFont('Comic Sans MS', int(70 / 900 * self.screen_height))
+        self.titlefont = pygame.font.SysFont('ariel', int(300 / 900 * self.screen_height))
 
     def draw(self):
         self.screen.fill(self.background_color)
@@ -167,7 +167,7 @@ class LeaderBoard(Menu):
         self.FPS = 10
         self.fontcolor = (255, 255, 255)
         self.buttoncolor = (15, 29, 219)
-        self.font = pygame.font.SysFont('Comic Sans MS', 50)
+        self.font = pygame.font.SysFont('Comic Sans MS', 50 / 900 * self.screen_height)
 
     def run_once(self):
         self.screen.fill(self.background_color)
@@ -204,8 +204,8 @@ class CustomisationMenu(Menu):
         self.FPS = 30
         self.fontcolor = (255, 255, 255)
         self.buttoncolor = (15, 29, 219)
-        self.font = pygame.font.SysFont('Comic Sans MS', 50)
-        self.titlefont = pygame.font.SysFont('ariel', 100)
+        self.font = pygame.font.SysFont('Comic Sans MS', int(50 / 900 * self.screen_height))
+        self.titlefont = pygame.font.SysFont('ariel', int(100 / 900 * self.screen_height))
         self.name_input = InputBox(self.screen,
                                    self.screen_width * 1 // 2 - 500 // 2,
                                    self.screen_height * 9 // 24 - 50 // 2,
@@ -256,7 +256,7 @@ class GameMenu(Menu):
         self.fontcolor = (255, 255, 255)
         self.buttoncolor = (15, 29, 219)
 
-        self.font = pygame.font.SysFont('Comic Sans MS', 50)
+        self.font = pygame.font.SysFont('Comic Sans MS', int(50 / 900 * self.screen_height))
 
     def draw(self):
         self.screen.fill(self.background_color)
