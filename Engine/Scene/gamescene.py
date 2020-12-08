@@ -363,7 +363,7 @@ class Level(Scene):
                 else:
                     for number in data[type_].keys():
                         object_ = data[type_][number]
-                        self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][0],
+                        self.add_to_level(type_=object_['class'], x=object_['vector'][0], y= object_['vector'][1],
                                           height=object_['height'], width=object_['width'],
                                           sprite_adress=object_['sprite_adress'])
 

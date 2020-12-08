@@ -42,322 +42,225 @@ objects:
   5:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1117
-    - 274
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - &id001 !!python/object/apply:numpy.dtype
+        args:
+        - f8
+        - false
+        - true
+        state: !!python/tuple
+        - 3
+        - <
+        - null
+        - null
+        - null
+        - -1
+        - -1
+        - 0
+      - !!binary |
+        aGZmZmYmEsA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        /P////9/A8A=
     width: 1
   6:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1101
-    - 278
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        AAAAAACACcA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        0MzMzMxMCEA=
     width: 1
   7:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1074
-    - 284
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        aGZmZmYmG8A=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        AAAAAACADEA=
     width: 1
   8:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1063
-    - 285
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        NDMzMzMzHMA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        /P////9/A8A=
     width: 1
   9:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1039
-    - 289
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        /v////8fIEA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        MDMzMzOzCkA=
     width: 1
   10:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1030
-    - 289
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        lpmZmZl5IUA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        /P//////B8A=
     width: 1
   11:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1021
-    - 289
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        KDMzMzOzAUA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        YGZmZmZm8b8=
     width: 1
   12:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1021
-    - 289
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        KDMzMzOzAUA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        YGZmZmZm8b8=
     width: 1
   13:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1020
-    - 289
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        MDMzMzOzAUA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        YGZmZmZm8b8=
     width: 1
   14:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1018
-    - 289
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        MDMzMzOzAUA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        YGZmZmZm8b8=
     width: 1
   15:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1017
-    - 289
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        ODMzMzOzAUA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        YGZmZmZm8b8=
     width: 1
   16:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 1016
-    - 289
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        +P//////CkA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        QGZmZmZm2r8=
     width: 1
   17:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 260
-    - 120
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        /P//////EUA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        ADMzMzMzs78=
     width: 1
   18:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 260
-    - 119
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        NDMzMzNzFUA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        gGZmZmZm2j8=
     width: 1
   19:
     class: StaticRectangularObject
     height: 1
-    sprite_adress: Resources//pictures//holodos.png
+    sprite_adress: Resources/pictures/holodos.png
     vector: !!python/tuple
-    - 260
-    - 118
-    width: 1
-  20:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 260
-    - 115
-    width: 1
-  21:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 260
-    - 113
-    width: 1
-  22:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 260
-    - 112
-    width: 1
-  23:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 260
-    - 111
-    width: 1
-  24:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 260
-    - 108
-    width: 1
-  25:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 259
-    - 108
-    width: 1
-  26:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 259
-    - 106
-    width: 1
-  27:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 259
-    - 105
-    width: 1
-  28:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 258
-    - 104
-    width: 1
-  29:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 258
-    - 104
-    width: 1
-  30:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 258
-    - 102
-    width: 1
-  31:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 257
-    - 102
-    width: 1
-  32:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 257
-    - 101
-    width: 1
-  33:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 256
-    - 100
-    width: 1
-  34:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 255
-    - 99
-    width: 1
-  35:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 254
-    - 98
-    width: 1
-  36:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 253
-    - 97
-    width: 1
-  37:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 237
-    - 74
-    width: 1
-  38:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 238
-    - 74
-    width: 1
-  39:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 240
-    - 74
-    width: 1
-  40:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 242
-    - 74
-    width: 1
-  41:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 245
-    - 74
-    width: 1
-  42:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 247
-    - 74
-    width: 1
-  43:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 250
-    - 74
-    width: 1
-  44:
-    class: StaticRectangularObject
-    height: 1
-    sprite_adress: Resources//pictures//holodos.png
-    vector: !!python/tuple
-    - 251
-    - 74
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        /P////9/GUA=
+    - !!python/object/apply:numpy.core.multiarray.scalar
+      - *id001
+      - !!binary |
+        QDMzMzMz6T8=
     width: 1
 entities:
   0:
@@ -484,201 +387,76 @@ invisible_shit:
     type: Segment
   10:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1117.5
-    - 274.5
+    - -4.037500000000001
+    - -1.9374999999999982
     type: Poly
   11:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1101.5
-    - 278.5
+    - -2.6875
+    - 3.5375000000000014
     type: Poly
   12:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1074.5
-    - 284.5
+    - -6.287500000000001
+    - 4.0625
     type: Poly
   13:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1063.5
-    - 285.5
+    - -6.550000000000001
+    - -1.9374999999999982
     type: Poly
   14:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1039.5
-    - 289.5
+    - 8.562499999999996
+    - 3.8374999999999986
     type: Poly
   15:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1030.5
-    - 289.5
+    - 9.237499999999994
+    - -2.4999999999999982
     type: Poly
   16:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1021.5
-    - 289.5
+    - 2.712499999999995
+    - -0.5874999999999986
     type: Poly
   17:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1021.5
-    - 289.5
+    - 2.712499999999995
+    - -0.5874999999999986
     type: Poly
   18:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1020.5
-    - 289.5
+    - 2.7124999999999986
+    - -0.5874999999999986
     type: Poly
   19:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1018.5
-    - 289.5
+    - 2.7124999999999986
+    - -0.5874999999999986
     type: Poly
   20:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1017.5
-    - 289.5
+    - 2.712500000000002
+    - -0.5874999999999986
     type: Poly
   21:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 1016.5
-    - 289.5
+    - 3.8749999999999964
+    - 0.08750000000000213
     type: Poly
   22:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 260.5
-    - 120.5
+    - 4.9999999999999964
+    - 0.4250000000000007
     type: Poly
   23:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 260.5
-    - 119.5
+    - 5.862500000000001
+    - 0.9125000000000014
     type: Poly
   24:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 260.5
-    - 118.5
-    type: Poly
-  25:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 260.5
-    - 115.5
-    type: Poly
-  26:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 260.5
-    - 113.5
-    type: Poly
-  27:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 260.5
-    - 112.5
-    type: Poly
-  28:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 260.5
-    - 111.5
-    type: Poly
-  29:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 260.5
-    - 108.5
-    type: Poly
-  30:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 259.5
-    - 108.5
-    type: Poly
-  31:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 259.5
-    - 106.5
-    type: Poly
-  32:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 259.5
-    - 105.5
-    type: Poly
-  33:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 258.5
-    - 104.5
-    type: Poly
-  34:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 258.5
-    - 104.5
-    type: Poly
-  35:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 258.5
-    - 102.5
-    type: Poly
-  36:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 257.5
-    - 102.5
-    type: Poly
-  37:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 257.5
-    - 101.5
-    type: Poly
-  38:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 256.5
-    - 100.5
-    type: Poly
-  39:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 255.5
-    - 99.5
-    type: Poly
-  40:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 254.5
-    - 98.5
-    type: Poly
-  41:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 253.5
-    - 97.5
-    type: Poly
-  42:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 237.5
-    - 74.5
-    type: Poly
-  43:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 238.5
-    - 74.5
-    type: Poly
-  44:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 240.5
-    - 74.5
-    type: Poly
-  45:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 242.5
-    - 74.5
-    type: Poly
-  46:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 245.5
-    - 74.5
-    type: Poly
-  47:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 247.5
-    - 74.5
-    type: Poly
-  48:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 250.5
-    - 74.5
-    type: Poly
-  49:
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 251.5
-    - 74.5
+    - 6.8749999999999964
+    - 1.2875000000000014
     type: Poly
