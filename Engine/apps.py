@@ -1,14 +1,9 @@
 import sys
 from collections import deque
-from math import pi, cos
 from time import perf_counter
 from typing import Union
 
-import atexit
 import pygame
-from pygame.draw import polygon
-
-from settings import *
 
 
 class MicroApp:
@@ -78,6 +73,13 @@ class MicroApp:
         """
         return
 
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.atexit()
+                pygame.quit()
+                sys.exit()
+
     def on_iteration(self):
         """
         Функция, обрабатывающая одну итерацию приложения
@@ -86,16 +88,11 @@ class MicroApp:
         if perf_counter() > self.end_time:
             self.alive = False
             return
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.atexit()
-                pygame.quit()
-                sys.exit()
+        self.handle_events()
         self.run_tasks()
         self.step(self.clock.get_time() / 1000)
         self.draw()
         self.clock.tick(self.FPS)
-        pygame.display.set_caption('{:.1f}'.format(self.clock.get_fps()))  # Вывод фпс в заголовок окна
 
     def run(self):
         """
@@ -175,4 +172,3 @@ class Init(MicroApp):
         """
         if sys.hexversion < 0x30900f0:
             raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
-
