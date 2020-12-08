@@ -19,7 +19,7 @@ class InputBox:
         self.text = text
         self.rect = pygame.Rect(x, y, w, h)
         self.color = (255, 255, 255)  # The non-active color
-        self.font = pygame.font.SysFont('arial', 50)
+        self.font = pygame.font.SysFont('arial', 40)
         self.txt_surface = self.font.render(self.text, True, self.color)
         self.active = False
 

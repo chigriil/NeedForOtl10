@@ -4,6 +4,7 @@ from time import perf_counter
 from Engine.overlays import FPS
 from Engine.overlays import HealthBar
 from Engine.overlays import SaveButton
+from Engine.overlays import PauseButton
 import numpy as np
 import pygame
 from pygame.draw import polygon
@@ -133,6 +134,7 @@ class Game(MicroApp):
     def __init__(self, screen, clock):
         super(Game, self).__init__(screen, clock, lifetime=float('inf'))
         self.FPS = 0
+        self.game_paused = False
         self.scene = TestLevel(Game)
         self.scene.load_level('pizda')
         #self.scene.primary_init()
@@ -140,7 +142,7 @@ class Game(MicroApp):
         self.camera.start()
         self.overlays = [FPS(self.screen, self.clock),
                          HealthBar(self.screen, self.clock, self.scene.player, self.camera)]
-        self.buttons = [SaveButton(self.screen, self.clock)]
+        self.buttons = [SaveButton(self.screen, self.clock), PauseButton(self.screen, self.clock)]
         self.DEVMODE = DEVMODE
         if DEVMODE:
             dev_message()
@@ -161,8 +163,9 @@ class Game(MicroApp):
         pygame.display.update()
 
     def step(self, dt):
-        self.scene.player.keyboard_handler(pressed_keys=pygame.key.get_pressed())
-        self.scene.step(dt)
+        if not self.game_paused:
+            self.scene.player.keyboard_handler(pressed_keys=pygame.key.get_pressed())
+            self.scene.step(dt)
         for overlay in self.overlays:
             overlay.update(dt)
 
@@ -175,19 +178,19 @@ class Game(MicroApp):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for button in self.buttons:
                     button.activate(event)
-            if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[0]:
-                self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
-            if event.type == pygame.MOUSEWHEEL:
-                self.camera.distance -= event.y
-            if event.type == pygame.KEYDOWN:
-                if pygame.key.get_pressed()[pygame.K_r]:
-                    self.camera.position = 0, 0
-                    self.camera.distance = 14
-                if pygame.key.get_pressed()[pygame.K_F3]:
-                    self.DEVMODE = not self.DEVMODE
-                # TODO: An in-game menu:
-                #  if pygame.key.get_pressed()[pygame.K_ESCAPE]:
-                #  GameMenu(self.screen, self.clock).run()
+            if event.type == pygame.USEREVENT:
+                self.game_paused = not self.game_paused
+            if not self.game_paused:
+                if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[0]:
+                    self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
+                if event.type == pygame.MOUSEWHEEL:
+                    self.camera.distance -= event.y
+                if event.type == pygame.KEYDOWN:
+                    if pygame.key.get_pressed()[pygame.K_r]:
+                        self.camera.position = 0, 0
+                        self.camera.distance = 14
+                    if pygame.key.get_pressed()[pygame.K_F3]:
+                        self.DEVMODE = not self.DEVMODE
 
         self.run_tasks()
         self.step(self.clock.get_time() / 1000)

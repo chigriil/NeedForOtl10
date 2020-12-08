@@ -107,9 +107,8 @@ class SaveButton(Button):
         self.fps = 10
 
     def draw(self):
-        self.text = self.font.render('Save', True, (0, 0, 0))
-        self.button_rect.topright = (self.screen.get_width() * 47 / 48 - self.text.get_width() // 2,
-                                     self.screen.get_height() * 1 / 48 + self.text.get_height() // 2)
+        self.button_rect.topright = (self.screen.get_width() * 46 / 48 + self.button_rect.w // 2,
+                                     self.screen.get_height() * 2 / 48 - self.button_rect.h // 2)
         pygame.draw.rect(self.screen, (225, 0, 0), self.button_rect, 2)
         self.screen.blit(self.text, (self.button_rect.x + self.button_rect.w // 2 -
                                      self.text.get_width() // 2, self.button_rect.y))
@@ -123,7 +122,30 @@ class SaveButton(Button):
         Для функции сохранения Юры
         :return:
         """
-        pass
+        print('Saved')
+
+
+class PauseButton(Button):
+    def __init__(self, screen, clock, x=0, y=0, width=95, height=30):
+        super(PauseButton, self).__init__(screen, clock)
+
+        self.button_rect = Rect(x, y, width, height)
+
+        self.font = pygame.font.SysFont('Arial', int(height))
+
+        self.text = self.font.render('Pause', True, (0, 0, 0))
+
+        self.fps = 10
+
+    def draw(self):
+        self.button_rect.topright = (self.screen.get_width() * 46 / 48 + self.button_rect.w // 2,
+                                     self.screen.get_height() * 5 / 48 - self.button_rect.h // 2)
+        pygame.draw.rect(self.screen, (225, 0, 0), self.button_rect, 2)
+        self.screen.blit(self.text, (self.button_rect.x + self.button_rect.w // 2 -
+                                     self.text.get_width() // 2, self.button_rect.y))
+
+    def does(self):
+        pygame.event.post(pygame.event.Event(pygame.USEREVENT))
 
 
 class FPS(Overlay):
