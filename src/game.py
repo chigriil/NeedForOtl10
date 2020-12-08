@@ -1,18 +1,18 @@
 import sys
 from math import pi, cos
 from time import perf_counter
-from Engine.overlays import FPS
-from Engine.overlays import HealthBar
-from Engine.overlays import SaveButton
-from Engine.overlays import PauseButton
+
 import numpy as np
-import pygame
 from pygame.draw import polygon
+
 from Engine.apps import MicroApp
 from Engine.camera import Camera
+from Engine.overlays import FPS
+from Engine.overlays import HealthBar
+from Engine.overlays import PauseButton
+from Engine.overlays import SaveButton
 from settings import *
 from src.locations import *
-from Engine.Scene.gamescene import Level
 from .Levels.testlevel import TestLevel
 
 
@@ -136,8 +136,8 @@ class Game(MicroApp):
         self.FPS = 0
         self.game_paused = False
         self.scene = TestLevel(Game)
-        self.scene.load_level('pizda')
-        #self.scene.primary_init()
+        self.scene.load_level('default_level')
+        # self.scene.primary_init()
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
         self.overlays = [FPS(self.screen, self.clock),
@@ -169,9 +169,10 @@ class Game(MicroApp):
         for overlay in self.overlays:
             overlay.update(dt)
 
-    def on_iteration(self):
+    def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self.atexit()
                 pygame.quit()
                 sys.exit()
 
@@ -191,11 +192,6 @@ class Game(MicroApp):
                         self.camera.distance = 14
                     if pygame.key.get_pressed()[pygame.K_F3]:
                         self.DEVMODE = not self.DEVMODE
-
-        self.run_tasks()
-        self.step(self.clock.get_time() / 1000)
-        self.draw()
-        self.clock.tick(self.FPS)
 
     def atexit(self):
         """

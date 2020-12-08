@@ -11,6 +11,7 @@ from pygame.draw import circle, line, polygon, rect
 
 from Engine.Scene.physical_primitives import PhysicalRect
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH
+from pymunk import Vec2d
 
 
 class CameraError(Exception):
@@ -264,3 +265,11 @@ class Camera:
 
     def start(self):
         self.distance = self.__distance
+
+    def screen_coords_to_physical(self, point):
+        if not isinstance(point, Vec2d):
+            point = Vec2d(point)
+
+            return Vec2d(point.x, SCREEN_HEIGHT - point.y) / self.scale_factor - (
+                                        self.window_width / 2 - self.__position[0],
+                                        self.window_height / 2 - self.__position[1])
