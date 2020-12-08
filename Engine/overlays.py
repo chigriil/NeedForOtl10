@@ -41,9 +41,7 @@ class Overlay:
 
 class Button(Overlay):
     def __init__(self, screen, clock, x=0, y=0, width=50, height=30):
-        self.screen = screen
-
-        self.clock = clock
+        super(Button, self).__init__(screen, clock)
 
         self.button_rect = pygame.Rect(x, y, width, height)
 
@@ -61,9 +59,7 @@ class Button(Overlay):
 
 class HealthBar(Overlay):
     def __init__(self, screen, clock, entity, camera, width=3, height=0.5):
-        self.screen = screen
-
-        self.clock = clock
+        super(HealthBar, self).__init__(screen, clock)
 
         self.entity = entity
 
