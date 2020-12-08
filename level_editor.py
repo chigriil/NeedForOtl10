@@ -1,33 +1,41 @@
 """
 Редактор уровней
 
+переключение между режимами - стрелки вверх и вниз
+
 Задание фона уровня:
+bg_select
 Написать в консоль background_adress = *название пикчи*
 !!!Пикча должна лежать в папке background_pics!!!
 
 Создание границы уровня:
-Зажать Y
+border_placer
 ЛКМ - первая точка границы уровня
 ПКМ - вторая точка границы уровня
-Отжать Y - граница сохраняется
+Нажать S - граница сохраняется
 
 Размещение объектов
-Нажать O
+object_placer
 В консоль (если будет не лень, то и куда-то в само окне pygame)
 будет выведено название объекта
 Стрелка вправо - следующий объект
 Стрелка влево - *WOW, HOW  CAN IT BE????* предыдущий объект
 Нажать ЛКМ - разместить объект
-Нажать O - выйти из режима размещения объектов
+
+Изначально помещаются  статичные объекты, изменить режим - нажать O
+
+
 
 Размещение персонажей
-Нажать P
+entity_placer
 В консоль (если будет не лень, то и куда-то в само окне pygame)
 будет выведено название персонажа
 Стрелка вправо - следующий персонаж
 Стрелка влево - *WOW, HOW  CAN IT BE????* предыдущий персонаж
 Нажать ЛКМ - разместить персонажа
-Нажать P - выйти из режима размещения персонажей
+
+Сохранение уровня в файл
+Нажать C
 
 Убрать последний созданный объект
 CTRL + Z
@@ -59,10 +67,14 @@ clock = pygame.time.Clock()
 
 saveTester = TestLevel(Game)
 saveTester.primary_init()
-saveTester.save_level('pizda')
+saveTester.save_level('default_save')
+
 
 
 class LevelEditor(MicroApp):
+    """
+    Собсна, редактор уровней
+    """
     def __init__(self, screen, clock):
         super(LevelEditor, self).__init__(screen, clock, lifetime=float('inf'))
         self.FPS = 0
@@ -74,7 +86,16 @@ class LevelEditor(MicroApp):
         self.overlays = [FPS(self.screen, self.clock)]
 
         self.DEVMODE = DEVMODE
-
+        self.modes = ['bg_select', 'border_placer', 'object_placer', 'entity_placer']
+        self.mode_number = 0
+        self.objects = ['fridge', 'closet', 'alarm', 'mouse']
+        self.placeable_objects = {'fridge': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/holodos.png',
+                                        'shape': 'rect'},
+                             'closet': 'FILLME',
+                             'alarm': 'FILLME',
+                             'mouse': 'FILLME'}
+        self.object_number = 0
+        self.static = True
     def draw(self):
         self.camera.view(self.scene)
 
@@ -87,6 +108,79 @@ class LevelEditor(MicroApp):
             overlay.draw()
 
         pygame.display.update()
+
+    def static_invert(self):
+        """
+        Выбор статического\динамического объекта
+        """
+        self.static = not self.static
+        print('static mode = '+ str(self.static))
+    """
+    Дальше куча методов по выбору объекта и режима 
+    """
+    def mode_up(self):
+        if self.mode_number < (len(self.modes) - 1):
+            self.mode_number += 1
+        else:
+            self.mode_number = 0
+        print(self.modes[self.mode_number])
+    def mode_down(self):
+        if self.mode_number > 0:
+            self.mode_number -= 1
+        else:
+            self.mode_number = len(self.modes) - 1
+        print(self.modes[self.mode_number])
+    def obj_right(self):
+        if self.object_number < (len(self.objects) - 1):
+            self.object_number += 1
+        else:
+            self.object_number = 0
+        if self.modes[self.mode_number] == 'object_placer':
+            print(self.objects[self.object_number])
+    def obj_left(self):
+        if self.object_number > 0:
+            self.object_number -= 1
+        else:
+            self.object_number = len(self.objects) - 1
+        if self.modes[self.mode_number] == 'object_placer':
+            print(self.objects[self.object_number])
+    """
+    Добавление выбранного объекта по позиции мыши
+    """
+    def object_appender(self, buttontype, coords):
+        """
+        Добавление выбранного объекта по позиции мыши
+        """
+        if self.modes[self.mode_number] == 'object_placer':
+            object_name = self.objects[self.object_number]
+            char_dict = self.placeable_objects[object_name]
+            if char_dict['shape'] == 'rect':
+                if self.static == True:
+                    self.scene.add_to_level('StaticRectangularObject', coords[0], coords[1],
+                                            char_dict['width'],
+                                            char_dict['height'],
+                                            char_dict['sprite_adress'])
+                    print('static rect object placed')
+                else:
+                    self.scene.add_to_level('DynamicRectangularObject', coords[0], coords[1],
+                                            char_dict['width'],
+                                            char_dict['height'],
+                                            char_dict['sprite_adress'])
+                    print('dynamic rect object placed')
+            else:
+                self.scene.add_to_level('StaticRectangularObject', coords[0], coords[1],
+                                        char_dict['radius'],
+                                        char_dict['sprite_adress'])
+                print('dynamic circ object placed')
+
+
+    def save_to_file(self, filename = 'default_level'):
+        """
+        Сохранение уровня в файл
+        """
+
+        self.scene.save_level(filename)
+        print('level saved as '+ str(filename))
 
     def step(self, dt):
         for overlay in self.overlays:
@@ -101,6 +195,9 @@ class LevelEditor(MicroApp):
 
             if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[0]:
                 self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
+                self.object_appender('leftbutton', pygame.mouse.get_pos())
+            if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[2]:
+                self.object_appender('rightbutton', pygame.mouse.get_pos())
             if event.type == pygame.MOUSEWHEEL:
                 self.camera.distance -= event.y
             if event.type == pygame.KEYDOWN:
@@ -109,7 +206,18 @@ class LevelEditor(MicroApp):
                     self.camera.distance = 14
                 if pygame.key.get_pressed()[pygame.K_F3]:
                     self.DEVMODE = not self.DEVMODE
-
+                if pygame.key.get_pressed()[pygame.K_UP]:
+                    self.mode_up()
+                if pygame.key.get_pressed()[pygame.K_DOWN]:
+                    self.mode_down()
+                if pygame.key.get_pressed()[pygame.K_RIGHT]:
+                    self.obj_right()
+                if pygame.key.get_pressed()[pygame.K_LEFT]:
+                    self.obj_left()
+                if pygame.key.get_pressed()[pygame.K_o]:
+                    self.static_invert()
+                if pygame.key.get_pressed()[pygame.K_c]:
+                    self.save_to_file()
     def atexit(self):
         """
         Действия при выходе из приложения

@@ -136,7 +136,7 @@ class Game(MicroApp):
         self.FPS = 0
         self.game_paused = False
         self.scene = TestLevel(Game)
-        self.scene.load_level('pizda')
+        self.scene.load_level('default_level')
         # self.scene.primary_init()
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()

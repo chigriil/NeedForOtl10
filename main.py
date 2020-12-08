@@ -10,7 +10,6 @@ import sys
 from settings import *
 from src.Levels.testlevel import *
 import pygame
-
 import Engine.__dark_magic__ as dark_magic
 from Engine.apps import App, Init
 from settings import *
