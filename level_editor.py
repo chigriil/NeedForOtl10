@@ -46,6 +46,7 @@ import sys
 
 import numpy as np
 import pygame
+import pymunk
 
 import Engine.__dark_magic__ as dark_magic
 from Engine.apps import App
@@ -86,16 +87,21 @@ class LevelEditor(MicroApp):
         self.overlays = [FPS(self.screen, self.clock)]
 
         self.DEVMODE = DEVMODE
-        self.modes = ['bg_select', 'border_placer', 'object_placer', 'entity_placer']
+        self.modes = ['bg_select', 'border_placer', 'object_placer', 'entity_placer', 'camera_motion']
         self.mode_number = 0
         self.objects = ['fridge', 'closet', 'alarm', 'mouse']
         self.placeable_objects = {'fridge': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/holodos.png',
                                         'shape': 'rect'},
-                             'closet': 'FILLME',
-                             'alarm': 'FILLME',
-                             'mouse': 'FILLME'}
+                            'closet': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/closet.png',
+                                        'shape': 'rect'},
+                             'alarm': {'height': 1, 'radius': 1, 'sprite_adress': 'Resources/pictures/alarm.png',
+                                        'shape': 'circle'},
+                             'mouse': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/mouse.png',
+                                        'shape': 'rect'}}
         self.object_number = 0
         self.static = True
+        self.a_bord = []
+        self.b_bord = []
     def draw(self):
         self.camera.view(self.scene)
 
@@ -147,10 +153,13 @@ class LevelEditor(MicroApp):
     """
     Добавление выбранного объекта по позиции мыши
     """
-    def object_appender(self, buttontype, coords):
+    def object_appender(self, buttontype, screencoords = None):
         """
         Добавление выбранного объекта по позиции мыши
         """
+        "НУЖНО ПОФИКИСИТЬ КООРДИНАТЫ"
+        coords = self.camera.screen_coords_to_physical(screencoords)
+        #coords[1] = -coords[1]
         if self.modes[self.mode_number] == 'object_placer':
             object_name = self.objects[self.object_number]
             char_dict = self.placeable_objects[object_name]
@@ -172,7 +181,18 @@ class LevelEditor(MicroApp):
                                         char_dict['radius'],
                                         char_dict['sprite_adress'])
                 print('dynamic circ object placed')
-
+        elif self.modes[self.mode_number] == 'border_placer':
+            if buttontype == 'leftbutton':
+                self.a_bord = coords
+                print('a point set')
+            if buttontype == 'rightbutton':
+                self.b_bord = coords
+                print('b point set')
+            if buttontype == 's':
+                if not (self.b_bord == [] and self.a_bord == []):
+                    self.scene.physical_space.add(pymunk.Segment(self.scene.physical_space.static_body,
+                                                                   self.a_bord, self.b_bord, 1))
+                print('border set')
 
     def save_to_file(self, filename = 'default_level'):
         """
@@ -195,9 +215,12 @@ class LevelEditor(MicroApp):
 
             if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[0]:
                 self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
-                self.object_appender('leftbutton', pygame.mouse.get_pos())
-            if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[2]:
+            if pygame.mouse.get_pressed(3)[2]:
                 self.object_appender('rightbutton', pygame.mouse.get_pos())
+                #print('rtouch')
+            if pygame.mouse.get_pressed(3)[0]:
+                self.object_appender('leftbutton', pygame.mouse.get_pos())
+                #print('ltouch')
             if event.type == pygame.MOUSEWHEEL:
                 self.camera.distance -= event.y
             if event.type == pygame.KEYDOWN:
@@ -218,6 +241,8 @@ class LevelEditor(MicroApp):
                     self.static_invert()
                 if pygame.key.get_pressed()[pygame.K_c]:
                     self.save_to_file()
+                if pygame.key.get_pressed()[pygame.K_s]:
+                    self.object_appender('s')
     def atexit(self):
         """
         Действия при выходе из приложения
