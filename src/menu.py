@@ -219,6 +219,9 @@ class CustomisationMenu(Menu):
 
         self.pretty_text_button(self.font, "Начать игру", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height * 7 // 12)
+        if self.name_input.name_recorded:
+            self.pretty_text_button(self.font, 'Имя записано', self.buttoncolor, self.fontcolor,
+                                    self.screen_width // 2, self.screen_height * 9 // 12)
 
     def on_iteration(self):
         for event in pygame.event.get():
@@ -230,7 +233,8 @@ class CustomisationMenu(Menu):
                                            self.buttoncolor,
                                            self.fontcolor,
                                            self.screen_width // 2,
-                                           self.screen_height * 7 // 12).collidepoint(event.pos):
+                                           self.screen_height * 7 // 12).collidepoint(event.pos) and \
+                        self.name_input.name_recorded:
                     self.alive = False
 
             self.name_input.handle_event(event)
@@ -245,7 +249,7 @@ class CustomisationMenu(Menu):
         pygame.display.flip()
 
     def atexit(self):
-        return Game(self.screen, self.clock).run()
+        return Game(self.screen, self.clock, self.name_input.username).run()
 
 
 class GameMenu(Menu):

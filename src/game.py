@@ -131,8 +131,9 @@ class LoadingScreen(MicroApp):
 
 
 class Game(MicroApp):
-    def __init__(self, screen, clock):
+    def __init__(self, screen, clock, username):
         super(Game, self).__init__(screen, clock, lifetime=float('inf'))
+        self.username = username
         self.FPS = 0
         self.game_paused = False
         self.scene = TestLevel(Game)
