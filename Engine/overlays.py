@@ -23,6 +23,7 @@ class Overlay:
         """
         self.screen = screen
         self.data_source = data_source
+        self.font = self.font = pygame.font.SysFont('Arial', int(30 / 900 * self.screen.get_height()))
 
     def update(self, dt):
         """
@@ -37,24 +38,6 @@ class Overlay:
         Отрисовывает оверлей на экране
         :return:
         """
-
-
-class Button(Overlay):
-    def __init__(self, screen, clock, x=0, y=0, width=50, height=30):
-        super(Button, self).__init__(screen, clock)
-
-        self.button_rect = pygame.Rect(x, y, width, height)
-
-        self.on = False
-
-    def does(self):
-        pass
-
-    def activate(self, event):
-        if self.button_rect.collidepoint(event.pos):
-            self.on = True
-            self.update(event)
-            self.does()
 
 
 class HealthBar(Overlay):
@@ -82,8 +65,6 @@ class HealthBar(Overlay):
 
         # self.font = pygame.font.SysFont('Arial', int(self.camera.projection_of_length(height)))
 
-        self.font = pygame.font.SysFont('Arial', height)
-
         self.text = self.font.render(str(self.entity.health), True, (0, 0, 0))
 
         self.fps = 10
@@ -103,13 +84,54 @@ class HealthBar(Overlay):
                                      self.text.get_width() // 2, self.health_rect.y))
 
 
+class CoolDownOverlay(Overlay):
+    def __init__(self, screen, clock, coolodowns: list, x=0, y=0, width=50, height=30):
+        super(CoolDownOverlay, self).__init__(screen, clock)
+
+        self.width = width
+
+        self.height = height
+
+        self.cooldowns = coolodowns
+
+        self.rects = []
+
+        self.texts = []
+
+    def update(self, dt):
+        for i, rect in enumerate(self.rects):
+            rect.w = int(min(self.width, self.cooldown))
+
+    def draw(self):
+        for rect in self.rects:
+            pygame.draw.rect(self.screen, (167, 167, 167), rect)
+        for i, text in enumerate(self.texts):
+            self.screen.blit(text, self.text_pos[i])
+
+
+class Button(Overlay):
+    def __init__(self, screen, clock, x=0, y=0, width=50, height=30):
+        super(Button, self).__init__(screen, clock)
+
+        self.button_rect = pygame.Rect(x, y, width, height)
+
+        self.on = False
+
+    def does(self):
+        pass
+
+    def activate(self, event):
+        if self.button_rect.collidepoint(event.pos):
+            self.on = True
+            self.update(event)
+            self.does()
+
+
 class SaveButton(Button):
     def __init__(self, screen, clock, x=0, y=0, width=95, height=30):
         super(SaveButton, self).__init__(screen, clock)
 
         self.button_rect = Rect(x, y, width, height)
-
-        self.font = pygame.font.SysFont('Arial', int(height))
 
         self.text = self.font.render('Save', True, (0, 0, 0))
 
@@ -140,8 +162,6 @@ class PauseButton(Button):
 
         self.button_rect = Rect(x, y, width, height)
 
-        self.font = pygame.font.SysFont('Arial', int(height))
-
         self.text = self.font.render('Pause', True, (0, 0, 0))
 
         self.fps = 10
@@ -166,8 +186,6 @@ class FPS(Overlay):
         super(FPS, self).__init__(screen, clock)
 
         self.text_rect = Rect(x, y, width, height)
-
-        self.font = pygame.font.SysFont('Arial', int(height))
 
         self.frame_times = deque()
 
