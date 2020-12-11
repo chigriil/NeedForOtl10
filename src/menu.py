@@ -222,6 +222,9 @@ class CustomisationMenu(Menu):
         if self.name_input.name_recorded:
             self.pretty_text_button(self.font, 'Имя записано', self.buttoncolor, self.fontcolor,
                                     self.screen_width // 2, self.screen_height * 9 // 12)
+        else:
+            self.pretty_text_button(self.font, 'Введите имя и нажмите enter', self.buttoncolor, self.fontcolor,
+                                    self.screen_width // 2, self.screen_height * 9 // 12)
 
     def on_iteration(self):
         for event in pygame.event.get():
