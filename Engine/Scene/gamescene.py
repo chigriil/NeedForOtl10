@@ -3,6 +3,7 @@
 100% поменяется в будущих версиях
 """
 
+import os
 import numpy as np
 import yaml
 from pygame.draw import rect, circle
@@ -282,7 +283,7 @@ class Level(Scene):
         но реализовать сохранение доп х-тик довольно просто
         """
 
-        with open(username + '_save', 'w') as write_file:
+        with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save'), 'w') as write_file:
             # сохранение подвижных объектов вместе со спрайтами
             save_data_dict = {}
             for counter, object_ in enumerate(self.objects):
@@ -326,7 +327,7 @@ class Level(Scene):
         P.S. такого резервного сейва еще нет
         """
 
-        with open(username + '_save') as readfile:
+        with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save')) as readfile:
             data = yaml.load(readfile, Loader=yaml.Loader)
             for type_ in data.keys():
                 if type_ == 'invisible_shit':
@@ -339,7 +340,7 @@ class Level(Scene):
                 else:
                     for number in data[type_].keys():
                         object_ = data[type_][number]
-                        self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][0],
+                        self.add_to_level(type_=object_['class'], x=object_['vector'][0], y= object_['vector'][1],
                                           height=object_['height'], width=object_['width'],
                                           sprite_adress=object_['sprite_adress'])
 

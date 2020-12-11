@@ -5,8 +5,9 @@
 
 Задание фона уровня:
 bg_select
-Написать в консоль background_adress = *название пикчи*
-!!!Пикча должна лежать в папке background_pics!!!
+Выбор бэкграунда стрелками
+Вправо - след бг
+Влево - пред бг
 
 Создание границы уровня:
 border_placer
@@ -66,9 +67,6 @@ pygame.font.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 
-saveTester = TestLevel(Game)
-saveTester.primary_init()
-saveTester.save_level('default_save')
 
 
 
@@ -80,7 +78,7 @@ class LevelEditor(MicroApp):
         super(LevelEditor, self).__init__(screen, clock, lifetime=float('inf'))
         self.FPS = 0
         self.scene = TestLevel(Game)
-        self.scene.load_level('pizda')
+        self.scene.load_level('default_level')
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
 
@@ -157,7 +155,6 @@ class LevelEditor(MicroApp):
         """
         Добавление выбранного объекта по позиции мыши
         """
-        "НУЖНО ПОФИКИСИТЬ КООРДИНАТЫ"
         coords = self.camera.screen_coords_to_physical(screencoords)
         #coords[1] = -coords[1]
         if self.modes[self.mode_number] == 'object_placer':
@@ -248,7 +245,7 @@ class LevelEditor(MicroApp):
         Действия при выходе из приложения
         :return: следущеее приложение, которое запустится сразу или None, если не предусмотрено следущее
         """
-        self.scene.save_level()
+        self.scene.save_level('editor_exit')
 
 
 if __name__ == '__main__':
