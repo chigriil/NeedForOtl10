@@ -2,10 +2,11 @@
 Модуль с различными оверлеями
 Возможно удалиться в будующих версиях
 """
-from typing import Any
-from pygame import Rect
-import pygame
 from collections import deque
+from typing import Any
+
+import pygame
+from pygame import Rect
 
 
 class Overlay:
@@ -15,15 +16,17 @@ class Overlay:
     Полосок здоровья и прочего
     """
 
-    def __init__(self, screen: pygame.Surface, data_source: Any):
+    def __init__(self, screen: pygame.Surface, data_source: Any, font_size=30):
         """
         Оверлеи будут вызываться дл яотриосвки в отдельном методе в MicroApp
         :param screen: поверхность, на которой будет рысоваться (скорее всего экран)
         :param data_source: источник данных для оверлея (может быть всё что угодно
+        :param font_size: относительный размер шрифта, реальный считается по формуле
+        int(font_size / 900 * self.screen.get_height()
         """
         self.screen = screen
         self.data_source = data_source
-        self.font = self.font = pygame.font.SysFont('Arial', int(30 / 900 * self.screen.get_height()))
+        self.font = pygame.font.SysFont('Arial', int(font_size / 900 * self.screen.get_height()))
 
     def update(self, dt):
         """
@@ -212,3 +215,37 @@ class FPS(Overlay):
     def draw(self):
         text = self.font.render('{:.1f} FPS'.format(self.fps), True, (255, 0, 0))
         self.screen.blit(text, text.get_rect(midright=self.text_rect.midright).topleft)
+
+
+class DevMode(Overlay):
+    def __init__(self, screen, game):
+        super(DevMode, self).__init__(screen, game, 25)
+        self.digits = 2
+
+    def draw(self):
+        if not self.data_source.DEVMODE:
+            return
+
+        player = self.data_source.scene.player
+
+        player_position = player.body.position
+
+        camera_position = self.data_source.camera.position
+
+        data_left = {
+            'Camera position': f'{round(camera_position[0], self.digits)}, {round(camera_position[1], self.digits)}',
+            'Operator target': 'yes' if self.data_source.camera_operator.target is not None else 'no',
+            'Operator type': self.data_source.camera_operator.targeting_method.value,
+            'Operator aiming': self.data_source.camera_operator.aiming,
+            'Player position': f'{round(player_position[0], self.digits)}, {round(player_position[1], self.digits)}',
+            'Player state': player.state,
+            'Player vertical view direction': player.vertical_view_direction,
+            'Player horizontal view direction': player.horizontal_view_direction,
+            'Player can lean on feet': player.can_lean_on_feet(),
+        }
+
+        for pos, (key, value) in enumerate(data_left.items()):
+            self.screen.blit(
+                self.font.render(f'{key}: {value}', True, (255, 255, 0)),
+                (self.screen.get_width() / 40, self.screen.get_height() / 1.8 + pos * self.font.get_height() * 1.2)
+            )

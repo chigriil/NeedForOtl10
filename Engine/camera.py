@@ -6,7 +6,6 @@ import warnings
 from enum import Enum
 from math import pi, tan, atan
 
-import numpy as np
 import pygame
 from pygame import Rect
 from pygame.draw import circle, line, polygon, rect
@@ -15,6 +14,7 @@ from pymunk import Vec2d
 from Engine.Scene.entities import Entity
 from Engine.Scene.physical_primitives import PhysicalRect
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH
+from .pseudo_math import sigmoid, inverse_sigmoid
 
 
 class CameraError(Exception):
@@ -39,9 +39,6 @@ class TargetingMethod(Enum):
     """
     Класс способов нацеливания на цель (да, да я тавтология)
     """
-
-    # Игнорирование
-    IGNORE = 'ignore'
 
     # Мгновенное навередие
     INSTANT = 'instant'
@@ -73,7 +70,7 @@ class Camera:
 
         # Далее физические характеристики камеры
         # Физические координаты центра камеры
-        self.__position = np.array([float(x), float(y)])
+        self.__position = Vec2d([float(x), float(y)])
         # Горизонтальный угол обзора камеры
         self.h_fov = h_fov
         # Расстояние от камеры до поверхности экрана
@@ -201,8 +198,8 @@ class Camera:
         :return:
         """
         # Перевод в массив numpy
-        if not isinstance(point, np.ndarray):
-            point = np.array(point)
+        if not isinstance(point, Vec2d):
+            point = Vec2d(point)
 
         return (point + [self.window_width / 2 - self.__position[0],
                          self.window_height / 2 - self.__position[1]]) * self.scale_factor
@@ -363,13 +360,28 @@ class Operator:
     Класс оператора камеры, наводит камеру на то, что нужно
     """
 
-    def __init__(self, camera: Camera, method: TargetingMethod = TargetingMethod.INSTANT):
+    def __init__(self, camera: Camera, method: TargetingMethod = TargetingMethod.SMOOTH):
         # Камера
         self.camera = camera
         # Цель, за которой будет следить оператор
         self.__target = None
         # Способ слежки
         self.targeting_method = method
+        # Следит ли оператор сейчас
+        self.aiming = False
+        # Скорость камеры при плавном перемещении
+        self.max_speed = 10
+        # Особое время
+        self.critical_time = 0.2
+        # Растояние, на котором камера не будет больше приблежаться
+        # Должно удовлетворять no_motion_distance < max_speed * critical_time
+        # Тут для примера с коеффициентом 0.5
+        self.no_motion_distance = self.max_speed * self.critical_time / 2
+        # Некие сдвиги для smooth_func
+        self.bias = 2
+        self.scale = sigmoid(self.bias)
+        self.alpha = self.inverse_smooth_func(
+            self.no_motion_distance / (self.max_speed * self.critical_time)) / self.no_motion_distance
 
     @property
     def target(self):
@@ -395,12 +407,10 @@ class Operator:
         :return:
         """
         # Если нет цели, то выходим
-        if self.__target is None:
+        if self.__target is None or not self.aiming:
             return
 
-        if self.targeting_method == TargetingMethod.IGNORE:
-            return
-        elif self.targeting_method == TargetingMethod.INSTANT:
+        if self.targeting_method == TargetingMethod.INSTANT:
             self.instant_focus()
         elif self.targeting_method == TargetingMethod.WINDOW:
             self.window_focus()
@@ -423,5 +433,26 @@ class Operator:
         pass
 
     def smooth_focus(self, dt):
-        # TODO: Дописать метод
-        pass
+        if isinstance(self.__target, Entity):
+            self.__smooth_focus(self.__target.body_rect.centre, dt)
+        elif isinstance(self.__target, Vec2d):
+            self.__smooth_focus(self.__target, dt)
+        elif isinstance(self.__target, PhysicalRect):
+            self.__smooth_focus(self.__target.centre, dt)
+
+    def __smooth_focus(self, point, dt):
+        # TODO: поколдовать с функцией, и учесть всякие точки перегиба
+        direction = point - self.camera.position
+        velocity = direction
+        if (sm := self.smooth_func(self.alpha * direction.length)) != 0:
+            velocity.length = self.max_speed * sm
+        else:
+            velocity = Vec2d(0, 0)
+        self.camera.position += velocity * dt
+
+    def smooth_func(self, x):
+        return 1 - sigmoid(self.bias - x) / self.scale
+
+    def inverse_smooth_func(self, x):
+
+        return self.bias - inverse_sigmoid((1 - x) * self.scale)

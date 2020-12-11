@@ -6,8 +6,8 @@ import numpy as np
 from pygame.draw import polygon
 
 from Engine.apps import MicroApp
-from Engine.camera import Camera, Operator
-from Engine.overlays import FPS
+from Engine.camera import Camera, Operator, TargetingMethod as TM
+from Engine.overlays import FPS, DevMode
 from Engine.overlays import HealthBar
 from Engine.overlays import PauseButton
 from Engine.overlays import SaveButton
@@ -142,8 +142,12 @@ class Game(MicroApp):
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
         self.camera_operator = Operator(camera=self.camera)
-        self.overlays = [FPS(self.screen, self.clock),
-                         HealthBar(self.screen, self.clock, self.scene.player, self.camera)]
+        # self.dev_overlay =
+        self.overlays = {
+            'FPS': FPS(self.screen, self.clock),
+            'DevMode': DevMode(self.screen, self),
+            'HealthBar': HealthBar(self.screen, self.clock, self.scene.player, self.camera)
+        }
         self.buttons = [SaveButton(self.screen, self.clock), PauseButton(self.screen, self.clock)]
         self.DEVMODE = DEVMODE
         if DEVMODE:
@@ -156,7 +160,7 @@ class Game(MicroApp):
 
         self.camera.show(self.DEVMODE)
 
-        for overlay in self.overlays:
+        for overlay in self.overlays.values():
             overlay.draw()
 
         for button in self.buttons:
@@ -169,7 +173,7 @@ class Game(MicroApp):
             self.scene.player.keyboard_handler(pressed_keys=pygame.key.get_pressed())
             self.scene.step(dt)
             self.camera_operator.step(dt)
-        for overlay in self.overlays:
+        for overlay in self.overlays.values():
             overlay.update(dt)
 
     def handle_events(self):
@@ -189,7 +193,7 @@ class Game(MicroApp):
             if not self.game_paused:
                 # Двжение камеры
                 if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[0]:
-                    self.camera_operator.target = None
+                    self.camera_operator.aiming = False
                     self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
 
                 # Меняем зум камеры (точнее расстояние от камеры до сцены)
@@ -214,8 +218,14 @@ class Game(MicroApp):
                     if event.key == pygame.K_f:
                         if self.camera_operator.target is None:
                             self.camera_operator.target = self.scene.player
+                        self.camera_operator.aiming = not self.camera_operator.aiming
+
+                        # Переключение фокусировки фокусировки на игроке
+                    if event.key == pygame.K_s:
+                        if self.camera_operator.targeting_method == TM.SMOOTH:
+                            self.camera_operator.targeting_method = TM.INSTANT
                         else:
-                            self.camera_operator.target = None
+                            self.camera_operator.targeting_method = TM.SMOOTH
 
     def atexit(self):
         """

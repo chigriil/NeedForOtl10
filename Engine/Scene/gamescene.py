@@ -251,29 +251,6 @@ class Level(Scene):
         # Возвращаем игрока в границы уровня
         self.player.check_scene_border(self.border)
 
-    def __devview__(self, camera):
-        super(Level, self).__devview__(camera)
-
-        # Всякий текст, который передет в класс оверлея
-        camera.temp_surface.blit(
-            pygame.transform.flip(
-                pygame.font.SysFont("Arial", 20).render(str(self.player.body.position), True, (255, 0, 0)),
-                False, True), (0, 0))
-
-        camera.temp_surface.blit(
-            pygame.transform.flip(
-                pygame.font.SysFont("Arial", 20).render(str(self.player.body.shapes.pop().get_vertices()), True,
-                                                        (255, 0, 0)),
-                False, True), (0, 50))
-
-        camera.temp_surface.blit(
-            pygame.transform.flip(
-                pygame.font.SysFont("Arial", 20).render(
-                    f'{self.player.state}, {self.player.horizontal_view_direction}, {self.player.vertical_view_direction}',
-                    True,
-                    (255, 0, 0)),
-                False, True), (0, 75))
-
     def add_to_level(self, type_, x, y, width=None, height=None, sprite_adress=None):
         """
         Методы для помещения сущностей и объектов в уровень
@@ -341,7 +318,6 @@ class Level(Scene):
             # print(str(i.__class__) == "<class 'pymunk.shapes.Segment'>")
             # print(str(i.__class__) == "<class 'pymunk.shapes.Circle'>")
 
-
     def load_level(self, username):
         """
         Функция загрузки уровня из файла
@@ -366,7 +342,6 @@ class Level(Scene):
                         self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][0],
                                           height=object_['height'], width=object_['width'],
                                           sprite_adress=object_['sprite_adress'])
-
 
     def create_level(self, location, save_name='hui'):
         """
