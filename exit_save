@@ -5,7 +5,7 @@ objects:
     sprite_adress: src/Levels/monalisa.jpg
     vector: !!python/tuple
     - 2
-    - 2
+    - 0
     width: 1
   1:
     class: DynamicRectangularObject
@@ -13,7 +13,7 @@ objects:
     sprite_adress: src/Levels/monalisa.jpg
     vector: !!python/tuple
     - 2
-    - 2
+    - 3
     width: 1
   2:
     class: DynamicRectangularObject
@@ -21,7 +21,7 @@ objects:
     sprite_adress: null
     vector: !!python/tuple
     - 2
-    - 2
+    - 5
     width: 1
   3:
     class: DynamicCircularObject
@@ -29,7 +29,7 @@ objects:
     sprite_adress: null
     vector: !!python/tuple
     - 1
-    - 1
+    - 5
     width: 0.7
   4:
     class: DynamicCircularObject
@@ -37,7 +37,7 @@ objects:
     sprite_adress: src/Levels/582ab5e93efcb_smaylik.png
     vector: !!python/tuple
     - 1
-    - 1
+    - 5
     width: 0.7
 entities:
   0:
@@ -46,7 +46,7 @@ entities:
     sprite_adress: null
     vector: !!python/tuple
     - 0
-    - 0
+    - 0.1
     width: 0.9
 invisible_shit:
   0:
@@ -100,7 +100,7 @@ invisible_shit:
   4:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
     - 2.5
-    - 2.35
+    - 0.35
     type: Poly
   5:
     a: !!python/object/apply:pymunk.vec2d.Vec2d

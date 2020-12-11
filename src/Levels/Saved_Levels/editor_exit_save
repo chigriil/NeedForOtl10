@@ -5,7 +5,7 @@ objects:
     sprite_adress: src/Levels/monalisa.jpg
     vector: !!python/tuple
     - 2
-    - 2
+    - 0
     width: 1
   1:
     class: DynamicRectangularObject
@@ -13,7 +13,7 @@ objects:
     sprite_adress: src/Levels/monalisa.jpg
     vector: !!python/tuple
     - 2
-    - 2
+    - 3
     width: 1
   2:
     class: DynamicRectangularObject
@@ -21,7 +21,7 @@ objects:
     sprite_adress: null
     vector: !!python/tuple
     - 2
-    - 2
+    - 5
     width: 1
   3:
     class: DynamicCircularObject
@@ -29,7 +29,7 @@ objects:
     sprite_adress: null
     vector: !!python/tuple
     - 1
-    - 1
+    - 5
     width: 0.7
   4:
     class: DynamicCircularObject
@@ -37,7 +37,7 @@ objects:
     sprite_adress: src/Levels/582ab5e93efcb_smaylik.png
     vector: !!python/tuple
     - 1
-    - 1
+    - 5
     width: 0.7
   5:
     class: StaticRectangularObject
@@ -60,11 +60,11 @@ objects:
         - -1
         - 0
       - !!binary |
-        aGZmZmYmEsA=
+        SOF6FK5HGcA=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        /P////9/A8A=
+        kML1KFyPAkA=
     width: 1
   6:
     class: StaticRectangularObject
@@ -74,11 +74,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        AAAAAACACcA=
+        2KNwPQrXD8A=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        0MzMzMxMCEA=
+        uB6F61G49j8=
     width: 1
   7:
     class: StaticRectangularObject
@@ -88,11 +88,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        aGZmZmYmG8A=
+        FK5H4XoUEsA=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        AAAAAACADEA=
+        wPUoXI/C/T8=
     width: 1
   8:
     class: StaticRectangularObject
@@ -102,11 +102,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        NDMzMzMzHMA=
+        hOtRuB6FE8A=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        /P////9/A8A=
+        zMzMzMzMAEA=
     width: 1
   9:
     class: StaticRectangularObject
@@ -116,11 +116,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        /v////8fIEA=
+        4noUrkfhFMA=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        MDMzMzOzCkA=
+        cD0K16NwAUA=
     width: 1
   10:
     class: StaticRectangularObject
@@ -130,11 +130,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        lpmZmZl5IUA=
+        mpmZmZmZF8A=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        /P//////B8A=
+        aGZmZmZmAkA=
     width: 1
   11:
     class: StaticRectangularObject
@@ -144,11 +144,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        KDMzMzOzAUA=
+        NDMzMzMzC8A=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        YGZmZmZm8b8=
+        QArXo3A9+j8=
     width: 1
   12:
     class: StaticRectangularObject
@@ -158,11 +158,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        KDMzMzOzAUA=
+        SOF6FK5HBcA=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        YGZmZmZm8b8=
+        gBSuR+F69D8=
     width: 1
   13:
     class: StaticRectangularObject
@@ -172,11 +172,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        MDMzMzOzAUA=
+        AAAAAAAABMA=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        YGZmZmZm8b8=
+        qHA9Ctej8D8=
     width: 1
   14:
     class: StaticRectangularObject
@@ -186,11 +186,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        MDMzMzOzAUA=
+        aGZmZmZmAsA=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        YGZmZmZm8b8=
+        MFyPwvUo7D8=
     width: 1
   15:
     class: StaticRectangularObject
@@ -200,11 +200,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        ODMzMzOzAUA=
+        zMzMzMzMAMA=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        YGZmZmZm8b8=
+        MDMzMzMz4z8=
     width: 1
   16:
     class: StaticRectangularObject
@@ -214,11 +214,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        +P//////CkA=
+        eBSuR+F6/L8=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        QGZmZmZm2r8=
+        INejcD0K1z8=
     width: 1
   17:
     class: StaticRectangularObject
@@ -228,11 +228,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        /P//////EUA=
+        KFyPwvUo9L8=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        ADMzMzMzs78=
+        gBSuR+F6xL8=
     width: 1
   18:
     class: StaticRectangularObject
@@ -242,11 +242,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        NDMzMzNzFUA=
+        mJmZmZmZ+b8=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        gGZmZmZm2j8=
+        AB+F61G4vj8=
     width: 1
   19:
     class: StaticRectangularObject
@@ -256,11 +256,11 @@ objects:
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        /P////9/GUA=
+        ULgehetR8L8=
     - !!python/object/apply:numpy.core.multiarray.scalar
       - *id001
       - !!binary |
-        QDMzMzMz6T8=
+        IDMzMzMz078=
     width: 1
 entities:
   0:
@@ -269,7 +269,7 @@ entities:
     sprite_adress: null
     vector: !!python/tuple
     - 0
-    - 0
+    - 0.1
     width: 0.9
 invisible_shit:
   0:
@@ -323,140 +323,332 @@ invisible_shit:
   4:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
     - 2.5
-    - 2.35
+    - 0.35
     type: Poly
   5:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -16.0
-    - 9.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 16.0
-    - 9.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
+    - -5.82
+    - 2.8200000000000003
+    type: Poly
   6:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 16.0
-    - -9.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -16.0
-    - -9.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
+    - -3.4800000000000004
+    - 1.92
+    type: Poly
   7:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 16.0
-    - 9.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 16.0
-    - -9.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
+    - -4.02
+    - 2.3599999999999994
+    type: Poly
   8:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -16.0
-    - -9.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -16.0
-    - 9.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
+    - -4.379999999999999
+    - 2.5999999999999996
+    type: Poly
   9:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -16.0
-    - 0.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 16.0
-    - 0.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
+    - -4.720000000000001
+    - 2.6799999999999997
+    type: Poly
   10:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -4.037500000000001
-    - -1.9374999999999982
+    - -5.4
+    - 2.8000000000000007
     type: Poly
   11:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -2.6875
-    - 3.5375000000000014
+    - -2.9000000000000004
+    - 2.1400000000000006
     type: Poly
   12:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -6.287500000000001
-    - 4.0625
+    - -2.16
+    - 1.7800000000000011
     type: Poly
   13:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -6.550000000000001
-    - -1.9374999999999982
+    - -2.0
+    - 1.540000000000001
     type: Poly
   14:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 8.562499999999996
-    - 3.8374999999999986
+    - -1.8000000000000007
+    - 1.3800000000000008
     type: Poly
   15:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 9.237499999999994
-    - -2.4999999999999982
+    - -1.5999999999999996
+    - 1.0999999999999996
     type: Poly
   16:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 2.712499999999995
-    - -0.5874999999999986
+    - -1.2799999999999994
+    - 0.8600000000000012
     type: Poly
   17:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 2.712499999999995
-    - -0.5874999999999986
+    - -0.7599999999999998
+    - 0.33999999999999986
     type: Poly
   18:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 2.7124999999999986
-    - -0.5874999999999986
+    - -1.0999999999999996
+    - 0.620000000000001
     type: Poly
   19:
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 2.7124999999999986
-    - -0.5874999999999986
+    - -0.5199999999999996
+    - 0.20000000000000107
     type: Poly
   20:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 2.712500000000002
-    - -0.5874999999999986
-    type: Poly
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
   21:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 3.8749999999999964
-    - 0.08750000000000213
-    type: Poly
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
   22:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 4.9999999999999964
-    - 0.4250000000000007
-    type: Poly
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
   23:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 5.862500000000001
-    - 0.9125000000000014
-    type: Poly
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
   24:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 6.8749999999999964
-    - 1.2875000000000014
-    type: Poly
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  25:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  26:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  27:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  28:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  29:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  30:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  31:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  32:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  33:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  34:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  35:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  36:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  37:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  38:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  39:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  40:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 0.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 0.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
