@@ -6,7 +6,7 @@ import numpy as np
 from pygame.draw import polygon
 
 from Engine.apps import MicroApp
-from Engine.camera import Camera
+from Engine.camera import Camera, Operator
 from Engine.overlays import FPS
 from Engine.overlays import HealthBar
 from Engine.overlays import PauseButton
@@ -140,6 +140,7 @@ class Game(MicroApp):
         # self.scene.primary_init()
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
+        self.camera_operator = Operator(camera=self.camera)
         self.overlays = [FPS(self.screen, self.clock),
                          HealthBar(self.screen, self.clock, self.scene.player, self.camera)]
         self.buttons = [SaveButton(self.screen, self.clock), PauseButton(self.screen, self.clock)]
@@ -149,7 +150,6 @@ class Game(MicroApp):
 
     def draw(self):
         self.camera.view(self.scene)
-
         if self.DEVMODE:
             self.camera.devview(self.scene)
 
@@ -157,6 +157,7 @@ class Game(MicroApp):
 
         for overlay in self.overlays:
             overlay.draw()
+
         for button in self.buttons:
             button.draw()
 
@@ -166,6 +167,7 @@ class Game(MicroApp):
         if not self.game_paused:
             self.scene.player.keyboard_handler(pressed_keys=pygame.key.get_pressed())
             self.scene.step(dt)
+            self.camera_operator.step(dt)
         for overlay in self.overlays:
             overlay.update(dt)
 
@@ -179,19 +181,40 @@ class Game(MicroApp):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for button in self.buttons:
                     button.activate(event)
+
             if event.type == pygame.USEREVENT:
                 self.game_paused = not self.game_paused
+
             if not self.game_paused:
+                # Двжение камеры
                 if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[0]:
+                    self.camera_operator.target = None
                     self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
+
+                # Меняем зум камеры (точнее расстояние от камеры до сцены)
                 if event.type == pygame.MOUSEWHEEL:
                     self.camera.distance -= event.y
+
                 if event.type == pygame.KEYDOWN:
-                    if pygame.key.get_pressed()[pygame.K_r]:
+                    # Сбрасываем позицию камеры
+                    if event.key == pygame.K_r:
                         self.camera.position = 0, 0
                         self.camera.distance = 14
-                    if pygame.key.get_pressed()[pygame.K_F3]:
+
+                    # Переключаем режим разработчика
+                    if event.key == pygame.K_F3:
                         self.DEVMODE = not self.DEVMODE
+
+                    # Возрат камеры в границы уровня
+                    if event.key == pygame.K_b:
+                        self.camera.return_to_borders(self.scene.border)
+
+                    # Тест фокусировки на игроке
+                    if event.key == pygame.K_f:
+                        if self.camera_operator.target is None:
+                            self.camera_operator.target = self.scene.player
+                        else:
+                            self.camera_operator.target = None
 
     def atexit(self):
         """

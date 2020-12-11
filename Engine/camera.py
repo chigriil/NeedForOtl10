@@ -2,22 +2,58 @@
 Модуль с классом камеры
 TODO: если кому не лень сделайте юниттесты, типо мы дофига работаем
 """
+import warnings
+from enum import Enum
 from math import pi, tan, atan
 
 import numpy as np
 import pygame
 from pygame import Rect
 from pygame.draw import circle, line, polygon, rect
+from pymunk import Vec2d
 
+from Engine.Scene.entities import Entity
 from Engine.Scene.physical_primitives import PhysicalRect
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH
-from pymunk import Vec2d
 
 
 class CameraError(Exception):
     def __init__(self, text):
         super(CameraError, self).__init__(text)
         self.txt = text
+
+
+class OperatorError(Exception):
+    def __init__(self, text):
+        super(OperatorError, self).__init__(text)
+        self.txt = text
+
+
+class OperatorWarning(Warning):
+    def __init__(self, text):
+        super(OperatorWarning, self).__init__(text)
+        self.txt = text
+
+
+class TargetingMethod(Enum):
+    """
+    Класс способов нацеливания на цель (да, да я тавтология)
+    """
+
+    # Игнорирование
+    IGNORE = 'ignore'
+
+    # Мгновенное навередие
+    INSTANT = 'instant'
+
+    # Оконный
+    # Задаётся допустимая область, в котолрой игрок передвигается без движения камеры
+    # При вызоде игрока за грацу данной области, она сдвинется в направлении сдвига игрока
+    WINDOW = 'window'
+
+    # Плавное наведение
+    # Камера будет плавно перемещаться к игроку
+    SMOOTH = 'smooth'
 
 
 class Camera:
@@ -102,6 +138,61 @@ class Camera:
         line(self.temp_surface, (255, 0, 0), temp_surface_rect.midtop, temp_surface_rect.midbottom)
         # text_surf = self.dev_font.render("Привет", True, (255, 255, 0))
         # self.temp_surface.blit(text_surf, text_surf.get_rect().center)
+
+    def return_to_borders(self, border: PhysicalRect):
+        """
+        Возращает камеру в границы
+        :param border: границы
+        :return: None
+        """
+
+        # По умолчанию считаем, что камеры смотрит крупнее, чем уровень
+        x, y = border.centre
+
+        # Если ширина области видимости камеры меньше ширины границ
+        # Делаем, чтобы часть уровня за границей не была видна
+        if self.camera_rect.width < border.width:
+            x = self.camera_rect.centre.x
+            x = max(x, border.left + self.camera_rect.width / 2)
+            x = min(x, border.right - self.camera_rect.width / 2)
+
+        # Если высота области видимости камеры меньше высоты границ
+        # Делаем, чтобы часть уровня за границей не была видна
+        if self.camera_rect.height < border.height:
+            y = self.camera_rect.centre.y
+            y = max(y, border.bottom + self.camera_rect.height / 2)
+            y = min(y, border.top - self.camera_rect.height / 2)
+
+        self.position = x, y
+
+    def focus_point(self, target_point: Vec2d):
+        """
+        Фокусируется на точке
+        :param target_point: целевая точка
+        :return:
+        """
+        self.position = target_point
+
+    def focus_rect(self, target_rect: PhysicalRect):
+        """
+        Фокусируется на центре target_rect
+        :param target_rect: целевой прямоугольник
+        :return:
+        """
+        self.position = target_rect.centre
+
+    def screen_coords_to_physical(self, point):
+        """
+        Переводит экранные координаты в физические
+        :param point: точка с экранными координатами
+        :return: точка с физическими координатами
+        """
+        if not isinstance(point, Vec2d):
+            point = Vec2d(point)
+
+        return Vec2d(point.x, SCREEN_HEIGHT - point.y) / self.scale_factor - (
+            self.window_width / 2 - self.__position[0],
+            self.window_height / 2 - self.__position[1])
 
     def projection_of_point(self, point):
         """
@@ -266,10 +357,71 @@ class Camera:
     def start(self):
         self.distance = self.__distance
 
-    def screen_coords_to_physical(self, point):
-        if not isinstance(point, Vec2d):
-            point = Vec2d(point)
 
-            return Vec2d(point.x, SCREEN_HEIGHT - point.y) / self.scale_factor - (
-                                        self.window_width / 2 - self.__position[0],
-                                        self.window_height / 2 - self.__position[1])
+class Operator:
+    """
+    Класс оператора камеры, наводит камеру на то, что нужно
+    """
+
+    def __init__(self, camera: Camera, method: TargetingMethod = TargetingMethod.INSTANT):
+        # Камера
+        self.camera = camera
+        # Цель, за которой будет следить оператор
+        self.__target = None
+        # Способ слежки
+        self.targeting_method = method
+
+    @property
+    def target(self):
+        """
+        Возвращает текущую цель
+        :return:
+        """
+        return self.__target
+
+    @target.setter
+    def target(self, new_target):
+        """
+        Устанавливает новую цель
+        :param new_target: новая цель
+        :return:
+        """
+        self.__target = new_target
+
+    def step(self, dt):
+        """
+        Размышления оператора от передвижении камеры
+        :param dt: квант времени
+        :return:
+        """
+        # Если нет цели, то выходим
+        if self.__target is None:
+            return
+
+        if self.targeting_method == TargetingMethod.IGNORE:
+            return
+        elif self.targeting_method == TargetingMethod.INSTANT:
+            self.instant_focus()
+        elif self.targeting_method == TargetingMethod.WINDOW:
+            self.window_focus()
+        elif self.targeting_method == TargetingMethod.SMOOTH:
+            self.smooth_focus(dt)
+
+        else:
+            warnings.warn(f'Нужно определить тип нацеливания {self.targeting_method} у оператора', OperatorWarning)
+
+    def instant_focus(self):
+        if isinstance(self.__target, Entity):
+            self.camera.focus_rect(self.__target.body_rect)
+        elif isinstance(self.__target, Vec2d):
+            self.camera.focus_point(self.__target)
+        elif isinstance(self.__target, PhysicalRect):
+            self.camera.focus_rect(self.__target)
+
+    def window_focus(self):
+        # TODO: Дописать метод
+        pass
+
+    def smooth_focus(self, dt):
+        # TODO: Дописать метод
+        pass

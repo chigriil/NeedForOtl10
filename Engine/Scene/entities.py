@@ -184,10 +184,10 @@ class Entity(PhysicalGameObject):
         """
         x, y = self.body.position
 
-        x = max(x, border.leftborder + self.width / 2)
-        x = min(x, border.rightborder - self.width / 2)
-        y = max(y, border.bottomborder + self.height / 2)
-        y = min(y, border.topborder - self.height / 2)
+        x = max(x, border.left + self.width / 2)
+        x = min(x, border.right - self.width / 2)
+        y = max(y, border.bottom + self.height / 2)
+        y = min(y, border.top - self.height / 2)
 
         self.body.position = x, y
 

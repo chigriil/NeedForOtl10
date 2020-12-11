@@ -12,7 +12,7 @@ class PhysicalRect:
     def __init__(self, x, y, width, height):
         """
         :param x: координата x левого нижнего края прямоугольника
-        :param y: координата н левого нижнего края прямоугольника
+        :param y: координата y левого нижнего края прямоугольника
         :param width: ширина прямоугольника
         :param height: высота прямоугольника
         """
@@ -72,6 +72,38 @@ class PhysicalRect:
                      self.y + self.__height)
 
     @property
+    def left(self):
+        """
+        Возвращает координату x левой границы
+        :return:
+        """
+        return self.__x
+
+    @property
+    def right(self):
+        """
+        Возвращает координату x правой границы
+        :return:
+        """
+        return self.__x + self.__width
+
+    @property
+    def bottom(self):
+        """
+        Возвращает координату y нижней границы
+        :return:
+        """
+        return self.__y
+
+    @property
+    def top(self):
+        """
+        Возвращает координату y верхней границы
+        :return:
+        """
+        return self.__y + self.__height
+
+    @property
     def width(self):
         """
         Возвращает ширину прямоугольника
@@ -109,22 +141,6 @@ class PhysicalRect:
         """
         return self.__y
 
-    @property
-    def topborder(self):
-        return self.__y + self.__height
-
-    @property
-    def rightborder(self):
-        return self.__x + self.__width
-
-    @property
-    def bottomborder(self):
-        return self.__y
-
-    @property
-    def leftborder(self):
-        return self.__x
-
     def vertices(self):
         return [
             self.topleft,
@@ -136,6 +152,46 @@ class PhysicalRect:
     def get_rotated(self, angle) -> list[Vec2d]:
         return [(vertex - self.centre).rotated(angle) + self.centre
                 for vertex in self.vertices()]
+
+    def point_in_rect(self, point):
+        """
+        Проверяет, находится ли точка внутри прямоугольника
+        :param point: координаты точки
+        :return:
+        """
+        return self.__x <= point.x <= self.__x + self.__width and self.__y <= point.y <= self.__y + self.__height
+
+    def check_intersection(self, rect: 'PhysicalRect'):
+        """
+        Проверяет, пересекаются ли прямоугольники
+        :param rect: другой прямоугольник
+        :return:
+        """
+        # Поочерёдная проверка попадания вершины прямоугольника rect внуть self
+        return self.__x <= rect.__x <= self.__x + self.__width and \
+               self.__y <= rect.__y <= self.__y + self.__height or \
+               self.__x <= rect.__x <= self.__x + self.__width and \
+               self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
+               self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
+               self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
+               self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
+               self.__y <= rect.__y <= self.__y + self.__height
+
+    def check_overlap(self, rect: 'PhysicalRect'):
+        """
+        Проверяет, перекрывает ли self прямоугольник rect полностью
+        :param rect: другой прямоугольник
+        :return:
+        """
+        # Поочерёдная проверка попадания вершины прямоугольника rect внуть self
+        return self.__x <= rect.__x <= self.__x + self.__width and \
+               self.__y <= rect.__y <= self.__y + self.__height and \
+               self.__x <= rect.__x <= self.__x + self.__width and \
+               self.__y <= rect.__y + rect.__height <= self.__y + self.__height and \
+               self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
+               self.__y <= rect.__y + rect.__height <= self.__y + self.__height and \
+               self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
+               self.__y <= rect.__y <= self.__y + self.__height
 
 
 class BoundingBox(PhysicalRect):
