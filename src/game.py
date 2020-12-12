@@ -237,4 +237,4 @@ class Game(MicroApp):
         Действия при выходе из приложения
         :return: следущеее приложение, которое запустится сразу или None, если не предусмотрено следущее
         """
-        self.scene.save_level('game_exit')
+        self.scene.save_level(self.username + 'game_exit')

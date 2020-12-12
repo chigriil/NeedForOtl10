@@ -282,13 +282,13 @@ class Level(Scene):
             for counter, object_ in enumerate(self.objects):
                 save_data_dict[counter] = object_.save_data()
             save_data_final = {'objects': save_data_dict}
-            yaml.dump(save_data_final, write_file)
+            #yaml.dump(save_data_final, write_file)
 
             save_data_dict = {}
             for counter, entity in enumerate(self.entities):
                 save_data_dict[counter] = entity.save_data()
             save_data_final = {'entities': save_data_dict}
-            yaml.dump(save_data_final, write_file)
+            #yaml.dump(save_data_final, write_file)
 
             # Функция роется в движке и сохраняет все неподвижные физические тела без спрайтов
             save_data_dict = {}
@@ -323,20 +323,21 @@ class Level(Scene):
 
         with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save')) as readfile:
             data = yaml.load(readfile, Loader=yaml.Loader)
-            for type_ in data.keys():
-                if type_ == 'invisible_shit':
-                    for number in data[type_].keys():
-                        object_ = data[type_][number]
-                        if object_['type'] == 'Segment':
-                            self.physical_space.add(pymunk.Segment(self.physical_space.static_body,
-                                                                   object_['a'], object_['b'], object_['r']))
+            if data != {}:
+                for type_ in data.keys():
+                    if type_ == 'invisible_shit':
+                        for number in data[type_].keys():
+                            object_ = data[type_][number]
+                            if object_['type'] == 'Segment':
+                                self.physical_space.add(pymunk.Segment(self.physical_space.static_body,
+                                                                       object_['a'], object_['b'], object_['r']))
 
-                else:
-                    for number in data[type_].keys():
-                        object_ = data[type_][number]
-                        self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][1],
-                                          height=object_['height'], width=object_['width'],
-                                          sprite_adress=object_['sprite_adress'])
+                    else:
+                        for number in data[type_].keys():
+                            object_ = data[type_][number]
+                            self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][1],
+                                              height=object_['height'], width=object_['width'],
+                                              sprite_adress=object_['sprite_adress'])
 
     def create_level(self, location, save_name='save'):
         """

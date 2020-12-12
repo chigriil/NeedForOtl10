@@ -255,6 +255,8 @@ class StaticRectangularObject(PhysicalGameObject):
     def save_data(self):
         return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
                 'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1]}
+    def load_from_dict(self):
+        pass
 
 
 class DynamicRectangularObject(PhysicalGameObject):
