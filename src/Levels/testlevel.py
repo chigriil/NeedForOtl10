@@ -6,7 +6,7 @@ import pymunk
 
 from Engine.Scene.game_objects import StaticRectangularObject, DynamicRectangularObject, DynamicCircularObject
 from Engine.Scene.gamescene import SunnyField, Level
-from Engine.Scene.physical_primitives import PhysicalRect
+from Engine.utils.physical_primitives import PhysicalRect
 
 
 class TestLevel(Level):

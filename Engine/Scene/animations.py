@@ -11,9 +11,9 @@ from typing import Union
 
 import pygame
 
-from ..exceptions import NotSupportedConfig
-from ..exceptions import YouAreTeapot
-from ..utils import load_yaml, load_json, load_image, pil_to_pygame
+from Engine.utils.exceptions import NotSupportedConfig
+from Engine.utils.exceptions import YouAreTeapot
+from ..utils.utils import load_yaml, load_json, load_image, pil_to_pygame
 
 
 class State(Enum):

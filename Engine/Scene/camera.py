@@ -12,9 +12,9 @@ from pygame.draw import circle, line, polygon, rect
 from pymunk import Vec2d
 
 from Engine.Scene.entities import Entity
-from Engine.Scene.physical_primitives import PhysicalRect
+from Engine.utils.physical_primitives import PhysicalRect
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH
-from .pseudo_math import sigmoid, inverse_sigmoid
+from Engine.utils.pseudo_math import sigmoid, inverse_sigmoid
 
 
 class CameraError(Exception):

@@ -49,11 +49,11 @@ import numpy as np
 import pygame
 import pymunk
 
-import Engine.__dark_magic__ as dark_magic
+import Engine.utils.__dark_magic__ as dark_magic
 from Engine.apps import App
 from Engine.apps import MicroApp
-from Engine.camera import Camera
-from Engine.overlays import FPS
+from Engine.Scene.camera import Camera
+from Engine.gui.overlays import FPS
 from settings import *
 from src.Levels.testlevel import TestLevel
 from src.game import Game

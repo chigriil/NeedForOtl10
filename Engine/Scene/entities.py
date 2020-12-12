@@ -13,7 +13,7 @@ from pymunk import Space
 from settings import critical_speed, critical_ground_collision, bounce_correction_speed
 from .animations import EntityAnimations, State
 from .game_objects import PhysicalGameObject
-from .physical_primitives import PhysicalRect
+from Engine.utils.physical_primitives import PhysicalRect
 
 
 class Entity(PhysicalGameObject):

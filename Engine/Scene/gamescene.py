@@ -11,7 +11,7 @@ from pygame.draw import rect, circle
 from pymunk import Body, Segment, Poly, Circle
 
 from Engine.Scene.game_objects import *
-from Engine.Scene.physical_primitives import PhysicalRect
+from Engine.utils.physical_primitives import PhysicalRect
 from src.persons import MainCharacter
 
 GRAVITY = Vec2d(0, -9.81)
@@ -263,7 +263,7 @@ class Level(Scene):
             self.objects.append(DynamicCircularObject(radius=width,
                                                       sprite_adress=sprite_adress, x=x, y=y,
                                                       physical_space=self.physical_space))
-        elif type_ == 'Player':
+        elif type_ == 'MainCharacter':
             self.init_player(x, y)
 
     def save_level(self, username="defaultName"):
@@ -291,22 +291,26 @@ class Level(Scene):
             yaml.dump(save_data_final, write_file)
 
             # Функция роется в движке и сохраняет все неподвижные физические тела без спрайтов
-            save_data_list = []
+            save_data_dict = {}
+            counter = 0
             for i in self.physical_space.shapes:
                 if i.body.body_type == Body.STATIC:
 
                     if isinstance(i, Segment):
-                        save_data_list.append({'type': 'Segment', 'position': i.body.position,
-                                               'a': i.a, 'b': i.b, 'r': i.radius})
+                        save_data_dict[counter] = {'type': 'Segment', 'position': i.body.position,
+                                                   'a': i.a, 'b': i.b, 'r': i.radius}
+                        counter += 1
 
                     if isinstance(i, Poly):
-                        save_data_list.append({'type': 'Poly', 'position': i.body.position})
+                        save_data_dict[counter] = {'type': 'Poly', 'position': i.body.position}
+                        counter += 1
 
                     if isinstance(i, Circle):
-                        save_data_list.append({'type': 'Circle', 'position': i.body.position,
-                                               'offset': i.offset, 'r': i.radius})
+                        save_data_dict[counter] = {'type': 'Circle', 'position': i.body.position,
+                                                   'offset': i.offset, 'r': i.radius}
+                        counter += 1
 
-            save_data_final = {'invisible_shit': save_data_list}
+            save_data_final = {'invisible_shit': save_data_dict}
             yaml.dump(save_data_final, write_file)
 
     def load_level(self, username):

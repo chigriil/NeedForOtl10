@@ -17,7 +17,7 @@ class MainCharacter(Entity):
     """
 
     def __init__(self, physical_space: Space, x=0, y=0):
-        super(MainCharacter, self).__init__(physical_space, x, y, width=0.7, height=1.8, mass=75)
+        super(MainCharacter, self).__init__(physical_space, x, y, width=0.75*1.8/1.4, height=1.8, mass=75)
         self.load_animations('Resources/Animations/DanyaPers.yaml')
 
     def keyboard_handler(self, pressed_keys: list[int]):

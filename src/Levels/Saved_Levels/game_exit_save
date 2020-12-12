@@ -270,7 +270,7 @@ entities:
     vector: !!python/tuple
     - 0
     - 0.1
-    width: 0.7
+    width: 0.9642857142857144
 invisible_shit:
 - a: !!python/object/apply:pymunk.vec2d.Vec2d
   - -16.0

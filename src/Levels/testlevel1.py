@@ -1,10 +1,7 @@
-import pygame
 import pymunk
 
-
-from Engine.Scene.game_objects import StaticRectangularObject, DynamicRectangularObject, DynamicCircularObject
 from Engine.Scene.gamescene import SunnyField, Level
-from Engine.Scene.physical_primitives import PhysicalRect
+from Engine.utils.physical_primitives import PhysicalRect
 
 test_level_1 = Level(None, SunnyField(), PhysicalRect(-16, -9, 32, 18))
 hl = pymunk.Segment(test_level_1.physical_space.static_body,

@@ -9,10 +9,10 @@ import sys
 
 
 import pygame
-import Engine.__dark_magic__ as dark_magic
+import Engine.utils.__dark_magic__ as dark_magic
 from Engine.apps import App, Init
 from settings import *
-from src.game import LoadingScreen, Game
+from src.game import LoadingScreen
 from src.menu import MainMenu
 
 if sys.hexversion < 0x30900f0:

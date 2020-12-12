@@ -7,7 +7,11 @@ from time import localtime, strftime
 
 
 def get_time_for_save():
-    return strftime("%Y_%m_%j_%a_%b_%d", localtime())
+    """
+    Возвращает строку с текущем именем
+    :return: год_месяй_число_час_минуты_секунды
+    """
+    return strftime("%Y_%m_%d_%H_%M_%S", localtime())
 
 
 def load_yaml(path):

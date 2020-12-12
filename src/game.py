@@ -3,16 +3,16 @@ from math import pi, cos
 from time import perf_counter
 
 import numpy as np
+import pygame
 from pygame.draw import polygon
 
 from Engine.apps import MicroApp
-from Engine.camera import Camera, Operator, TargetingMethod as TM
-from Engine.overlays import FPS, DevMode
-from Engine.overlays import HealthBar
-from Engine.overlays import PauseButton
-from Engine.overlays import SaveButton
+from Engine.Scene.camera import Camera, Operator, TargetingMethod as TM
+from Engine.gui.overlays import FPS, DevMode
+from Engine.gui.overlays import HealthBar
+from Engine.gui.overlays import PauseButton
+from Engine.gui.overlays import SaveButton
 from settings import *
-from src.locations import *
 from .Levels.testlevel import TestLevel
 
 
@@ -213,6 +213,11 @@ class Game(MicroApp):
                     # Возрат камеры в границы уровня
                     if event.key == pygame.K_b:
                         self.camera.return_to_borders(self.scene.border)
+
+                    # Возрат камеры в границы уровня
+                    if event.key == pygame.K_z:
+                        for s in self.scene.physical_space.shapes:
+                            print(s)
 
                     # Тест фокусировки на игроке
                     if event.key == pygame.K_f:
