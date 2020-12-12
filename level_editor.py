@@ -85,7 +85,7 @@ class LevelEditor(MicroApp):
         self.overlays = [FPS(self.screen, self.clock)]
 
         self.DEVMODE = DEVMODE
-        self.modes = ['bg_select', 'border_placer', 'object_placer', 'entity_placer', 'camera_motion']
+        self.modes = ['bg_select', 'border_placer', 'object_placer', 'entity_placer', 'camera_motion', 'load_from', 'save_to']
         self.mode_number = 0
         self.objects = ['fridge', 'closet', 'alarm', 'mouse']
         self.placeable_objects = {'fridge': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/holodos.png',
