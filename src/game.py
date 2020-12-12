@@ -6,14 +6,11 @@ import numpy as np
 import pygame
 from pygame.draw import polygon
 
+from Engine.Scene.camera import Camera, Operator, TargetingMethod
+from Engine.Scene.gamescene import Level
 from Engine.apps import MicroApp
-from Engine.Scene.camera import Camera, Operator, TargetingMethod as TM
-from Engine.gui.overlays import FPS, DevMode
-from Engine.gui.overlays import HealthBar
-from Engine.gui.overlays import PauseButton
-from Engine.gui.overlays import SaveButton
+from Engine.gui.overlays import FPS, DevMode, HealthBar, PauseButton, SaveButton
 from settings import *
-from .Levels.testlevel import TestLevel
 
 
 def dev_message():
@@ -131,25 +128,27 @@ class LoadingScreen(MicroApp):
 
 
 class Game(MicroApp):
-    def __init__(self, screen, clock, username):
+    def __init__(self, screen, clock, username, level='default_level'):
         super(Game, self).__init__(screen, clock, lifetime=float('inf'))
         self.username = username
         self.FPS = 0
         self.game_paused = False
-        self.scene = TestLevel(Game)
-        self.scene.load_level('default_level')
-        # self.scene.primary_init()
+
+        self.scene = Level(Game)
+        self.scene.load_level(level)
+
         self.camera = Camera(self.screen, distance=16)
-        self.camera.start()
         self.camera_operator = Operator(camera=self.camera)
-        # self.dev_overlay =
+
         self.overlays = {
             'FPS': FPS(self.screen, self.clock),
             'DevMode': DevMode(self.screen, self),
             'HealthBar': HealthBar(self.screen, self.clock, self.scene.player, self.camera)
         }
+
         self.buttons = [SaveButton(self.screen, self.clock), PauseButton(self.screen, self.clock)]
         self.DEVMODE = DEVMODE
+
         if DEVMODE:
             dev_message()
 
@@ -170,7 +169,6 @@ class Game(MicroApp):
 
     def step(self, dt):
         if not self.game_paused:
-            self.scene.player.keyboard_handler(pressed_keys=pygame.key.get_pressed())
             self.scene.step(dt)
             self.camera_operator.step(dt)
         for overlay in self.overlays.values():
@@ -227,10 +225,10 @@ class Game(MicroApp):
 
                         # Переключение фокусировки фокусировки на игроке
                     if event.key == pygame.K_s:
-                        if self.camera_operator.targeting_method == TM.SMOOTH:
-                            self.camera_operator.targeting_method = TM.INSTANT
+                        if self.camera_operator.targeting_method == TargetingMethod.SMOOTH:
+                            self.camera_operator.targeting_method = TargetingMethod.INSTANT
                         else:
-                            self.camera_operator.targeting_method = TM.SMOOTH
+                            self.camera_operator.targeting_method = TargetingMethod.SMOOTH
 
     def atexit(self):
         """

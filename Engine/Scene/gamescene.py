@@ -237,13 +237,18 @@ class Level(Scene):
         :return:
         """
         self.player = MainCharacter(self.physical_space, x, y)
-        self.entities.append(self.player)
 
     def step(self, dt):
         super(Level, self).step(dt)
 
+        self.player.step(dt)
+
         # Возвращаем игрока в границы уровня
         self.player.check_scene_border(self.border)
+
+    def __view__(self, camera):
+        super(Level, self).__view__(camera)
+        camera.view(self.player)
 
     def add_to_level(self, type_, x, y, width=None, height=None, sprite_adress=None):
         """
@@ -266,6 +271,15 @@ class Level(Scene):
         elif type_ == 'MainCharacter':
             self.init_player(x, y)
 
+        elif type_ == 'Danilio':
+            self.init_player(x, y)
+
+        elif type_ == 'Udoser':
+            self.init_player(x, y)
+
+        elif type_ == 'Difurmen':
+            self.init_player(x, y)
+
     def save_level(self, username="defaultName"):
         """
         Функция сохранения уровня в ямл файл
@@ -281,14 +295,10 @@ class Level(Scene):
             save_data_dict = {}
             for counter, object_ in enumerate(self.objects):
                 save_data_dict[counter] = object_.save_data()
-            save_data_final = {'objects': save_data_dict}
-            #yaml.dump(save_data_final, write_file)
 
             save_data_dict = {}
             for counter, entity in enumerate(self.entities):
                 save_data_dict[counter] = entity.save_data()
-            save_data_final = {'entities': save_data_dict}
-            #yaml.dump(save_data_final, write_file)
 
             # Функция роется в движке и сохраняет все неподвижные физические тела без спрайтов
             save_data_dict = {}

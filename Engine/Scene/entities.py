@@ -10,10 +10,11 @@ import pygame
 import pymunk
 from pymunk import Space
 
+from Engine.utils.physical_primitives import PhysicalRect
 from settings import critical_speed, critical_ground_collision, bounce_correction_speed
 from .animations import EntityAnimations, State
 from .game_objects import PhysicalGameObject
-from Engine.utils.physical_primitives import PhysicalRect
+from ..EntityControllers import Idle
 
 
 class Entity(PhysicalGameObject):
@@ -23,21 +24,20 @@ class Entity(PhysicalGameObject):
     TODO: прикрутить атрибуты игрока, например здоровье, уклонение, и т.д.
     TODO: добавить объект кулаков и ног, чтобы можно было легко реализовать засчитывание урона
     TODO: очень желателдьно добавить подсчёт очков, нужно если вруг мы решим завести ии от OpenAI
-    TODO: придумать, как сериализовать игрока и как делать конфиг
     TODO: прикрутить анимацию удара
     TODO: прикрутить анимацию кидания
     TODO: придумать, как сохранять состояние игрока
     TODO: разделить толо игрока на само тело, ноги, руки, голову (нужно для удобной анимации ударов)
     """
 
-    def __init__(self, physical_space: Space, x=0, y=0, width=0.7, height=1.8, mass=75):
+    def __init__(self, physical_space: Space, x=0, y=0, width=0.7, height=1.8, mass=75, brain=Idle):
         """
         :param physical_space: физическое пространство
         :param x: x координата левого нижнего края сущности
         :param y: y координата левого нижнего края сущности
         :param height: высота сущности
         :param width: ширина сущности
-        :param sprite: спрайт сущности
+        :param brain: мозги сущности, подробнее смотри в Engine/EntityControllers.py
         """
 
         super(Entity, self).__init__(x=x, y=y, width=width, height=height, sprite=None, sprite_adress=None,
@@ -49,9 +49,11 @@ class Entity(PhysicalGameObject):
         # Описанные прямоугольники для разных состояний игрока
         # Нужны для пересчёта геометрии при смене состояния игрока
         # Названия говорят сами за себяф
+
+        self.brain = brain(self)
         self.idle_rect = PhysicalRect(0, 0, width, height)
         self.walking_rect = PhysicalRect(0, 0, width, height)
-        self.running_rect = PhysicalRect(0, 0, width * 4 / 3, height * 134 / 140)
+        self.running_rect = PhysicalRect(0, 0, width, height * 134 / 140)
 
         self.sitting_rect = PhysicalRect(0, 0, width, height / 2)
         self.squatting_rect = PhysicalRect(0, 0, width, height / 2)
@@ -288,6 +290,9 @@ class Entity(PhysicalGameObject):
         :param dt: квант времени
         :return:
         """
+
+        # сущность думает что делать дальше
+        self.brain.step(dt)
 
         # Проверяем направление взгляда сущности
         self.check_directions()
