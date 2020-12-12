@@ -3,6 +3,11 @@ import json
 import pygame
 import yaml
 from PIL import Image
+from time import localtime, strftime
+
+
+def get_time_for_save():
+    return strftime("%Y_%m_%j_%a_%b_%d", localtime())
 
 
 def load_yaml(path):
@@ -34,9 +39,12 @@ def load_json(path):
         return json.load(file)
 
 
-def save_json(obj, path, indent=None):
+def save_json(obj, path, indent=2):
     """
     Записывает json файл
+    :param indent: Если отступ является неотрицательным целым числом,
+    то элементы массива JSON и члены объекта будут красиво напечатаны с этим уровнем отступа.
+    Уровень отступа 0 будет вставлять только новые строки. Ни одно из них не является самым компактным представлением.
     :param obj: объект, который записываем в json
     :param path: путь
     :return: None

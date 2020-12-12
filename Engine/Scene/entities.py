@@ -8,7 +8,6 @@ from typing import Union
 
 import pygame
 import pymunk
-from pygame import Surface
 from pymunk import Space
 
 from settings import critical_speed, critical_ground_collision, bounce_correction_speed
@@ -29,10 +28,9 @@ class Entity(PhysicalGameObject):
     TODO: прикрутить анимацию кидания
     TODO: придумать, как сохранять состояние игрока
     TODO: разделить толо игрока на само тело, ноги, руки, голову (нужно для удобной анимации ударов)
-    TODO: сделать так, чтобы отображался спрайт по умолчанию если не анимации, а если его нет, то тогда зелёный квадрат
     """
 
-    def __init__(self, physical_space: Space, x=0, y=0, width=0.7, height=1.8, sprite: Surface = None, sprite_adress = None, mass=75):
+    def __init__(self, physical_space: Space, x=0, y=0, width=0.7, height=1.8, mass=75):
         """
         :param physical_space: физическое пространство
         :param x: x координата левого нижнего края сущности
@@ -42,7 +40,7 @@ class Entity(PhysicalGameObject):
         :param sprite: спрайт сущности
         """
 
-        super(Entity, self).__init__(x=x, y=y, width=width, height=height, sprite=sprite, sprite_adress = sprite_adress,
+        super(Entity, self).__init__(x=x, y=y, width=width, height=height, sprite=None, sprite_adress=None,
                                      physical_space=physical_space,
                                      mass=mass, moment=float('inf'), elasticity=0,
                                      friction=0.6, type_=pymunk.Body.DYNAMIC)
@@ -69,10 +67,6 @@ class Entity(PhysicalGameObject):
         self.walk_speed = 1.5  # Скорость ходьбы сущности
         self.run_speed = 4  # Скорость бега сущности
         self.jump_speed = 4.5  # Скорость прыжка
-
-        # Конечно, сущность можно проецировать на несколько камер
-        # Можно хранить несколько спрайтов для разных дистанций, но зачем
-        # Если всегда на сущность будет смотреть лишь одна камера
 
         # Далее флаги, нужные для удобной обработки
 
@@ -109,6 +103,7 @@ class Entity(PhysicalGameObject):
         # Если новое состояние равно старому, то выходим из функции
         if new_state == self.__state:
             return
+        # print(f'Changing entity status {self.__state} -> {new_state}')
 
         # # Выводим в консоль вызывающую функцию (ДЛЯ ДЕБАГА)
         # print(f'State: {self.__state} -> {new_state}, Calling function = {calling_function}')
@@ -324,7 +319,6 @@ class Entity(PhysicalGameObject):
             return
 
         self.scaled_sprite = self.animations.get(camera.distance, camera.projection_of_rect(self.body_rect).size)
-
         # Рисуем спрайт сущности
         # Поворачиваем
         prepared_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))

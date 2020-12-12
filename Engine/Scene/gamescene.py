@@ -4,17 +4,17 @@
 """
 
 import os
+
 import numpy as np
 import yaml
 from pygame.draw import rect, circle
+from pymunk import Body, Segment, Poly, Circle
 
 from Engine.Scene.game_objects import *
 from Engine.Scene.physical_primitives import PhysicalRect
-from src.persons import Player
+from src.persons import MainCharacter
 
-# from Engine.Scene.animations import _Sprite
-
-GRAVITY = np.array([0, -9.81])
+GRAVITY = Vec2d(0, -9.81)
 
 
 class Background:
@@ -229,21 +229,14 @@ class Level(Scene):
         # Инициализируется в отдельном методе init_player
         self.player = None
 
-    def init_player(self, x=0, y=0, width=0.9, height=1.8, sprite=None, sprite_adress=None, animations_config=None,
-                    location=None):
+    def init_player(self, x=0, y=0):
         """
         Инициализирует игрока
-        :param x:
-        :param y:
-        :param width:
-        :param height:
-        :param sprite:
-        :param animations_config:
+        :param x: x координата левого нижнего угла описанного прямоугольника игрока
+        :param y: y координата левого нижнего угла описанного прямоугольника игрока
         :return:
         """
-        self.location = location
-        self.player = Player(self.physical_space, x, y, width, height, sprite_adress)
-        self.player.load_animations(animations_config)
+        self.player = MainCharacter(self.physical_space, x, y)
         self.entities.append(self.player)
 
     def step(self, dt):
@@ -271,8 +264,7 @@ class Level(Scene):
                                                       sprite_adress=sprite_adress, x=x, y=y,
                                                       physical_space=self.physical_space))
         elif type_ == 'Player':
-            self.init_player(width=width, height=height,
-                             sprite_adress=sprite_adress, x=x, y=y, animations_config="src/Levels/test.yaml")
+            self.init_player(x, y)
 
     def save_level(self, username="defaultName"):
         """
@@ -284,40 +276,38 @@ class Level(Scene):
         """
 
         with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save'), 'w') as write_file:
+
             # сохранение подвижных объектов вместе со спрайтами
             save_data_dict = {}
             for counter, object_ in enumerate(self.objects):
                 save_data_dict[counter] = object_.save_data()
             save_data_final = {'objects': save_data_dict}
             yaml.dump(save_data_final, write_file)
+
             save_data_dict = {}
             for counter, entity in enumerate(self.entities):
                 save_data_dict[counter] = entity.save_data()
             save_data_final = {'entities': save_data_dict}
             yaml.dump(save_data_final, write_file)
+
             # Функция роется в движке и сохраняет все неподвижные физические тела без спрайтов
-            counter = 0
-            save_data_dict = {}
+            save_data_list = []
             for i in self.physical_space.shapes:
-                if i.body.__repr__() == 'Body(Body.STATIC)':
-                    if (str(i.__class__) == "<class 'pymunk.shapes.Segment'>"):
-                        save_data_dict[counter] = {'type': 'Segment', 'position': i.body.position, 'a': i._get_a(),
-                                                   'b': i._get_b(), 'r':
-                                                       i._get_radius()}
-                        counter += 1
-                    if (str(i.__class__) == "<class 'pymunk.shapes.Poly'>"):
-                        save_data_dict[counter] = {'type': 'Poly', 'position': i.body.position}
-                        counter += 1
-                    if (str(i.__class__) == "<class 'pymunk.shapes.Circle'>"):
-                        save_data_dict[counter] = {'type': 'Circle', 'offset': i._get_a(), 'position': i.body.position,
-                                                   'r': i._get_radius()}
-                        counter += 1
-            save_data_final = {'invisible_shit': save_data_dict}
+                if i.body.body_type == Body.STATIC:
+
+                    if isinstance(i, Segment):
+                        save_data_list.append({'type': 'Segment', 'position': i.body.position,
+                                               'a': i.a, 'b': i.b, 'r': i.radius})
+
+                    if isinstance(i, Poly):
+                        save_data_list.append({'type': 'Poly', 'position': i.body.position})
+
+                    if isinstance(i, Circle):
+                        save_data_list.append({'type': 'Circle', 'position': i.body.position,
+                                               'offset': i.offset, 'r': i.radius})
+
+            save_data_final = {'invisible_shit': save_data_list}
             yaml.dump(save_data_final, write_file)
-            # print(i.body.position)
-            # print(str(i.__class__) == "<class 'pymunk.shapes.Poly'>")
-            # print(str(i.__class__) == "<class 'pymunk.shapes.Segment'>")
-            # print(str(i.__class__) == "<class 'pymunk.shapes.Circle'>")
 
     def load_level(self, username):
         """
@@ -340,18 +330,18 @@ class Level(Scene):
                 else:
                     for number in data[type_].keys():
                         object_ = data[type_][number]
-                        self.add_to_level(type_=object_['class'], x=object_['vector'][0], y= object_['vector'][1],
+                        self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][1],
                                           height=object_['height'], width=object_['width'],
                                           sprite_adress=object_['sprite_adress'])
 
-    def create_level(self, location, save_name='hui'):
+    def create_level(self, location, save_name='save'):
         """
         Функция инициализации уровня
         На вход принимает локацию и сейв
         если сейва нет - юзает дефолтный сейв
         """
 
-        self.background = location.bg
+        self.bg = location.bg
         self.border = location.border
         self.load_level(save_name)
         hl = pymunk.Segment(self.physical_space.static_body,

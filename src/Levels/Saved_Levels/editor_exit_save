@@ -264,13 +264,13 @@ objects:
     width: 1
 entities:
   0:
-    class: Player
+    class: MainCharacter
     height: 1.8
     sprite_adress: null
     vector: !!python/tuple
     - 0
     - 0.1
-    width: 0.9
+    width: 0.7
 invisible_shit:
   0:
     a: !!python/object/apply:pymunk.vec2d.Vec2d

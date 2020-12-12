@@ -5,15 +5,20 @@ TODO: Подобрать более подходлящитее имя файлу
 from math import copysign
 
 import pygame
+from pymunk import Space
 
 from Engine.Scene.animations import State
 from Engine.Scene.entities import Entity
 
 
-class Player(Entity):
+class MainCharacter(Entity):
     """
     Класс игрока
     """
+
+    def __init__(self, physical_space: Space, x=0, y=0):
+        super(MainCharacter, self).__init__(physical_space, x, y, width=0.7, height=1.8, mass=75)
+        self.load_animations('Resources/Animations/DanyaPers.yaml')
 
     def keyboard_handler(self, pressed_keys: list[int]):
         """

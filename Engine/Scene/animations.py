@@ -186,7 +186,7 @@ class AnimationLoader:
         source = load_image(config['file'])
 
         try:
-            return PeriodicAnimation(
+            return NonPeriodicAnimation(
                 crop_image(source, config['coords'], flip_x, flip_y),
                 config['time_length'],
                 adaptive_width=adaptive_width,
@@ -237,6 +237,10 @@ class PeriodicAnimation:
         self.scaled_frames = frames
         # Последнее расстояние до камеры
         self.last_camera_distance = -1
+
+        # Конечно, сущность можно проецировать на несколько камер
+        # Можно хранить несколько спрайтов для разных дистанций, но зачем
+        # Если всегда на сущность будет смотреть лишь одна камера
 
         if self.frames is not None:
             # Время одного фрейма
@@ -309,6 +313,7 @@ class SemiPeriodicAnimation(PeriodicAnimation):
     """
     Полупериодичская анимация
     Сначала проигрывается непериодическая часть (один раз), потом периодическая (сколько надо)
+    TODO: Дописать класс в случае необходимости
     """
 
     def __init__(self, non_frames_periodic=None, frames=None, non_periodic_time=1, period=1, adaptive_width=True,
@@ -389,7 +394,7 @@ class NonPeriodicAnimation(PeriodicAnimation):
         self.check_camera_distance(distance, size)
 
         # Если анимация закончилась, то выдаём последний кадр
-        return self.scaled_frames[min(self.animation_time // self.frame_time, len(self.frames))]
+        return self.scaled_frames[min(int(self.animation_time // self.frame_time), len(self.frames) - 1)]
 
 
 @dataclass
@@ -623,7 +628,6 @@ class EntityAnimations:
                     animation,
                     flip_x=True
                 )
-
                 # Анимация в зеркальном направлении
                 self.__dict__[f'{animation_name}_{directions[1]}'] = loader[animation['type']](
                     animation,

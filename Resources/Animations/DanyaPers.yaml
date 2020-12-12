@@ -1,0 +1,79 @@
+{
+  'idle': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites.png',
+    'coords': [
+      [ 0, 0, 75, 140 ],
+      [ 75, 0, 150, 140 ]
+    ],
+    'direction': 'right'
+  }
+  ,
+  'walking': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites.png',
+    'coords': [
+      [ 300, 0, 375, 140 ],
+      [ 375, 0, 450, 140 ],
+      [ 450, 0, 525, 140 ],
+      [ 525, 0, 600, 140 ]
+    ],
+    'direction': 'right'
+  },
+  'running': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites.png',
+    'coords': [
+      [ 900, 0, 975, 140 ],
+      [ 975, 0, 1050, 140 ],
+      [ 1050, 0, 1125, 140 ],
+      [ 1125, 0, 1200, 140 ],
+      [ 1200, 0, 1275, 140 ]
+    ],
+    'direction': 'right'
+  },
+  'sitting': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites.png',
+    'coords': [
+      [ 225, 140, 300, 280 ]
+    ],
+    'direction': 'right'
+  },
+  'squatting': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites.png',
+    'coords': [
+      [ 1660, 0, 1725, 140 ],
+      [ 1725, 0, 1805, 140 ],
+      [ 1805, 0, 1875, 140 ]
+    ],
+    'direction': 'right'
+  },
+  'lying': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites.png',
+    'coords': [
+      [ 150, 280, 370, 350 ]
+    ],
+    'direction': 'right'
+  },
+  'jumping': {
+    'type': 'non_periodic',
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites.png',
+    'coords': [
+      [ 1730, 0, 1805, 140 ]
+    ],
+    'non_periodic_coords': [
+      [ 1660, 0, 1730, 140 ],
+      [ 1805, 0, 1880, 140 ] ],
+    'direction': "right"
+  }
+}

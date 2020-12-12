@@ -2,7 +2,6 @@
 Тестовый уровень для нужд програмистов
 TODO: чем-нибудь напольникть уровень
 """
-import pygame
 import pymunk
 
 from Engine.Scene.game_objects import StaticRectangularObject, DynamicRectangularObject, DynamicCircularObject
@@ -14,16 +13,10 @@ class TestLevel(Level):
     def __init__(self, game_app):
         super(TestLevel, self).__init__(game_app, SunnyField(), PhysicalRect(-16, -9, 32, 18))
 
-
-
-        # граница горизонта (чтобы человек не проваливался под землю)
-
-
+    def primary_init(self):
         """
         Первичная инициализация уровня
         """
-
-    def primary_init(self):
         # Инициализация игрока
         hl = pymunk.Segment(self.physical_space.static_body,
                             (self.border.x, 0),
@@ -33,8 +26,7 @@ class TestLevel(Level):
 
         self.physical_space.add(hl)
 
-        self.init_player(0, 0.1, sprite=pygame.image.load('src/Levels/Boxer2_Idle_000.png'),
-                         animations_config="src/Levels/test.yaml")
+        self.init_player(0, 0.1)
 
         self.objects.append(StaticRectangularObject(2, 0, 1, 0.7, sprite_adress='src/Levels/monalisa.jpg',
                                                     physical_space=self.physical_space))

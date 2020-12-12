@@ -135,14 +135,12 @@ class App:
             try:
                 # Вынимаем приложение из очереди, если app это None
                 if app is None:
+                    if len(self.micro_apps) == 0:
+                        break
                     app = self.micro_apps.popleft()
 
                 # Получаем слудущее приложение или None
                 app = app.run()
-
-            except IndexError:
-                # Вызывается, если акончились приложения в очереди, ставим флаг running = False
-                running = False
 
             except Exception as e:
                 # Псевдо-обработка других исключений

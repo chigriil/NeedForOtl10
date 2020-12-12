@@ -1,6 +1,7 @@
 """
 Класс содержащий геометрическое примитивы из физической реализации сцены
 """
+from pygame import Rect
 from pymunk import Vec2d, BB
 
 
@@ -168,14 +169,15 @@ class PhysicalRect:
         :return:
         """
         # Поочерёдная проверка попадания вершины прямоугольника rect внуть self
-        return self.__x <= rect.__x <= self.__x + self.__width and \
-               self.__y <= rect.__y <= self.__y + self.__height or \
-               self.__x <= rect.__x <= self.__x + self.__width and \
-               self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
-               self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
-               self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
-               self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
-               self.__y <= rect.__y <= self.__y + self.__height
+        return \
+            self.__x <= rect.__x <= self.__x + self.__width and \
+            self.__y <= rect.__y <= self.__y + self.__height or \
+            self.__x <= rect.__x <= self.__x + self.__width and \
+            self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
+            self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
+            self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
+            self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
+            self.__y <= rect.__y <= self.__y + self.__height
 
     def check_overlap(self, rect: 'PhysicalRect'):
         """
@@ -184,14 +186,53 @@ class PhysicalRect:
         :return:
         """
         # Поочерёдная проверка попадания вершины прямоугольника rect внуть self
-        return self.__x <= rect.__x <= self.__x + self.__width and \
-               self.__y <= rect.__y <= self.__y + self.__height and \
-               self.__x <= rect.__x <= self.__x + self.__width and \
-               self.__y <= rect.__y + rect.__height <= self.__y + self.__height and \
-               self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
-               self.__y <= rect.__y + rect.__height <= self.__y + self.__height and \
-               self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
-               self.__y <= rect.__y <= self.__y + self.__height
+        return \
+            self.__x <= rect.__x <= self.__x + self.__width and \
+            self.__y <= rect.__y <= self.__y + self.__height and \
+            self.__x <= rect.__x <= self.__x + self.__width and \
+            self.__y <= rect.__y + rect.__height <= self.__y + self.__height and \
+            self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
+            self.__y <= rect.__y + rect.__height <= self.__y + self.__height and \
+            self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
+            self.__y <= rect.__y <= self.__y + self.__height
+
+    def to_pygame_rect(self):
+        """
+        Делает из этого прямоугольника прямогуольник pygame
+        :return:
+        """
+        return Rect(self.__x, self.__y, self.__width, self.__height)
+
+    def __imul__(self, other):
+        """
+        Маштабирует длины сторон
+        :param other: есои other это скаляр, то умножает длину и ширину на него,
+        если нет, то перемножает покомпонентно
+        :return:
+        """
+        if hasattr(other, '__getitem__'):
+            self.__width *= other[0]
+            self.__height *= other[1]
+        else:
+            self.__width *= other
+            self.__height *= other
+
+    def __mul__(self, other):
+        """
+        Возвращает прямоугольник с маштабированными длинами сторон
+        :param other: есои other это скаляр, то умножает длину и ширину на него,
+        если нет, то перемножает покомпонентно
+        :return:
+        """
+        w, h = self.__width, self.__height
+        if hasattr(other, '__getitem__'):
+            w *= other[0]
+            h *= other[1]
+        else:
+            w *= other
+            h *= other
+
+        return PhysicalRect(self.__x, self.__y, w, h)
 
 
 class BoundingBox(PhysicalRect):

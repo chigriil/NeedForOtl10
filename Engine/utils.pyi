@@ -5,6 +5,9 @@ import PIL
 import pygame
 
 
+def get_time_for_save() -> str:
+
+
 def load_yaml(path: Union[str, bytes, PathLike[str], PathLike[bytes], int]) -> \
         Union[dict[Hashable, Any], list, None]: ...
 
