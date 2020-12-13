@@ -13,12 +13,13 @@ class EntityController:
     Базовый класс контролера сущности
     Отвечает за принятия сущностью решения о том, что делать в каждый момент времени
     """
-    def __init__(self, entity):
+    def __init__(self, entity, name = 'default_contr_name'):
         """
 
         :param entity: сама сущность
         """
         self.entity = entity
+        self.name = name
 
     def step(self, dt):
         """
@@ -30,10 +31,11 @@ class EntityController:
 
 
 class Idle(EntityController):
+    def __init__(self, entity, name = 'default_contr_name'):
+        super(Idle, self).__init__(entity=entity, name = name)
     """
     Ничего не делающий контроллер
     """
-    pass
 
 
 class ManualController(EntityController):

@@ -12,7 +12,7 @@ from pymunk import Body, Segment, Poly, Circle
 
 from Engine.Scene.game_objects import *
 from Engine.utils.physical_primitives import PhysicalRect
-from src.persons import MainCharacter
+from src.persons import MainCharacter, Danilio, Udoser, Difurmen
 
 GRAVITY = Vec2d(0, -9.81)
 
@@ -237,6 +237,13 @@ class Level(Scene):
         :return:
         """
         self.player = MainCharacter(self.physical_space, x, y)
+    def init_entity(self, x, y, entity_name):
+        if entity_name == 'Danilio':
+            self.entities.append(Danilio(self.physical_space, x, y))
+        if entity_name == 'Udoser':
+            self.entities.append(Udoser(self.physical_space, x, y))
+        if entity_name == 'Difurmen':
+            self.entities.append(Difurmen(self.physical_space, x, y))
 
     def step(self, dt):
         super(Level, self).step(dt)
@@ -250,7 +257,7 @@ class Level(Scene):
         super(Level, self).__view__(camera)
         camera.view(self.player)
 
-    def add_to_level(self, type_, x, y, width=None, height=None, sprite_adress=None):
+    def add_to_level(self, type_, x, y, width=None, height=None, sprite_adress=None, brain = None):
         """
         Методы для помещения сущностей и объектов в уровень
         Немного быдлокод, но рабочий
@@ -272,13 +279,13 @@ class Level(Scene):
             self.init_player(x, y)
 
         elif type_ == 'Danilio':
-            self.init_player(x, y)
+            self.init_entity(x, y, 'Danilio')
 
         elif type_ == 'Udoser':
-            self.init_player(x, y)
+            self.init_entity(x, y, 'Udoser')
 
         elif type_ == 'Difurmen':
-            self.init_player(x, y)
+            self.init_entity(x, y, 'Difurmen')
 
     def save_level(self, username="defaultName"):
         """
@@ -368,7 +375,7 @@ class Level(Scene):
                             print(object_)
                             self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][1],
                                               height=object_['height'], width=object_['width'],
-                                              sprite_adress=object_['sprite_adress'], )
+                                              sprite_adress=object_['sprite_adress'])
 
     def create_level(self, location, save_name='save'):
         """

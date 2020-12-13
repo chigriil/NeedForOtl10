@@ -329,3 +329,6 @@ class Entity(PhysicalGameObject):
         prepared_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
         # Рисуем
         camera.temp_surface.blit(prepared_sprite, prepared_sprite.get_rect(center=rect_for_camera.center).topleft)
+    def save_data(self):
+        return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
+                'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1], 'brain': self.brain.name}
