@@ -362,7 +362,7 @@ class Level(Scene):
 
                     if type_ == 'MainCharacter':
                         self.init_player(x=data[type_]['vector'][0], y=data[type_]['vector'][1])
-                    if type_ == 'objects':
+                    if (type_ == 'objects') or (type_ == 'entities'):
                         for number in data[type_].keys():
                             object_ = data[type_][number]
                             print(object_)
