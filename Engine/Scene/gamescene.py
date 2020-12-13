@@ -355,13 +355,13 @@ class Level(Scene):
                             object_ = data[type_][number]
                             if object_['type'] == 'Segment':
                                 segment = pymunk.Segment(self.physical_space.static_body,
-                                                                       object_['a'], object_['b'], object_['r'])
+                                                         object_['a'], object_['b'], object_['r'])
                                 segment.friction = 1
                                 self.physical_space.add(segment)
 
-
                     if type_ == 'MainCharacter':
                         self.init_player(x=data[type_]['vector'][0], y=data[type_]['vector'][1])
+
                     if (type_ == 'objects') or (type_ == 'entities'):
                         for number in data[type_].keys():
                             object_ = data[type_][number]

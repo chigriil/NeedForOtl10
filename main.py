@@ -26,4 +26,3 @@ clock = pygame.time.Clock()
 
 app = App(micro_apps=[Init(screen, clock), LoadingScreen(screen, clock, lifetime=0), MainMenu(screen, clock)])
 app.run()
-

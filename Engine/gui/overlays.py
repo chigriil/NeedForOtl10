@@ -243,6 +243,8 @@ class DevMode(Overlay):
             'Player vertical view direction': player.vertical_view_direction,
             'Player horizontal view direction': player.horizontal_view_direction,
             'Player can lean on feet': player.can_lean_on_feet(),
+            'Number of objects': len(self.data_source.scene.objects),
+            'Number of entities': len(self.data_source.scene.entities)
         }
 
         for pos, (key, value) in enumerate(data_left.items()):

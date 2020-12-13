@@ -1,0 +1,92 @@
+objects:
+  0:
+    class: StaticRectangularObject
+    height: 0.7
+    sprite_adress: src/Levels/monalisa.jpg
+    vector: !!python/tuple
+    - 2
+    - 0
+    width: 1
+
+MainCharacter:
+  height: 1.8
+  sprite_adress: null
+  vector: !!python/tuple
+  - 0
+  - 0.1
+  width: 0.9642857142857144
+
+entities:
+  0:
+    class: Danilio
+    height: 1.8
+    sprite_adress: null
+    vector: !!python/tuple
+    - 3
+    - 0.1
+    width: 0.9642857142857144
+    brain: Idle
+
+invisible_shit:
+  0:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  1:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  2:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  3:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+
+  4:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 0.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 0.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+
