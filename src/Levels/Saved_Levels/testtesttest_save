@@ -1,0 +1,304 @@
+invisible_shit:
+  0:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  1:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  2:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  3:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  4:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 2.5
+    - 0.35
+    type: Poly
+  5:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  6:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  7:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  8:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  9:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 0.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 0.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  10:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -6.223749999999999
+    - -4.120000000000001
+    type: Poly
+  11:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -6.223749999999999
+    - -4.120000000000003
+    type: Poly
+  12:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -6.223749999999999
+    - -4.119999999999999
+    type: Poly
+  13:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -6.223749999999999
+    - -4.078749999999999
+    type: Poly
+  14:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -6.223749999999999
+    - -4.120000000000001
+    type: Poly
+  15:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -6.223749999999999
+    - -4.119999999999999
+    type: Poly
+  16:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -6.223749999999999
+    - -4.119999999999999
+    type: Poly
+  17:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -8.86375
+    - -3.130000000000001
+    type: Poly
+  18:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -5.605
+    - -5.109999999999999
+    type: Poly
+  19:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -5.605
+    - -5.068750000000001
+    type: Poly
+  20:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -5.605
+    - -5.06875
+    type: Poly
+  21:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -5.605000000000004
+    - -5.06875
+    type: Poly
+  22:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -5.604999999999997
+    - -5.06875
+    type: Poly
+  23:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -5.605
+    - -5.068749999999998
+    type: Poly
+  24:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -3.088750000000001
+    - -5.357499999999998
+    type: Poly
+  25:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -0.5725000000000016
+    - -3.66625
+    type: Poly
+  26:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -0.5725000000000016
+    - -3.6662500000000016
+    type: Poly
+  27:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -0.5725000000000016
+    - -3.66625
+    type: Poly
+  28:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -0.9437500000000014
+    - -3.955
+    type: Poly
+  29:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -2.59375
+    - -2.8412499999999987
+    type: Poly
+  30:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -7.956249999999997
+    - -1.6037500000000016
+    type: Poly
+  31:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -7.956249999999997
+    - -1.6037500000000016
+    type: Poly
+  32:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -7.956249999999997
+    - -1.6037500000000016
+    type: Poly
+  33:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -7.956250000000001
+    - -1.603749999999998
+    type: Poly
+  34:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -7.956250000000001
+    - -1.603749999999998
+    type: Poly
+  35:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -7.956249999999997
+    - -1.6037500000000016
+    type: Poly
+  36:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -7.956249999999997
+    - -1.6037500000000016
+    type: Poly
+  37:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -7.956250000000004
+    - -1.6037500000000016
+    type: Poly
+  38:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -10.967500000000001
+    - -4.202500000000001
+    type: Poly
+  39:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -4.821250000000003
+    - -6.883749999999999
+    type: Poly
+  40:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 2.521249999999995
+    - -6.223749999999999
+    type: Poly
+  41:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 2.521250000000002
+    - -6.223749999999999
+    type: Poly
+  42:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 7.71875
+    - -4.615
+    type: Poly
+  43:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 11.884999999999998
+    - -3.0062499999999996
+    type: Poly
+  44:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 3.799999999999997
+    - -2.469999999999999
+    type: Poly
+  45:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 12.916249999999998
+    - -6.141249999999999
+    type: Poly
+  46:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 6.068750000000001
+    - -1.3975000000000009
+    type: Poly
+  47:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 5.449999999999996
+    - -4.57375
+    type: Poly

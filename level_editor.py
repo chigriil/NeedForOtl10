@@ -74,14 +74,15 @@ class LevelEditor(MicroApp):
     """
     Собсна, редактор уровней
     """
-    def __init__(self, screen, clock):
+    def __init__(self, screen, clock, load_file, saving_file):
         super(LevelEditor, self).__init__(screen, clock, lifetime=float('inf'))
         self.FPS = 0
+        self.load_file = load_file
+        self.saving_file = saving_file
         self.scene = TestLevel(Game)
-        self.scene.load_level('default_level')
+        self.scene.load_level(self.load_file)
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
-
         self.overlays = [FPS(self.screen, self.clock)]
 
         self.DEVMODE = DEVMODE
@@ -96,8 +97,11 @@ class LevelEditor(MicroApp):
                                         'shape': 'circle'},
                              'mouse': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/mouse.png',
                                         'shape': 'rect'}}
+        self.persons = ['MainCharacter', 'Enemy1']
         self.object_number = 0
+        self.person = 'MainCharacter'
         self.static = True
+        self.last_placed_is_object = True
         self.a_bord = []
         self.b_bord = []
     def draw(self):
@@ -148,6 +152,27 @@ class LevelEditor(MicroApp):
             self.object_number = len(self.objects) - 1
         if self.modes[self.mode_number] == 'object_placer':
             print(self.objects[self.object_number])
+    def pers_right(self):
+        if self.persons.index(self.person)+1 < len(self.persons):
+            self.person = self.persons[self.persons.index(self.person)+1]
+        else:
+            self.person = self.persons[0]
+        if self.modes[self.mode_number] == 'entity_placer':
+            print(self.person)
+    def pers_left(self):
+        if self.persons.index(self.person)+1 > 0:
+            self.person = self.persons[self.persons.index(self.person)-1]
+        else:
+            self.person = self.persons[len(self.persons)-1]
+        if self.modes[self.mode_number] == 'entity_placer':
+            print(self.person)
+    def mainCharacter_placed(self):
+        for i in self.scene.entities:
+            if i.save_data()['class'] == 'MainCharacter':
+                return True
+            else:
+                return False
+
     """
     Добавление выбранного объекта по позиции мыши
     """
@@ -190,6 +215,10 @@ class LevelEditor(MicroApp):
                     self.scene.physical_space.add(pymunk.Segment(self.scene.physical_space.static_body,
                                                                    self.a_bord, self.b_bord, 1))
                 print('border set')
+        elif self.modes[self.mode_number] == 'entity_placer' and buttontype == 'leftbutton':
+            print(self.person == 'MainCharacter')
+            if self.person == 'MainCharacter' and  not self.mainCharacter_placed():
+                self.scene.init_player(coords[0], coords[1])
 
     def save_to_file(self, filename = 'default_level'):
         """
@@ -232,12 +261,14 @@ class LevelEditor(MicroApp):
                     self.mode_down()
                 if pygame.key.get_pressed()[pygame.K_RIGHT]:
                     self.obj_right()
+                    self.pers_right()
                 if pygame.key.get_pressed()[pygame.K_LEFT]:
                     self.obj_left()
+                    self.pers_left()
                 if pygame.key.get_pressed()[pygame.K_o]:
                     self.static_invert()
                 if pygame.key.get_pressed()[pygame.K_c]:
-                    self.save_to_file()
+                    self.save_to_file(filename=self.saving_file)
                 if pygame.key.get_pressed()[pygame.K_s]:
                     self.object_appender('s')
     def atexit(self):
@@ -245,9 +276,19 @@ class LevelEditor(MicroApp):
         Действия при выходе из приложения
         :return: следущеее приложение, которое запустится сразу или None, если не предусмотрено следущее
         """
-        self.scene.save_level('editor_exit')
+        self.scene.save_level(self.saving_file + 'editor_exit')
 
 
 if __name__ == '__main__':
-    app = App(micro_apps=[LevelEditor(screen, clock)])
+    print('enter where to load from')
+    load_file = input()
+    print('enter where to save')
+    saving_file = input()
+    if len(saving_file) == 0:
+        saving_file = 'default_level'
+    if len(load_file) == 0:
+        load_file = 'basic'
+    app = App(micro_apps=[LevelEditor(screen, clock, saving_file= saving_file, load_file= load_file )])
     app.run()
+
+
