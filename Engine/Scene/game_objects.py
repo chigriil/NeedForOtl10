@@ -6,6 +6,8 @@ from pymunk import Vec2d
 
 from Engine.utils.physical_primitives import PhysicalRect, BoundingBox
 
+ObjectRegistry = {}
+
 
 class GameObject:
     """
@@ -94,13 +96,16 @@ class GameObject:
     def position(self):
         return self._position
 
+    def __init_subclass__(cls, **kwargs):
+        ObjectRegistry[cls.__name__] = cls
+
 
 class PhysicalGameObject(GameObject):
     """
     Базовый класс физического игрового объекта
     """
 
-    def __init__(self, x, y, width=1, height=1, sprite=None, sprite_adress=None,
+    def __init__(self, x, y, width=1, height=1, sprite=None,
                  physical_space: pymunk.Space = None, body: pymunk.Body = None, shape: pymunk.Shape = None,
                  angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
         """
@@ -137,7 +142,7 @@ class PhysicalGameObject(GameObject):
         :param friction: коэффициент трения
         :param type_: тип объекта (DYNAMIC, KINEMATIC, STATIC)
         """
-        super(PhysicalGameObject, self).__init__(x, y, width, height, sprite=sprite, sprite_adress=sprite_adress)
+        super(PhysicalGameObject, self).__init__(x, y, width, height, sprite=sprite)
 
         if physical_space is None:
             raise AttributeError("Нужно задать обязательно физическое пространство physical_space")
@@ -164,13 +169,8 @@ class PhysicalGameObject(GameObject):
         self.body_shape = shape
         self.body_shape.elasticity = elasticity
         self.body_shape.friction = friction
-        self.sprite_adress = sprite_adress
 
         self.physical_space.add(self.body, self.body_shape)
-
-    def save_data(self):
-        return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
-                'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1]}
 
     def step(self, dt):
         # пересчитываем позицию описанного прямоугольника
@@ -243,38 +243,31 @@ class PhysicalGameObject(GameObject):
         """
         return self.body_rect.get_rotated(self.body.angle)
 
+    @property
+    def position(self):
+        return self.body.position - Vec2d(self.width / 2, self.height / 2)
+
 
 class StaticRectangularObject(PhysicalGameObject):
-    def __init__(self, x, y, width=0.3, height=0.3, sprite_adress=None, sprite=None, physical_space=None,
-                 angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
-        super(StaticRectangularObject, self).__init__(x=x, y=y, width=width, height=height, sprite_adress=sprite_adress,
+    def __init__(self, x, y, width=0.3, height=0.3, sprite=None,
+                 physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
+        super(StaticRectangularObject, self).__init__(x=x, y=y, width=width, height=height,
                                                       sprite=sprite, physical_space=physical_space, angle=angle,
                                                       mass=mass, moment=moment, elasticity=elasticity,
                                                       friction=friction, type_=pymunk.Body.STATIC)
 
-    def save_data(self):
-        return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
-                'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1]}
-    def load_from_dict(self):
-        pass
-
 
 class DynamicRectangularObject(PhysicalGameObject):
-    def __init__(self, x, y, width=0.3, height=0.3, sprite_adress=None, sprite=None,
+    def __init__(self, x, y, width=0.3, height=0.3, sprite=None,
                  physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
-        super(DynamicRectangularObject, self).__init__(x=x, y=y, width=width, height=height,
-                                                       sprite_adress=sprite_adress, sprite=sprite,
+        super(DynamicRectangularObject, self).__init__(x=x, y=y, width=width, height=height, sprite=sprite,
                                                        physical_space=physical_space, angle=angle,
                                                        mass=mass, moment=moment, elasticity=elasticity,
                                                        friction=friction, type_=pymunk.Body.DYNAMIC)
 
-    def save_data(self):
-        return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
-                'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1]}
-
 
 class DynamicCircularObject(PhysicalGameObject):
-    def __init__(self, x, y, radius=0.3, sprite_adress=None, sprite=None,
+    def __init__(self, x, y, radius=0.3, sprite=None,
                  physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
         if moment is None:
             moment = pymunk.moment_for_box(mass, (radius, radius))
@@ -282,7 +275,7 @@ class DynamicCircularObject(PhysicalGameObject):
         body = pymunk.Body(mass, moment)
         shape = pymunk.Circle(body, radius=radius)
 
-        super(DynamicCircularObject, self).__init__(x=x, y=y, width=radius, height=radius, sprite_adress=sprite_adress,
+        super(DynamicCircularObject, self).__init__(x=x, y=y, width=radius, height=radius,
                                                     physical_space=physical_space, sprite=sprite,
                                                     body=body, shape=shape,
                                                     angle=angle, mass=mass, moment=moment, elasticity=elasticity,
@@ -292,7 +285,3 @@ class DynamicCircularObject(PhysicalGameObject):
 
     def no_sprite_view(self, camera):
         camera.project_circle(self.boundingbox2.centre, self.body_shape.radius, (100, 100, 100))
-
-    def save_data(self):
-        return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
-                'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1]}

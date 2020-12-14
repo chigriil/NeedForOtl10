@@ -2,11 +2,14 @@
 Тут храняться классы игрока и антогонистов
 TODO: Подобрать более подходлящитее имя файлу
 """
+import os
+
 from pymunk import Space
 
 from Engine.EntityControllers import ManualController
 from Engine.Scene.entities import Entity
 from Engine.utils.utils import load_yaml
+from settings import person_configs_path
 
 # Реестр всех персонажей
 PersonRegistry = {}
@@ -17,38 +20,44 @@ class BaseCharacter(Entity):
     Базовый класс игрового персонажа
     На основе него делаются остальные классы
     """
-    configs = load_yaml('src/configs/maincharacter.yaml')
+    configs = load_yaml('src/configs/persons/maincharacter.yaml')
 
     def __init__(self, physical_space: Space, x=0, y=0, brain=ManualController):
-        super(BaseCharacter, self).__init__(physical_space, x, y,
-                                            width=self.configs['width'], height=self.configs['height'],
-                                            mass=self.configs['mass'], brain=brain)
-        self.load_animations(self.configs['animations'])
+        super(BaseCharacter, self).__init__(physical_space, x, y, brain=brain, **self.configs)
+
+    def save_data(self):
+        return {'class': self.name, 'vector': list(self.position), 'brain': self.brain.__class__.__name__}
+
+    def __init_subclass__(cls, **kwargs):
+        PersonRegistry[cls.__name__] = cls
 
 
-def make_character(name, configs):
+def make_character(configs):
     """
     Создает класс сущности с нужными параметрами
     была претензия на метакласс, но он тут не особо нужен
-    :param name: Имя сущности
     :param configs: конфигурация сущности
-    :return:
+    У файла должна ьыть следующая структура
+    ##################################################
+    name: 'Danilio'
+    description: null
+    width: 0.96
+    height: 1.8
+    mass: 75
+    animations: 'Resources/Animations/DanyaPers.yaml'
+    ##################################################
+    :return: None
     """
     # Создаём класс персонажа
-    person = type(name, (BaseCharacter,), {'configs': configs})
-    # Добавляем в реестр
-    PersonRegistry[name] = person
-    return person
+    return type(configs['name'], (BaseCharacter,), {'configs': configs})
 
 
-# Главный герой
-MainCharacter = make_character('MainCharacter', load_yaml('src/configs/maincharacter.yaml'))
+# Загрузка персонажей
+for person_config_file in os.listdir(person_configs_path):
 
-# Главный антогонист - Данилио
-Danilio = make_character('Danilio', load_yaml('src/configs/danilio.yaml'))
+    if not person_config_file.endswith('.yaml'):
+        continue
 
-# Шестёрка Данилио
-Udoser = make_character('Udoser', load_yaml('src/configs/udoser.yaml'))
+    config = load_yaml(os.path.join(person_configs_path, person_config_file))
 
-# Шестёрка Данилио
-Difurmen = make_character('Difurmen', load_yaml('src/configs/difurmen.yaml'))
+    make_character(config)

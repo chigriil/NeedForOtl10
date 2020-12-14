@@ -262,7 +262,10 @@ class Level(Scene):
         # сохранение подвижных объектов вместе со спрайтами
         save_data_dict = {}
         for counter, object_ in enumerate(self.objects):
-            save_data_dict[counter] = object_.save_data()
+            save_data_dict[counter] = {
+                'class': object_.__class__.__name__,
+                'init': object_.save_data()
+            }
         save_data_final['objects'] = save_data_dict
 
         # Сохранение сущностей
@@ -329,24 +332,14 @@ class Level(Scene):
                 segment.friction = 1
                 self.physical_space.add(segment)
 
-    def load_object(self, type_, x, y, width=None, height=None, sprite_adress=None):
+    def load_object(self, config):
         """
         Методы для помещения объектов в уровень
-        Немного быдлокод, но рабочий
         """
-
-        if type_ == 'StaticRectangularObject':
-            self.objects.append(StaticRectangularObject(width=width, height=height,
-                                                        sprite_adress=sprite_adress, x=x, y=y,
-                                                        physical_space=self.physical_space))
-        elif type_ == 'DynamicRectangularObject':
-            self.objects.append(DynamicRectangularObject(width=width, height=height,
-                                                         sprite_adress=sprite_adress, x=x, y=y,
-                                                         physical_space=self.physical_space))
-        elif type_ == 'DynamicCircularObject':
-            self.objects.append(DynamicCircularObject(radius=width,
-                                                      sprite_adress=sprite_adress, x=x, y=y,
-                                                      physical_space=self.physical_space))
+        self.objects.append(ObjectRegistry[config['class']](
+            self.physical_space,
+            **config['init']
+        ))
 
     def load_level(self, username):
         """
@@ -368,9 +361,10 @@ class Level(Scene):
 
         # Загрузка объектов
         for object_ in data['objects'].values():
-            self.load_object(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][1],
-                             height=object_['height'], width=object_['width'],
-                             sprite_adress=object_['sprite_adress'])
+            # self.load_object(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][1],
+            #                  height=object_['height'], width=object_['width'],
+            #                  sprite_adress=object_['sprite_adress'])
+            self.load_object(object_)
 
         # Инициализация игрока
         self.init_player(*data['MainCharacter']['vector'])

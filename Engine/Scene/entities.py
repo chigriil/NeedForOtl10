@@ -30,7 +30,8 @@ class Entity(PhysicalGameObject):
     TODO: разделить толо игрока на само тело, ноги, руки, голову (нужно для удобной анимации ударов)
     """
 
-    def __init__(self, physical_space: Space, x=0, y=0, width=0.7, height=1.8, mass=75, brain=Idle):
+    def __init__(self, physical_space: Space, x=0, y=0, width=0.7, height=1.8, mass=75, brain=Idle,
+                 name=None, description=None, animations=None):
         """
         :param physical_space: физическое пространство
         :param x: x координата левого нижнего края сущности
@@ -40,7 +41,7 @@ class Entity(PhysicalGameObject):
         :param brain: мозги сущности, подробнее смотри в Engine/EntityControllers.py
         """
 
-        super(Entity, self).__init__(x=x, y=y, width=width, height=height, sprite=None, sprite_adress=None,
+        super(Entity, self).__init__(x=x, y=y, width=width, height=height, sprite=None,
                                      physical_space=physical_space,
                                      mass=mass, moment=float('inf'), elasticity=0,
                                      friction=0.6, type_=pymunk.Body.DYNAMIC)
@@ -49,6 +50,11 @@ class Entity(PhysicalGameObject):
         # Описанные прямоугольники для разных состояний игрока
         # Нужны для пересчёта геометрии при смене состояния игрока
         # Названия говорят сами за себяф
+
+        # Имя персонажа
+        self.name = name
+        # Описание персонажа
+        self.description = description
 
         self.brain = brain(self)
         self.idle_rect = PhysicalRect(0, 0, width, height)
@@ -81,6 +87,8 @@ class Entity(PhysicalGameObject):
 
         # Сами анимации
         self.animations = EntityAnimations(self)
+        if animations is not None:
+            self.load_animations(animations)
 
     @property
     def state(self):
@@ -329,7 +337,3 @@ class Entity(PhysicalGameObject):
         prepared_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
         # Рисуем
         camera.temp_surface.blit(prepared_sprite, prepared_sprite.get_rect(center=rect_for_camera.center).topleft)
-
-    def save_data(self):
-        return {'class': self.__class__.__name__, 'width': self.width, 'height': self.height,
-                'sprite_adress': self.sprite_adress, 'vector': self._position.__reduce__()[1], 'brain': self.brain.name}

@@ -1,40 +1,24 @@
-objects:
-  0:
-    class: StaticRectangularObject
-    height: 0.7
-    sprite_adress: src/Levels/monalisa.jpg
-    vector: !!python/tuple
-    - 2
-    - 0
-    width: 1
-
 MainCharacter:
-  height: 1.8
-  sprite_adress: null
-  vector: !!python/tuple
+  brain: ManualController
+  class: MainCharacter
+  vector:
   - 0
   - 0.1
-  width: 0.9642857142857144
-
 entities:
   0:
+    brain: Idle
     class: Danilio
-    height: 1.8
-    sprite_adress: null
-    vector: !!python/tuple
+    vector:
     - 3
     - 0.1
-    width: 0.9642857142857144
-    brain: Idle
-
 invisible_shit:
   0:
     a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -16.0
-    - 9.0
+    - -10.0
+    - 5.0
     b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 16.0
-    - 9.0
+    - 10.0
+    - 5.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
     - 0.0
     - 0.0
@@ -42,11 +26,11 @@ invisible_shit:
     type: Segment
   1:
     a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 16.0
-    - -9.0
+    - 10.0
+    - -5.0
     b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -16.0
-    - -9.0
+    - -10.0
+    - -5.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
     - 0.0
     - 0.0
@@ -54,11 +38,11 @@ invisible_shit:
     type: Segment
   2:
     a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 16.0
-    - 9.0
+    - 10.0
+    - 5.0
     b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 16.0
-    - -9.0
+    - 10.0
+    - -5.0
     position: !!python/object/apply:pymunk.vec2d.Vec2d
     - 0.0
     - 0.0
@@ -66,6 +50,102 @@ invisible_shit:
     type: Segment
   3:
     a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -10.0
+    - -5.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -10.0
+    - 5.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  4:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -10.0
+    - 5.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 10.0
+    - 5.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  5:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 10.0
+    - -5.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -10.0
+    - -5.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  6:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 10.0
+    - 5.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 10.0
+    - -5.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  7:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -10.0
+    - -5.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -10.0
+    - 5.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  8:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  9:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - -16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  10:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - 9.0
+    b: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 16.0
+    - -9.0
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 0.0
+    - 0.0
+    r: 0.0
+    type: Segment
+  11:
+    a: !!python/object/apply:pymunk.vec2d.Vec2d
     - -16.0
     - -9.0
     b: !!python/object/apply:pymunk.vec2d.Vec2d
@@ -76,8 +156,7 @@ invisible_shit:
     - 0.0
     r: 0.0
     type: Segment
-
-  4:
+  12:
     a: !!python/object/apply:pymunk.vec2d.Vec2d
     - -16.0
     - 0.0
@@ -89,4 +168,36 @@ invisible_shit:
     - 0.0
     r: 0.0
     type: Segment
+  13:
+    position: !!python/object/apply:pymunk.vec2d.Vec2d
+    - 2.5
+    - 0.35
+    type: Poly
+objects:
+  0:
+    class: Fridge
+    init:
+      x: 2
+      y: 0
+      type_: 0
+  1:
+    class: AlarmClock
+    init:
+      x: 2.5
+      y: 3
+      type_: 0
+  2:
+    class: Closet
+    init:
+      x: 2.2
+      y: 1.5
+      type_: 0
+      angle: 0.76
 
+  3:
+    class: Calculator
+    init:
+      x: -2.2
+      y: 1.5
+      type_: 0
+      angle: 0.76

@@ -1,0 +1,11 @@
+name: 'Fridge'
+sprite: 'Resources/pictures/Items_for_levels/holodos.png'
+type: 'RectangularObject'
+init:
+  width: 0.7
+  height: 1.5
+
+  mass: 50
+  moment: null
+  elasticity: 0
+  friction: 0.6

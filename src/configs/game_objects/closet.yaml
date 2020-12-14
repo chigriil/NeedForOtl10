@@ -1,0 +1,11 @@
+name: 'Closet'
+sprite: 'Resources/pictures/Items_for_levels/closet.png'
+type: 'RectangularObject'
+init:
+  width: 0.5
+  height: 0.5
+
+  mass: 5
+  moment: null
+  elasticity: 0
+  friction: 0.6

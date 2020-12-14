@@ -1,0 +1,9 @@
+name: 'AlarmClock'
+sprite: 'Resources/pictures/Items_for_levels/alarm.png'
+type: 'CircularObject'
+init:
+  radius: 0.15
+  mass: 0.2
+  moment: null
+  elasticity: 0
+  friction: 0.6

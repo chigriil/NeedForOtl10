@@ -1,0 +1,11 @@
+name: 'Calculator'
+sprite: 'Resources/pictures/Items_to_throw/calculator.png'
+type: 'RectangularObject'
+init:
+  width: 0.15
+  height: 0.20
+
+  mass: 100
+  moment: null
+  elasticity: 0
+  friction: 0.6
