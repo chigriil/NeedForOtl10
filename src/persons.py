@@ -8,6 +8,9 @@ from Engine.EntityControllers import ManualController
 from Engine.Scene.entities import Entity
 from Engine.utils.utils import load_yaml
 
+# Реестр всех персонажей
+PersonRegistry = {}
+
 
 class BaseCharacter(Entity):
     """
@@ -31,7 +34,11 @@ def make_character(name, configs):
     :param configs: конфигурация сущности
     :return:
     """
-    return type(name, (BaseCharacter,), {'configs': configs})
+    # Создаём класс персонажа
+    person = type(name, (BaseCharacter,), {'configs': configs})
+    # Добавляем в реестр
+    PersonRegistry[name] = person
+    return person
 
 
 # Главный герой

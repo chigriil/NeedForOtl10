@@ -50,30 +50,20 @@ import pygame
 import pymunk
 
 import Engine.utils.__dark_magic__ as dark_magic
+from Engine.Scene.camera import Camera
 from Engine.apps import App
 from Engine.apps import MicroApp
-from Engine.Scene.camera import Camera
 from Engine.gui.overlays import FPS
 from settings import *
 from src.Levels.testlevel import TestLevel
 from src.game import Game
-
-if sys.hexversion < 0x30900f0:
-    raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
-dark_magic.init()
-pygame.mixer.pre_init()
-pygame.init()
-pygame.font.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-clock = pygame.time.Clock()
-
-
 
 
 class LevelEditor(MicroApp):
     """
     Собсна, редактор уровней
     """
+
     def __init__(self, screen, clock, load_file, saving_file):
         super(LevelEditor, self).__init__(screen, clock, lifetime=float('inf'))
         self.FPS = 0
@@ -84,19 +74,19 @@ class LevelEditor(MicroApp):
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
         self.overlays = [FPS(self.screen, self.clock)]
-
         self.DEVMODE = DEVMODE
-        self.modes = ['bg_select', 'border_placer', 'object_placer', 'entity_placer', 'camera_motion', 'load_from', 'save_to']
+        self.modes = ['bg_select', 'border_placer', 'object_placer', 'entity_placer', 'camera_motion', 'load_from',
+                      'save_to']
         self.mode_number = 0
         self.objects = ['fridge', 'closet', 'alarm', 'mouse']
         self.placeable_objects = {'fridge': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/holodos.png',
-                                        'shape': 'rect'},
-                            'closet': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/closet.png',
-                                        'shape': 'rect'},
-                             'alarm': {'height': 1, 'radius': 1, 'sprite_adress': 'Resources/pictures/alarm.png',
-                                        'shape': 'circle'},
-                             'mouse': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/mouse.png',
-                                        'shape': 'rect'}}
+                                             'shape': 'rect'},
+                                  'closet': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/closet.png',
+                                             'shape': 'rect'},
+                                  'alarm': {'height': 1, 'radius': 1, 'sprite_adress': 'Resources/pictures/alarm.png',
+                                            'shape': 'circle'},
+                                  'mouse': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/mouse.png',
+                                            'shape': 'rect'}}
         self.persons = ['MainCharacter', 'Enemy1']
         self.object_number = 0
         self.person = 'MainCharacter'
@@ -104,6 +94,7 @@ class LevelEditor(MicroApp):
         self.last_placed_is_object = True
         self.a_bord = []
         self.b_bord = []
+
     def draw(self):
         self.camera.view(self.scene)
 
@@ -122,22 +113,26 @@ class LevelEditor(MicroApp):
         Выбор статического\динамического объекта
         """
         self.static = not self.static
-        print('static mode = '+ str(self.static))
+        print('static mode = ' + str(self.static))
+
     """
     Дальше куча методов по выбору объекта и режима 
     """
+
     def mode_up(self):
         if self.mode_number < (len(self.modes) - 1):
             self.mode_number += 1
         else:
             self.mode_number = 0
         print(self.modes[self.mode_number])
+
     def mode_down(self):
         if self.mode_number > 0:
             self.mode_number -= 1
         else:
             self.mode_number = len(self.modes) - 1
         print(self.modes[self.mode_number])
+
     def obj_right(self):
         if self.object_number < (len(self.objects) - 1):
             self.object_number += 1
@@ -145,6 +140,7 @@ class LevelEditor(MicroApp):
             self.object_number = 0
         if self.modes[self.mode_number] == 'object_placer':
             print(self.objects[self.object_number])
+
     def obj_left(self):
         if self.object_number > 0:
             self.object_number -= 1
@@ -152,20 +148,23 @@ class LevelEditor(MicroApp):
             self.object_number = len(self.objects) - 1
         if self.modes[self.mode_number] == 'object_placer':
             print(self.objects[self.object_number])
+
     def pers_right(self):
-        if self.persons.index(self.person)+1 < len(self.persons):
-            self.person = self.persons[self.persons.index(self.person)+1]
+        if self.persons.index(self.person) + 1 < len(self.persons):
+            self.person = self.persons[self.persons.index(self.person) + 1]
         else:
             self.person = self.persons[0]
         if self.modes[self.mode_number] == 'entity_placer':
             print(self.person)
+
     def pers_left(self):
-        if self.persons.index(self.person)+1 > 0:
-            self.person = self.persons[self.persons.index(self.person)-1]
+        if self.persons.index(self.person) + 1 > 0:
+            self.person = self.persons[self.persons.index(self.person) - 1]
         else:
-            self.person = self.persons[len(self.persons)-1]
+            self.person = self.persons[len(self.persons) - 1]
         if self.modes[self.mode_number] == 'entity_placer':
             print(self.person)
+
     def mainCharacter_placed(self):
         for i in self.scene.entities:
             if i.save_data()['class'] == 'MainCharacter':
@@ -176,12 +175,13 @@ class LevelEditor(MicroApp):
     """
     Добавление выбранного объекта по позиции мыши
     """
-    def object_appender(self, buttontype, screencoords = None):
+
+    def object_appender(self, buttontype, screencoords=None):
         """
         Добавление выбранного объекта по позиции мыши
         """
         coords = self.camera.screen_coords_to_physical(screencoords)
-        #coords[1] = -coords[1]
+        # coords[1] = -coords[1]
         if self.modes[self.mode_number] == 'object_placer':
             object_name = self.objects[self.object_number]
             char_dict = self.placeable_objects[object_name]
@@ -213,20 +213,20 @@ class LevelEditor(MicroApp):
             if buttontype == 's':
                 if not (self.b_bord == [] and self.a_bord == []):
                     self.scene.physical_space.add(pymunk.Segment(self.scene.physical_space.static_body,
-                                                                   self.a_bord, self.b_bord, 1))
+                                                                 self.a_bord, self.b_bord, 1))
                 print('border set')
         elif self.modes[self.mode_number] == 'entity_placer' and buttontype == 'leftbutton':
             print(self.person == 'MainCharacter')
-            if self.person == 'MainCharacter' and  not self.mainCharacter_placed():
+            if self.person == 'MainCharacter' and not self.mainCharacter_placed():
                 self.scene.init_player(coords[0], coords[1])
 
-    def save_to_file(self, filename = 'default_level'):
+    def save_to_file(self, filename='default_level'):
         """
         Сохранение уровня в файл
         """
 
         self.scene.save_level(filename)
-        print('level saved as '+ str(filename))
+        print('level saved as ' + str(filename))
 
     def step(self, dt):
         for overlay in self.overlays:
@@ -243,10 +243,10 @@ class LevelEditor(MicroApp):
                 self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
             if pygame.mouse.get_pressed(3)[2]:
                 self.object_appender('rightbutton', pygame.mouse.get_pos())
-                #print('rtouch')
+                # print('rtouch')
             if pygame.mouse.get_pressed(3)[0]:
                 self.object_appender('leftbutton', pygame.mouse.get_pos())
-                #print('ltouch')
+                # print('ltouch')
             if event.type == pygame.MOUSEWHEEL:
                 self.camera.distance -= event.y
             if event.type == pygame.KEYDOWN:
@@ -271,6 +271,7 @@ class LevelEditor(MicroApp):
                     self.save_to_file(filename=self.saving_file)
                 if pygame.key.get_pressed()[pygame.K_s]:
                     self.object_appender('s')
+
     def atexit(self):
         """
         Действия при выходе из приложения
@@ -280,6 +281,16 @@ class LevelEditor(MicroApp):
 
 
 if __name__ == '__main__':
+    if sys.hexversion < 0x30900f0:
+        raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
+
+    dark_magic.init()
+    pygame.mixer.pre_init()
+    pygame.init()
+    pygame.font.init()
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    clock = pygame.time.Clock()
+
     print('enter where to load from')
     load_file = input()
     print('enter where to save')
@@ -288,7 +299,5 @@ if __name__ == '__main__':
         saving_file = 'default_level'
     if len(load_file) == 0:
         load_file = 'basic'
-    app = App(micro_apps=[LevelEditor(screen, clock, saving_file= saving_file, load_file= load_file )])
+    app = App(micro_apps=[LevelEditor(screen, clock, saving_file=saving_file, load_file=load_file)])
     app.run()
-
-

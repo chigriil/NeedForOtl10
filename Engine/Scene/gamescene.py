@@ -12,7 +12,8 @@ from pymunk import Body, Segment, Poly, Circle
 
 from Engine.Scene.game_objects import *
 from Engine.utils.physical_primitives import PhysicalRect
-from src.persons import MainCharacter, Danilio, Udoser, Difurmen
+from src.persons import PersonRegistry
+from ..EntityControllers import ControllerRegistry
 
 GRAVITY = Vec2d(0, -9.81)
 
@@ -229,22 +230,6 @@ class Level(Scene):
         # Инициализируется в отдельном методе init_player
         self.player = None
 
-    def init_player(self, x=0, y=0):
-        """
-        Инициализирует игрока
-        :param x: x координата левого нижнего угла описанного прямоугольника игрока
-        :param y: y координата левого нижнего угла описанного прямоугольника игрока
-        :return:
-        """
-        self.player = MainCharacter(self.physical_space, x, y)
-    def init_entity(self, x, y, entity_name):
-        if entity_name == 'Danilio':
-            self.entities.append(Danilio(self.physical_space, x, y))
-        if entity_name == 'Udoser':
-            self.entities.append(Udoser(self.physical_space, x, y))
-        if entity_name == 'Difurmen':
-            self.entities.append(Difurmen(self.physical_space, x, y))
-
     def step(self, dt):
         super(Level, self).step(dt)
 
@@ -257,9 +242,96 @@ class Level(Scene):
         super(Level, self).__view__(camera)
         camera.view(self.player)
 
-    def add_to_level(self, type_, x, y, width=None, height=None, sprite_adress=None, brain = None):
+    def __devview__(self, camera):
+        super(Level, self).__devview__(camera)
+        camera.devview(self.player)
+
+    # Методы, отвечающие за сохранение уровня в файла
+
+    def save_level(self, username="defaultName"):
         """
-        Методы для помещения сущностей и объектов в уровень
+        Функция сохранения уровня в ямл файл
+        На вход принимает имя сохранения, если оно есть
+        Иначе файл сохраняется как defaultName_save.yml
+        На данный момент сохраняет только основные х-тики объектов,
+        но реализовать сохранение доп х-тик довольно просто
+        """
+        # Словарь для сохранения
+        save_data_final = {}
+
+        # сохранение подвижных объектов вместе со спрайтами
+        save_data_dict = {}
+        for counter, object_ in enumerate(self.objects):
+            save_data_dict[counter] = object_.save_data()
+        save_data_final['objects'] = save_data_dict
+
+        # Сохранение сущностей
+        save_data_dict = {}
+        counter = 0
+        for entity in self.entities:
+            save_data_dict[counter] = entity.save_data()
+            counter += 1
+        save_data_final['entities'] = save_data_dict
+
+        # Сохранение гг
+        save_data_final['MainCharacter'] = self.player.save_data()
+
+        # Функция роется в движке и сохраняет все неподвижные физические тела без спрайтов
+        save_data_dict = {}
+        counter = 0
+        for i in self.physical_space.shapes:
+            if i.body.body_type == Body.STATIC:
+
+                if isinstance(i, Segment):
+                    save_data_dict[counter] = {'type': 'Segment', 'position': i.body.position,
+                                               'a': i.a, 'b': i.b, 'r': i.radius}
+                    counter += 1
+
+                if isinstance(i, Poly):
+                    save_data_dict[counter] = {'type': 'Poly', 'position': i.body.position}
+                    counter += 1
+
+                if isinstance(i, Circle):
+                    save_data_dict[counter] = {'type': 'Circle', 'position': i.body.position,
+                                               'offset': i.offset, 'r': i.radius}
+                    counter += 1
+
+        save_data_final['invisible_shit'] = save_data_dict
+
+        with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save'), 'w') as write_file:
+            yaml.dump(save_data_final, write_file)
+
+    # Методы, отвечающие за загрузку уровня из файла
+
+    def init_player(self, x=0, y=0):
+        """
+        Инициализирует игрока
+        :param x: x координата левого нижнего угла описанного прямоугольника игрока
+        :param y: y координата левого нижнего угла описанного прямоугольника игрока
+        :return:
+        """
+        self.player = PersonRegistry['MainCharacter'](self.physical_space, x, y)
+
+    def spawn_entity(self, configs):
+        self.entities.append(
+            PersonRegistry[configs['class']](
+                self.physical_space,
+                *configs['vector'],
+                ControllerRegistry[configs['brain']]
+            )
+        )
+
+    def load_invisible_objects(self, object_dict):
+        for object_ in object_dict.values():
+            if object_['type'] == 'Segment':
+                segment = pymunk.Segment(self.physical_space.static_body,
+                                         object_['a'], object_['b'], object_['r'])
+                segment.friction = 1
+                self.physical_space.add(segment)
+
+    def load_object(self, type_, x, y, width=None, height=None, sprite_adress=None):
+        """
+        Методы для помещения объектов в уровень
         Немного быдлокод, но рабочий
         """
 
@@ -275,75 +347,6 @@ class Level(Scene):
             self.objects.append(DynamicCircularObject(radius=width,
                                                       sprite_adress=sprite_adress, x=x, y=y,
                                                       physical_space=self.physical_space))
-        elif type_ == 'MainCharacter':
-            self.init_player(x, y)
-
-        elif type_ == 'Danilio':
-            self.init_entity(x, y, 'Danilio')
-
-        elif type_ == 'Udoser':
-            self.init_entity(x, y, 'Udoser')
-
-        elif type_ == 'Difurmen':
-            self.init_entity(x, y, 'Difurmen')
-
-    def save_level(self, username="defaultName"):
-        """
-        Функция сохранения уровня в ямл файл
-        На вход принимает имя сохранения, если оно есть
-        Иначе файл сохраняется как defaultName_save.yml
-        На данный момент сохраняет только основные х-тики объектов,
-        но реализовать сохранение доп х-тик довольно просто
-        """
-
-        with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save'), 'w') as write_file:
-
-            # сохранение подвижных объектов вместе со спрайтами
-            save_data_dict = {}
-            for counter, object_ in enumerate(self.objects):
-                save_data_dict[counter] = object_.save_data()
-            save_data_final = {'objects': save_data_dict}
-            yaml.dump(save_data_final, write_file)
-
-            save_data_dict = {}
-
-            # Сохранение сущностей
-            counter = 0
-            for entity in self.entities:
-                if entity.save_data()['class'] != 'MainCharacter':
-                    save_data_dict[counter] = entity.save_data()
-                    counter += 1
-            save_data_final = {'entities': save_data_dict}
-            yaml.dump(save_data_final, write_file)
-
-            # Сохранение гг
-            for entity in self.entities:
-                if entity.save_data()['class'] == 'MainCharacter':
-                    save_data_dict = entity.save_data()
-            save_data_final = {'MainCharacter': save_data_dict}
-            yaml.dump(save_data_final, write_file)
-            # Функция роется в движке и сохраняет все неподвижные физические тела без спрайтов
-            save_data_dict = {}
-            counter = 0
-            for i in self.physical_space.shapes:
-                if i.body.body_type == Body.STATIC:
-
-                    if isinstance(i, Segment):
-                        save_data_dict[counter] = {'type': 'Segment', 'position': i.body.position,
-                                                   'a': i.a, 'b': i.b, 'r': i.radius}
-                        counter += 1
-
-                    if isinstance(i, Poly):
-                        save_data_dict[counter] = {'type': 'Poly', 'position': i.body.position}
-                        counter += 1
-
-                    if isinstance(i, Circle):
-                        save_data_dict[counter] = {'type': 'Circle', 'position': i.body.position,
-                                                   'offset': i.offset, 'r': i.radius}
-                        counter += 1
-
-            save_data_final = {'invisible_shit': save_data_dict}
-            yaml.dump(save_data_final, write_file)
 
     def load_level(self, username):
         """
@@ -355,27 +358,26 @@ class Level(Scene):
 
         with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save')) as readfile:
             data = yaml.load(readfile, Loader=yaml.Loader)
-            if data != {}:
-                for type_ in data.keys():
-                    if type_ == 'invisible_shit':
-                        for number in data[type_].keys():
-                            object_ = data[type_][number]
-                            if object_['type'] == 'Segment':
-                                segment = pymunk.Segment(self.physical_space.static_body,
-                                                         object_['a'], object_['b'], object_['r'])
-                                segment.friction = 1
-                                self.physical_space.add(segment)
 
-                    if type_ == 'MainCharacter':
-                        self.init_player(x=data[type_]['vector'][0], y=data[type_]['vector'][1])
+        if data == {}:
+            return
 
-                    if (type_ == 'objects') or (type_ == 'entities'):
-                        for number in data[type_].keys():
-                            object_ = data[type_][number]
-                            print(object_)
-                            self.add_to_level(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][1],
-                                              height=object_['height'], width=object_['width'],
-                                              sprite_adress=object_['sprite_adress'])
+        # Загрузка невидимых объектов
+        # TODO: Юра назови это нормально, добавить документацию
+        self.load_invisible_objects(data['invisible_shit'])
+
+        # Загрузка объектов
+        for object_ in data['objects'].values():
+            self.load_object(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][1],
+                             height=object_['height'], width=object_['width'],
+                             sprite_adress=object_['sprite_adress'])
+
+        # Инициализация игрока
+        self.init_player(*data['MainCharacter']['vector'])
+
+        # Загрузка сущностей
+        for entity_config in data['entities'].values():
+            self.spawn_entity(entity_config)
 
     def create_level(self, location, save_name='save'):
         """

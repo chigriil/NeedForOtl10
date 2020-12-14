@@ -7,13 +7,16 @@ import pygame
 
 from .Scene.animations import State
 
+ControllerRegistry = {}
+
 
 class EntityController:
     """
     Базовый класс контролера сущности
     Отвечает за принятия сущностью решения о том, что делать в каждый момент времени
     """
-    def __init__(self, entity, name = 'default_contr_name'):
+
+    def __init__(self, entity, name='default_contr_name'):
         """
 
         :param entity: сама сущность
@@ -29,10 +32,14 @@ class EntityController:
         """
         pass
 
+    def __init_subclass__(cls, **kwargs):
+        ControllerRegistry[cls.__name__] = cls
+
 
 class Idle(EntityController):
-    def __init__(self, entity, name = 'default_contr_name'):
-        super(Idle, self).__init__(entity=entity, name = name)
+    def __init__(self, entity, name='default_contr_name'):
+        super(Idle, self).__init__(entity=entity, name=name)
+
     """
     Ничего не делающий контроллер
     """
