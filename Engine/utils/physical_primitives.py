@@ -203,6 +203,18 @@ class PhysicalRect:
         """
         return Rect(self.__x, self.__y, self.__width, self.__height)
 
+    def save_data(self):
+        """
+        Возвращает данные для сериализации
+        :return:
+        """
+        return {
+            'x': self.x,
+            'y': self.y,
+            'width': self.__width,
+            'height': self.__height
+        }
+
     def __imul__(self, other):
         """
         Маштабирует длины сторон

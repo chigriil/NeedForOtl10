@@ -8,7 +8,6 @@ import os
 import numpy as np
 import yaml
 from pygame.draw import rect, circle
-from pymunk import Body, Segment, Poly, Circle
 
 from Engine.Scene.game_objects import *
 from Engine.utils.physical_primitives import PhysicalRect
@@ -107,7 +106,7 @@ class Scene:
     TODO: придумать, как сохранять состояние уровня
     """
 
-    def __init__(self, game_app, background=SunnyField(), border=PhysicalRect(-10, -5, 20, 10)):
+    def __init__(self, game_app, background=SunnyField(), borders=None):
         """
         :param game_app: приложение игры, нужно для управления сценой
         """
@@ -127,11 +126,17 @@ class Scene:
         self.physical_space.gravity = GRAVITY
 
         # Граница уровня
-        self.border = border
-        top = pymunk.Segment(self.physical_space.static_body, self.border.topleft, self.border.topright, 0)
-        bottom = pymunk.Segment(self.physical_space.static_body, self.border.bottomright, self.border.bottomleft, 0)
-        right = pymunk.Segment(self.physical_space.static_body, self.border.topright, self.border.bottomright, 0)
-        left = pymunk.Segment(self.physical_space.static_body, self.border.bottomleft, self.border.topleft, 0)
+        self.borders = borders
+        # Другие невидимые сегменты, например горизонт
+        self.invisible_segments = []
+        if self.borders is not None:
+            self.add_borders()
+
+    def add_borders(self):
+        top = pymunk.Segment(self.physical_space.static_body, self.borders.topleft, self.borders.topright, 0)
+        bottom = pymunk.Segment(self.physical_space.static_body, self.borders.bottomright, self.borders.bottomleft, 0)
+        right = pymunk.Segment(self.physical_space.static_body, self.borders.topright, self.borders.bottomright, 0)
+        left = pymunk.Segment(self.physical_space.static_body, self.borders.bottomleft, self.borders.topleft, 0)
 
         bottom.friction = 1  # трение на полу
 
@@ -139,6 +144,14 @@ class Scene:
         self.physical_space.add(bottom)
         self.physical_space.add(right)
         self.physical_space.add(left)
+
+        for invisible_segment in self.invisible_segments:
+            new_segment = pymunk.Segment(self.physical_space.static_body,
+                                         invisible_segment['start'],
+                                         invisible_segment['end'],
+                                         invisible_segment['radius'])
+            new_segment.friction = 1
+            self.physical_space.add(new_segment)
 
     def __view__(self, camera):
         """
@@ -170,29 +183,29 @@ class Scene:
 
         # Границы уровня
         camera.project_line(
-            self.border.topleft,
-            self.border.topright,
+            self.borders.topleft,
+            self.borders.topright,
             (139, 69, 19),
             3
         )
 
         camera.project_line(
-            self.border.topright,
-            self.border.bottomright,
+            self.borders.topright,
+            self.borders.bottomright,
             (139, 69, 19),
             3
         )
 
         camera.project_line(
-            self.border.bottomright,
-            self.border.bottomleft,
+            self.borders.bottomright,
+            self.borders.bottomleft,
             (139, 69, 19),
             3
         )
 
         camera.project_line(
-            self.border.bottomleft,
-            self.border.topleft,
+            self.borders.bottomleft,
+            self.borders.topleft,
             (139, 69, 19),
             3
         )
@@ -222,8 +235,8 @@ class Level(Scene):
 
     """
 
-    def __init__(self, game_app, background=SunnyField(), border=PhysicalRect(-10, -5, 20, 10)):
-        super(Level, self).__init__(game_app, background, border)
+    def __init__(self, game_app, background=SunnyField(), borders=None):
+        super(Level, self).__init__(game_app, background, borders)
 
         # Выносим игрока отдельно, чтобы был удобный доступ к нему
         # Возможно так придётся вынести и антогонистов
@@ -236,7 +249,7 @@ class Level(Scene):
         self.player.step(dt)
 
         # Возвращаем игрока в границы уровня
-        self.player.check_scene_border(self.border)
+        self.player.check_scene_border(self.borders)
 
     def __view__(self, camera):
         super(Level, self).__view__(camera)
@@ -257,7 +270,11 @@ class Level(Scene):
         но реализовать сохранение доп х-тик довольно просто
         """
         # Словарь для сохранения
-        save_data_final = {}
+        save_data_final = dict()
+
+        # Сохранение границ
+        save_data_final['borders'] = self.borders.save_data()
+        save_data_final['invisible_segments'] = self.invisible_segments
 
         # сохранение подвижных объектов вместе со спрайтами
         save_data_dict = {}
@@ -278,28 +295,6 @@ class Level(Scene):
 
         # Сохранение гг
         save_data_final['MainCharacter'] = self.player.save_data()
-
-        # Функция роется в движке и сохраняет все неподвижные физические тела без спрайтов
-        save_data_dict = {}
-        counter = 0
-        for i in self.physical_space.shapes:
-            if i.body.body_type == Body.STATIC:
-
-                if isinstance(i, Segment):
-                    save_data_dict[counter] = {'type': 'Segment', 'position': i.body.position,
-                                               'a': i.a, 'b': i.b, 'r': i.radius}
-                    counter += 1
-
-                if isinstance(i, Poly):
-                    save_data_dict[counter] = {'type': 'Poly', 'position': i.body.position}
-                    counter += 1
-
-                if isinstance(i, Circle):
-                    save_data_dict[counter] = {'type': 'Circle', 'position': i.body.position,
-                                               'offset': i.offset, 'r': i.radius}
-                    counter += 1
-
-        save_data_final['invisible_shit'] = save_data_dict
 
         with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save'), 'w') as write_file:
             yaml.dump(save_data_final, write_file)
@@ -324,14 +319,6 @@ class Level(Scene):
             )
         )
 
-    def load_invisible_objects(self, object_dict):
-        for object_ in object_dict.values():
-            if object_['type'] == 'Segment':
-                segment = pymunk.Segment(self.physical_space.static_body,
-                                         object_['a'], object_['b'], object_['r'])
-                segment.friction = 1
-                self.physical_space.add(segment)
-
     def load_object(self, config):
         """
         Методы для помещения объектов в уровень
@@ -348,22 +335,23 @@ class Level(Scene):
         Если названия нет, подгружает резервный сейв под именем DefaultName_save
         P.S. такого резервного сейва еще нет
         """
-
-        with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save')) as readfile:
+        lvl_path = os.path.join('src', 'Levels', 'Saved_Levels', username + '_save')
+        if not os.path.exists(lvl_path):
+            lvl_path = os.path.join('src', 'Levels', 'Saved_Levels', 'default_level_save')
+        with open(lvl_path) as readfile:
             data = yaml.load(readfile, Loader=yaml.Loader)
 
+        # Если нет данных выходим
         if data == {}:
             return
 
-        # Загрузка невидимых объектов
-        # TODO: Юра назови это нормально, добавить документацию
-        self.load_invisible_objects(data['invisible_shit'])
+        # Загрузка границ
+        self.borders = PhysicalRect(**data['borders']) if data['borders'] is not None else PhysicalRect(-10, -5, 20, 10)
+        self.invisible_segments = data['invisible_segments']
+        self.add_borders()
 
         # Загрузка объектов
         for object_ in data['objects'].values():
-            # self.load_object(type_=object_['class'], x=object_['vector'][0], y=object_['vector'][1],
-            #                  height=object_['height'], width=object_['width'],
-            #                  sprite_adress=object_['sprite_adress'])
             self.load_object(object_)
 
         # Инициализация игрока
@@ -372,21 +360,3 @@ class Level(Scene):
         # Загрузка сущностей
         for entity_config in data['entities'].values():
             self.spawn_entity(entity_config)
-
-    def create_level(self, location, save_name='save'):
-        """
-        Функция инициализации уровня
-        На вход принимает локацию и сейв
-        если сейва нет - юзает дефолтный сейв
-        """
-
-        self.bg = location.bg
-        self.border = location.border
-        self.load_level(save_name)
-        hl = pymunk.Segment(self.physical_space.static_body,
-                            (self.border.x, 0),
-                            (self.border.x + self.border.width, 0),
-                            0)
-        hl.friction = 1
-
-        self.physical_space.add(hl)
