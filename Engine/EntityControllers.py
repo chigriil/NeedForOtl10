@@ -54,7 +54,7 @@ class ManualController(EntityController):
     def step(self, dt):
         pressed_keys = pygame.key.get_pressed()
         new_state = self.entity.state
-        velocity = self.entity.body.velocity
+        velocity = list(self.entity.body.velocity)
 
         # Если сущность имеет опору под ногами
         if self.entity.can_lean_on_feet():

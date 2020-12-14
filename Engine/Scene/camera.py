@@ -13,8 +13,8 @@ from pymunk import Vec2d
 
 from Engine.Scene.entities import Entity
 from Engine.utils.physical_primitives import PhysicalRect
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH
 from Engine.utils.pseudo_math import sigmoid, inverse_sigmoid
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH
 
 
 class CameraError(Exception):
@@ -70,7 +70,7 @@ class Camera:
 
         # Далее физические характеристики камеры
         # Физические координаты центра камеры
-        self.__position = Vec2d([float(x), float(y)])
+        self.__position = Vec2d(x, y)
         # Горизонтальный угол обзора камеры
         self.h_fov = h_fov
         # Расстояние от камеры до поверхности экрана
@@ -199,10 +199,10 @@ class Camera:
         """
         # Перевод в массив numpy
         if not isinstance(point, Vec2d):
-            point = Vec2d(point)
+            point = Vec2d(*point)
 
-        return (point + [self.window_width / 2 - self.__position[0],
-                         self.window_height / 2 - self.__position[1]]) * self.scale_factor
+        return (point + (self.window_width / 2 - self.__position[0],
+                         self.window_height / 2 - self.__position[1])) * self.scale_factor
 
     def projection_of_length(self, length):
         """
@@ -445,7 +445,7 @@ class Operator:
         direction = point - self.camera.position
         velocity = direction
         if (sm := self.smooth_func(self.alpha * direction.length)) != 0:
-            velocity.length = self.max_speed * sm
+            velocity.scale_to_length(self.max_speed * sm)
         else:
             velocity = Vec2d(0, 0)
         self.camera.position += velocity * dt
