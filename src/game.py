@@ -235,8 +235,10 @@ class Game(MicroApp):
 
     def run_once(self):
         super(Game, self).run_once()
-        # Создаём новые часы, чтобы не было рывка физики в начале игры
-        self.clock = pygame.time.Clock()
+        # Тикаем часы, чтобы не было рывка физики в начале игры
+        # Это нужно сделать дважды
+        self.clock.tick()
+        self.clock.tick()
 
     def atexit(self):
         """

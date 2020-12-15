@@ -1,0 +1,9 @@
+name: 'TennisBall'
+sprite: 'Resources/pictures/Items_to_throw/tennis_ball.png'
+type: 'CircularObject'
+init:
+  radius: 0.05
+  mass: 0.2
+  moment: null
+  elasticity: 0
+  friction: 0.6
