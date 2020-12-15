@@ -213,7 +213,7 @@ class Game(MicroApp):
 
                     # Возрат камеры в границы уровня
                     if event.key == pygame.K_b:
-                        self.camera.return_to_borders(self.scene.border)
+                        self.camera.return_to_borders(self.scene.borders)
 
                     # Возрат камеры в границы уровня
                     if event.key == pygame.K_z:
@@ -232,6 +232,11 @@ class Game(MicroApp):
                             self.camera_operator.targeting_method = TargetingMethod.INSTANT
                         else:
                             self.camera_operator.targeting_method = TargetingMethod.SMOOTH
+
+    def run_once(self):
+        super(Game, self).run_once()
+        # Создаём новые часы, чтобы не было рывка физики в начале игры
+        self.clock = pygame.time.Clock()
 
     def atexit(self):
         """
