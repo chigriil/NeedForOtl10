@@ -21,4 +21,4 @@ DEVMODE = True
 person_configs_path = 'src\\configs\\persons'
 
 # Путь до папки с конфигарациями статичных объектов
-static_configs_path = 'src/configs/game_objects'
+game_objects_configs_path = 'src/configs/game_objects'

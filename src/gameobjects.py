@@ -6,18 +6,18 @@ from pymunk import Body
 from Engine.Scene.game_objects import PhysicalGameObject, ObjectRegistry
 from Engine.utils.physical_primitives import PhysicalRect
 from Engine.utils.utils import load_yaml, load_image, pil_to_pygame
-from settings import static_configs_path
+from settings import game_objects_configs_path
 
 
 class RectangularObject(PhysicalGameObject):
     configs = load_yaml('src/configs/game_objects/fridge.yaml')
 
-    def __init__(self, physical_space, x, y,angle=0, type_=Body.STATIC):
+    def __init__(self, physical_space, x, y, angle=0, type_=Body.STATIC):
         sprite = None
         if self.configs['sprite'] is not None:
             sprite = pil_to_pygame(load_image(self.configs['sprite']))
 
-        super(RectangularObject, self).__init__(x, y,angle=angle, sprite=sprite, physical_space=physical_space,
+        super(RectangularObject, self).__init__(x, y, angle=angle, sprite=sprite, physical_space=physical_space,
                                                 type_=type_, **self.configs['init'])
 
     def save_data(self):
@@ -33,7 +33,7 @@ class RectangularObject(PhysicalGameObject):
 class CircularObject(PhysicalGameObject):
     configs = load_yaml('src/configs/game_objects/alarm_clock.yaml')
 
-    def __init__(self, physical_space, x, y,angle=0, type_=Body.STATIC):
+    def __init__(self, physical_space, x, y, angle=0, type_=Body.STATIC):
 
         sprite = None
         if self.configs['sprite'] is not None:
@@ -92,14 +92,14 @@ def make_object(configs):
 def init_object():
     len_0 = len(ObjectRegistry)
 
-    # static
-    for static_object_config_file in os.listdir(static_configs_path):
+    for game_object_config_file in os.listdir(game_objects_configs_path):
 
-        if not static_object_config_file.endswith('.yaml'):
+        if not game_object_config_file.endswith('.yaml'):
             continue
 
-        config = load_yaml(os.path.join(static_configs_path, static_object_config_file))
+        config = load_yaml(os.path.join(game_objects_configs_path, game_object_config_file))
 
+        print(f'Loading {config["name"]}')
         make_object(config)
     return len(ObjectRegistry) - len_0
 
