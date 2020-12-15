@@ -1,6 +1,7 @@
 name: 'MainCharacter'
 description: null
-width: 0.96
-height: 1.8
-mass: 75
-animations: 'Resources/Animations/DanyaPers.yaml'
+init:
+  width: 0.96
+  height: 1.8
+  mass: 75
+  animations: 'Resources/Animations/DanyaPers.yaml'

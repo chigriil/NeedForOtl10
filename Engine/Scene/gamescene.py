@@ -11,7 +11,7 @@ from pygame.draw import rect, circle
 
 from Engine.Scene.game_objects import *
 from Engine.utils.physical_primitives import PhysicalRect
-from src.persons import PersonRegistry
+from .entities import PersonRegistry
 from ..EntityControllers import ControllerRegistry
 
 GRAVITY = Vec2d(0, -9.81)
@@ -308,12 +308,12 @@ class Level(Scene):
         :param y: y координата левого нижнего угла описанного прямоугольника игрока
         :return:
         """
-        self.player = PersonRegistry['MainCharacter'](self.physical_space, x, y)
+        self.player = PersonRegistry['MainCharacter'](self, x, y)
 
     def spawn_entity(self, configs):
         self.entities.append(
             PersonRegistry[configs['class']](
-                self.physical_space,
+                self,
                 *configs['vector'],
                 ControllerRegistry[configs['brain']]
             )
@@ -324,7 +324,7 @@ class Level(Scene):
         Методы для помещения объектов в уровень
         """
         self.objects.append(ObjectRegistry[config['class']](
-            self.physical_space,
+            self,
             **config['init']
         ))
 

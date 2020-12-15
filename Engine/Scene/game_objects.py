@@ -2,7 +2,7 @@ from math import degrees
 
 import pygame
 import pymunk
-from pymunk import Vec2d
+from pymunk import Vec2d, Space
 
 from Engine.utils.physical_primitives import PhysicalRect, BoundingBox
 
@@ -106,7 +106,7 @@ class PhysicalGameObject(GameObject):
     """
 
     def __init__(self, x, y, width=1, height=1, sprite=None,
-                 physical_space: pymunk.Space = None, body: pymunk.Body = None, shape: pymunk.Shape = None,
+                 scene=None, body: pymunk.Body = None, shape: pymunk.Shape = None,
                  angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
         """
         Если вы хотите установить свою фарму объекта, то при наследовании перед вызовом super().__init__
@@ -133,7 +133,7 @@ class PhysicalGameObject(GameObject):
         :param width: ширина описанного прямоугольника объекта
         :param height: высота описанного прямоугольника объекта
         :param sprite: спрайт объекта
-        :param physical_space: физическое пространство pymunk
+        :param scene: игровая сцена
         :param shape: физическая форма тела
         :param angle: начальный угол поворота тела против часовой (в радианах)
         :param mass: масса объекта
@@ -143,12 +143,14 @@ class PhysicalGameObject(GameObject):
         :param type_: тип объекта (DYNAMIC, KINEMATIC, STATIC)
         """
         super(PhysicalGameObject, self).__init__(x, y, width, height, sprite=sprite)
+        if isinstance(scene, Space):
+            raise
+        if scene is None:
+            raise AttributeError("Нужно задать обязательно сцену")
 
-        if physical_space is None:
-            raise AttributeError("Нужно задать обязательно физическое пространство physical_space")
-
+        self.scene = scene
         # Цыганская магия
-        self.physical_space = physical_space
+        self.physical_space = scene.physical_space
 
         # Если момент не задан, то считаем его для прямоугольника
         if moment is None:

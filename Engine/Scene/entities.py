@@ -3,18 +3,28 @@
 Например игрока и врагов
 """
 from math import degrees
+from math import sin, cos
 from os import PathLike
+from random import choice
 from typing import Union
 
 import pygame
 import pymunk
-from pymunk import Space
+from pymunk import Vec2d, Body
 
+from Engine.EntityControllers import ManualController
+from Engine.Scene.game_objects import ObjectRegistry
 from Engine.utils.physical_primitives import PhysicalRect
 from settings import critical_speed, critical_ground_collision, bounce_correction_speed
 from .animations import EntityAnimations, State
 from .game_objects import PhysicalGameObject
 from ..EntityControllers import Idle
+from ..utils.utils import load_yaml
+
+# Реестр всех персонажей
+PersonRegistry = {}
+
+default_person = load_yaml('src/configs/persons/_default_person.yaml')
 
 
 class Entity(PhysicalGameObject):
@@ -30,10 +40,9 @@ class Entity(PhysicalGameObject):
     TODO: разделить толо игрока на само тело, ноги, руки, голову (нужно для удобной анимации ударов)
     """
 
-    def __init__(self, physical_space: Space, x=0, y=0, width=0.7, height=1.8, mass=75, brain=Idle,
-                 name=None, description=None, animations=None):
+    def __init__(self, scene, x=0, y=0, width=0.7, height=1.8, mass=75, brain=Idle, animations=None):
         """
-        :param physical_space: физическое пространство
+        :param scene: игровая сцена
         :param x: x координата левого нижнего края сущности
         :param y: y координата левого нижнего края сущности
         :param height: высота сущности
@@ -42,21 +51,18 @@ class Entity(PhysicalGameObject):
         """
 
         super(Entity, self).__init__(x=x, y=y, width=width, height=height, sprite=None,
-                                     physical_space=physical_space,
+                                     scene=scene,
                                      mass=mass, moment=float('inf'), elasticity=0,
                                      friction=0.6, type_=pymunk.Body.DYNAMIC)
         # float('inf'), чтобы исключить вращение
+        # Сцена сущностит
+        self.scene = scene
+        # Мозг сущности
+        self.brain = brain(self)
 
         # Описанные прямоугольники для разных состояний игрока
         # Нужны для пересчёта геометрии при смене состояния игрока
         # Названия говорят сами за себяф
-
-        # Имя персонажа
-        self.name = name
-        # Описание персонажа
-        self.description = description
-
-        self.brain = brain(self)
         self.idle_rect = PhysicalRect(0, 0, width, height)
         self.walking_rect = PhysicalRect(0, 0, width, height)
         self.running_rect = PhysicalRect(0, 0, width, height * 134 / 140)
@@ -113,7 +119,6 @@ class Entity(PhysicalGameObject):
         # Если новое состояние равно старому, то выходим из функции
         if new_state == self.__state:
             return
-        # print(f'Changing entity status {self.__state} -> {new_state}')
 
         # # Выводим в консоль вызывающую функцию (ДЛЯ ДЕБАГА)
         # print(f'State: {self.__state} -> {new_state}, Calling function = {calling_function}')
@@ -337,3 +342,118 @@ class Entity(PhysicalGameObject):
         prepared_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
         # Рисуем
         camera.temp_surface.blit(prepared_sprite, prepared_sprite.get_rect(center=rect_for_camera.center).topleft)
+
+
+class BaseCharacter(Entity):
+    """
+    Базовый класс игрового персонажа
+    На основе него делаются остальные классы
+    """
+    configs = default_person
+
+    def __init__(self, scene, x=0, y=0, brain=ManualController):
+        super(BaseCharacter, self).__init__(scene, x, y, brain=brain, **self.configs['init'])
+
+        # Имя персонажа
+        self.name = self.__class__.__name__
+        # Описание персонажа
+        self.description = None
+
+        # Не меняющиеся атрибуты
+        # Здоровье
+        properties: dict = default_person['properties']
+        self.max_health = properties['max_health']
+        # Вероятность уклонения
+        self.dodge = properties['dodge']
+
+        # Боёвка
+        hits: dict = default_person['hits']
+        self.arming = hits['arming']
+        self.throwing = hits['throwing']
+        self.arming_types = list(self.arming)
+        self.throwing_types = list(self.throwing)
+
+        if 'properties' in self.configs:
+            self.__dict__ |= self.configs['properties']
+
+        if 'hits' in self.configs:
+            self.__dict__ |= self.configs['hit']
+
+        # Атрибуты, которые в данный момент
+        self.health = 0
+        self.__arming_reload = 0
+        self.__throwing_reload = 0
+
+    def __init_subclass__(cls, **kwargs):
+        PersonRegistry[cls.__name__] = cls
+
+    @property
+    def arming_reload(self):
+        return self.__arming_reload
+
+    @arming_reload.setter
+    def arming_reload(self, value):
+        self.__arming_reload = max(value, 0)
+
+    @property
+    def throwing_reload(self):
+        return self.__throwing_reload
+
+    @throwing_reload.setter
+    def throwing_reload(self, value):
+        self.__throwing_reload = max(value, 0)
+
+    def step(self, dt):
+        super(BaseCharacter, self).step(dt)
+        # Перезарядка спссобностей
+        self.arming_reload -= dt
+        self.throwing_reload -= dt
+
+    def hand_hit(self):
+        """
+        Удар
+        :return:
+        """
+        pass
+
+    def throw(self):
+        """
+        Кидание
+        TODO: добавить время перезарядки
+        :return:
+        """
+        throw_method = self.throwing[choice(self.throwing_types)]
+        class_ = ObjectRegistry[throw_method['item']]
+
+        velocity = Vec2d(
+            throw_method['throw_speed'] * cos(throw_method['throw_angle']),
+            throw_method['throw_speed'] * sin(throw_method['throw_angle'])
+        )
+
+        if self.horizontal_view_direction == 'right':
+            position = self.position + throw_method['position']
+            velocity = self.body.velocity + Vec2d(
+                throw_method['throw_speed'] * cos(throw_method['throw_angle']),
+                throw_method['throw_speed'] * sin(throw_method['throw_angle'])
+            )
+        else:
+            position = self.position + Vec2d(
+                self.width - throw_method['position'][0],
+                throw_method['position'][1]
+            )
+            velocity = self.body.velocity + Vec2d(
+                -throw_method['throw_speed'] * cos(throw_method['throw_angle']),
+                throw_method['throw_speed'] * sin(throw_method['throw_angle'])
+            )
+
+        obj = class_(
+            self.scene,
+            *position,
+            throw_method['start_angle'],
+        )
+        obj.body.velocity = velocity
+        obj.body.angular_velocity = throw_method['angular_speed']
+        self.scene.objects.append(obj)
+
+    def save_data(self):
+        return {'class': self.__class__.__name__, 'vector': list(self.position), 'brain': self.brain.__class__.__name__}

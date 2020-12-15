@@ -12,12 +12,12 @@ from settings import game_objects_configs_path
 class RectangularObject(PhysicalGameObject):
     configs = load_yaml('src/configs/game_objects/fridge.yaml')
 
-    def __init__(self, physical_space, x, y, angle=0, type_=Body.STATIC):
+    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC):
         sprite = None
         if self.configs['sprite'] is not None:
             sprite = pil_to_pygame(load_image(self.configs['sprite']))
 
-        super(RectangularObject, self).__init__(x, y, angle=angle, sprite=sprite, physical_space=physical_space,
+        super(RectangularObject, self).__init__(x, y, angle=angle, sprite=sprite, scene=scene,
                                                 type_=type_, **self.configs['init'])
 
     def save_data(self):
@@ -33,7 +33,7 @@ class RectangularObject(PhysicalGameObject):
 class CircularObject(PhysicalGameObject):
     configs = load_yaml('src/configs/game_objects/alarm_clock.yaml')
 
-    def __init__(self, physical_space, x, y, angle=0, type_=Body.STATIC):
+    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC):
 
         sprite = None
         if self.configs['sprite'] is not None:
@@ -50,7 +50,7 @@ class CircularObject(PhysicalGameObject):
         shape = pymunk.Circle(body, radius)
 
         super(CircularObject, self).__init__(x=x, y=y, width=radius, height=radius,
-                                             physical_space=physical_space, sprite=sprite,
+                                             scene=scene, sprite=sprite,
                                              body=body, shape=shape, angle=angle,
                                              mass=init_config['mass'], moment=init_config['moment'],
                                              elasticity=init_config['elasticity'],

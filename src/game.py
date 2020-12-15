@@ -12,8 +12,10 @@ from Engine.Scene.gamescene import Level
 from Engine.apps import MicroApp
 from Engine.gui.overlays import FPS, DevMode, HealthBar, PauseButton, SaveButton
 from settings import *
+from .persons import load_characters
 
 gameobjects.register()
+load_characters()
 
 
 def dev_message():

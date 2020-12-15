@@ -52,9 +52,14 @@ class ManualController(EntityController):
     """
 
     def step(self, dt):
+
         pressed_keys = pygame.key.get_pressed()
         new_state = self.entity.state
         velocity = list(self.entity.body.velocity)
+
+        # Бросок
+        if pressed_keys[pygame.K_q] and hasattr(self.entity, 'throw'):
+            self.entity.throw()
 
         # Если сущность имеет опору под ногами
         if self.entity.can_lean_on_feet():
