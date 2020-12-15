@@ -1,83 +1,26 @@
+borders:
+  x: -10
+  y: -5
+  width: 20
+  height: 10
+
+
+invisible_segments:
+- end: !!python/tuple
+  - 10
+  - 0
+  radius: 0
+  start: !!python/tuple
+  - -10
+  - 0
+
+
 MainCharacter:
   brain: ManualController
   class: MainCharacter
   vector:
   - 0
-  - 0.5
+  - 0.1
 entities: {}
-invisible_shit:
-  0:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -10.0
-    - 5.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 10.0
-    - 5.0
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
-  1:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 10.0
-    - -5.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -10.0
-    - -5.0
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
-  2:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 10.0
-    - 5.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 10.0
-    - -5.0
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
-  3:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -10.0
-    - -5.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -10.0
-    - 5.0
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
-  4:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -10.0
-    - 5.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 10.0
-    - 5.0
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
-
-  5:
-    a: !!python/object/apply:pymunk.vec2d.Vec2d
-    - -10.0
-    - 0.0
-    b: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 10.0
-    - 0 .0
-    position: !!python/object/apply:pymunk.vec2d.Vec2d
-    - 0.0
-    - 0.0
-    r: 0.0
-    type: Segment
 
 objects: {}
