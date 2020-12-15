@@ -18,7 +18,7 @@ bounce_correction_speed = 1
 DEVMODE = True
 
 # Путь до папки с конфигарациями персонажей
-person_configs_path = 'src\\configs\\persons'
+person_configs_path = 'src/configs/persons'
 
 # Путь до папки с конфигарациями статичных объектов
 game_objects_configs_path = 'src/configs/game_objects'
