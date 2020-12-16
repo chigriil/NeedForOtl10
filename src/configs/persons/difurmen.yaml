@@ -4,4 +4,4 @@ init:
   width: 0.96
   height: 1.8
   mass: 75
-  animations: 'Resources/Animations/DanyaPers.yaml'
+  animations: 'Resources/Animations/difurmen.yaml'
