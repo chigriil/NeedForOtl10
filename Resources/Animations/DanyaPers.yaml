@@ -1,81 +1,105 @@
 {
   'idle': {
     'type': 'periodic',
-    'period': 1,
-    'file': 'Resources/Animations/sprites.png',
+    'period': 2,
+    'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
-      [ 0, 0, 75, 140 ],
-      [ 75, 0, 150, 140 ]
+      [ 0, 0, 74, 139 ],
+      [ 75, 0, 148, 139 ]
     ],
     'direction': 'right'
   }
   ,
   'walking': {
     'type': 'periodic',
-    'period': 0.7,
-    'file': 'Resources/Animations/sprites.png',
+    'period': 0.5,
+    'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
-      [ 300, 0, 375, 140 ],
-      [ 375, 0, 450, 140 ],
-      [0, 0, 75, 140],
-      [ 375, 0, 450, 140 ],
-      [ 450, 0, 525, 140 ],
-      [ 525, 0, 600, 140 ]
+      [ 0, 0, 74, 139 ],
+      [ 301, 0, 374, 138 ],
+      [ 376, 0, 447, 139 ],
+      [ 75, 0, 148, 139 ],
+      [ 449, 0, 520, 138 ],
+      [ 523, 0, 598, 138 ]
     ],
     'direction': 'right'
   },
   'running': {
     'type': 'periodic',
     'period': 0.3,
-    'file': 'Resources/Animations/sprites.png',
+    'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
-      [ 900, 0, 975, 140 ],
-      [ 975, 0, 1050, 140 ],
-      [ 1050, 0, 1125, 140 ],
-      [ 1125, 0, 1200, 140 ],
-      [ 1200, 0, 1275, 140 ]
+      [ 900, 0, 973, 138 ],
+      [ 975, 0, 1050, 137 ],
+      [ 1051, 0, 1125, 137 ],
+      [ 1129, 0, 1197, 137 ],
+      [ 1203, 0, 1278, 136 ]
     ],
     'direction': 'right'
   },
   'sitting': {
     'type': 'periodic',
     'period': 1,
-    'file': 'Resources/Animations/sprites.png',
+    'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
-      [ 225, 140, 300, 280 ]
+      [ 228, 142, 298, 278 ]
     ],
     'direction': 'right'
   },
   'squatting': {
     'type': 'periodic',
     'period': 1,
-    'file': 'Resources/Animations/sprites.png',
+    'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
-      [ 1660, 0, 1725, 140 ],
-      [ 1725, 0, 1805, 140 ],
-      [ 1805, 0, 1875, 140 ]
+      [ 1662, 0, 1730, 137 ],
+      [ 1734, 0, 1806, 137 ],
+      [ 1808, 0, 1877, 135 ]
     ],
     'direction': 'right'
   },
   'lying': {
     'type': 'periodic',
     'period': 1,
-    'file': 'Resources/Animations/sprites.png',
+    'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
-      [ 150, 280, 370, 350 ]
+      [ 156, 281, 365, 352 ]
     ],
     'direction': 'right'
   },
   'jumping': {
     'type': 'non_periodic',
-    'time_length': 0.3,
-    'file': 'Resources/Animations/sprites.png',
+    'time_length': 0.1,
+    'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
-      [ 1730, 0, 1805, 140 ]
+      [ 1733, 0, 1805, 137 ]
     ],
-    'non_periodic_coords': [
-      [ 1660, 0, 1730, 140 ],
-      [ 1805, 0, 1880, 140 ] ],
-    'direction': "right"
+    'direction': 'right'
+  },
+  'flying_up': {
+    'type' : 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_danya.png',
+    'coords': [
+      [ 1733, 0, 1805, 135 ]
+    ],
+    'direction': 'right'
+  },
+  'flying_down': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_danya.png',
+    'coords': [
+      [ 1807, 0, 1879, 136 ]
+    ],
+    'direction': 'right'
+  },
+  'landing': {
+    'type': 'non_periodic',
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_danya.png',
+    'coords': [
+      [ 1882, 0, 1957, 135 ]
+    ],
+    'direction': 'right'
   }
 }
