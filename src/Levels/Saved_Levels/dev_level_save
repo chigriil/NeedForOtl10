@@ -2,7 +2,7 @@ borders:
   x: -10
   y: -5
   width: 20
-  height: 10
+  height: 20
 
 
 invisible_segments:

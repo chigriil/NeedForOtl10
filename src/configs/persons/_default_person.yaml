@@ -28,7 +28,7 @@ hits:
   throwing:
     throw_1:
       damage: 20
-      reload_time: 2
+      reload_time: 0.4
       item: 'TennisBall'
 
       position:
@@ -40,3 +40,6 @@ hits:
 
       start_angle: 0
       angular_speed: 10
+
+      animation: 'throw_1'
+      animation_hatting_phase: 0.5

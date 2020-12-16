@@ -2,23 +2,20 @@
 Модуль реализующий классы живых сущностей
 Например игрока и врагов
 """
-from math import degrees
-from math import sin, cos
+from math import degrees, sin, cos, atan, sqrt
 from os import PathLike
 from random import choice
-from typing import Union
+from typing import SupportsFloat, Union
 
 import pygame
 import pymunk
-from pymunk import Vec2d, Body
+from pymunk import Vec2d
 
-from Engine.EntityControllers import ManualController
-from Engine.Scene.game_objects import ObjectRegistry
+from Engine.EntityControllers import ManualController, Idle
+from Engine.Scene.animations import EntityAnimations, State
+from Engine.Scene.game_objects import ObjectRegistry, PhysicalGameObject
 from Engine.utils.physical_primitives import PhysicalRect
-from settings import critical_speed, critical_ground_collision, bounce_correction_speed
-from .animations import EntityAnimations, State
-from .game_objects import PhysicalGameObject
-from ..EntityControllers import Idle
+from settings import critical_speed, critical_ground_collision, bounce_correction_speed, critical_reloading, g
 from ..utils.utils import load_yaml
 
 # Реестр всех персонажей
@@ -416,25 +413,94 @@ class BaseCharacter(Entity):
         """
         pass
 
-    def throw(self):
+    def _throw(self, throw_method: dict, position: Vec2d, velocity: Vec2d, angle: SupportsFloat):
+        """
+        Бросание объекта
+        :param throw_method: способ броска
+        :param position: позиция броска, т. е. в которой спаниться объект
+        :param velocity: скорость броска
+        :param angle: угол броска
+        :return: None
+        """
+        # Класс объекта, который кадаёт персонаж
+        class_ = ObjectRegistry[throw_method['item']]
+        # Создаём объект, который кинул персонаж
+        obj = class_(
+            self.scene,
+            *position,
+            angle,
+        )
+        # Устанавливает скорость
+        obj.body.velocity = velocity
+        # Устанавливаем угловую скорость
+        obj.body.angular_velocity = throw_method['angular_speed']
+        # Добавляем объект на сцену
+        self.scene.objects.append(obj)
+        # Устанавливаем время новое перезараядки
+        self.throwing_reload = throw_method['reload_time']
+
+    def _throw_aiming_at_target(self, target: Vec2d, position: Vec2d, throw_method: dict) -> float:
+        """
+        Возращает угол, под которым надо просить тело, чтобы попасть в цель
+        TODO: пофиксить это, т. к. наводка не верна. Скорее всего беды с формулами
+        :param target: цель
+        :param position: позиция, из которой происходит бросок
+        :param throw_method: способ бросания
+        :return: угол, по которым нужно бросать
+        """
+        dx, dy = target - position
+        # Если направление взгляда совпадает с целью
+        # TODO: может быть лучше менять взгляд во время кидания, а не кидать в никуда?
+        if dx > 0 and self.horizontal_view_direction == 'right' or \
+                dx < 0 and self.horizontal_view_direction == 'left':
+            # Нужно, чтобы angle ∈ [-pi/2, pi/2]
+            dx = abs(dx)
+            # Скорость броска
+            v = throw_method['throw_speed']
+            # Физика 9 класса
+            # Считаем тангенс угла
+            # Для этого дискрименант делёный на dx^2
+            d = 1 - 2 * g * dy / v / v - g * g * dx * dx * dx * dx / v / v / v / v
+
+            # Кидаем на максимально возможную дистанцию
+            tga = v * v / g / dx
+
+            # print(d)
+
+            # При положительном дискрименанте можно папасть, поэтому считаем угол
+            if d >= 0:
+                tga *= 1 - sqrt(d)
+
+            return atan(tga)
+
+        return throw_method['throw_angle']
+
+    def throw(self, target=Vec2d(2, 2)):
         """
         Кидание
-        TODO: добавить время перезарядки
-        :return:
+        TODO: заменить Vec2d(2, 2) на None. Это было для теста
+        :param target: цель,
+        Если None, то угол броска берётся из конфига
+        Если число, то угол броска = target
+        Если вектор, то угол считается, так чтобы попасть в цель с координатами target по минимальной троектории или
+        если не дотягивается, то кидаёт максимально близко к цели
+        :return: None
         """
+        # Если не перезарядилась перезарядка, то не кидаем новый
+        if self.throwing_reload > critical_reloading:
+            return
+
+        # Выбираем способ броска
         throw_method = self.throwing[choice(self.throwing_types)]
-        class_ = ObjectRegistry[throw_method['item']]
 
-        velocity = Vec2d(
-            throw_method['throw_speed'] * cos(throw_method['throw_angle']),
-            throw_method['throw_speed'] * sin(throw_method['throw_angle'])
-        )
+        angle = throw_method['throw_angle']
 
+        # Пересчитываем координаты с учётом направления взгляда
         if self.horizontal_view_direction == 'right':
             position = self.position + throw_method['position']
             velocity = self.body.velocity + Vec2d(
-                throw_method['throw_speed'] * cos(throw_method['throw_angle']),
-                throw_method['throw_speed'] * sin(throw_method['throw_angle'])
+                throw_method['throw_speed'] * cos(angle),
+                throw_method['throw_speed'] * sin(angle)
             )
         else:
             position = self.position + Vec2d(
@@ -442,18 +508,30 @@ class BaseCharacter(Entity):
                 throw_method['position'][1]
             )
             velocity = self.body.velocity + Vec2d(
-                -throw_method['throw_speed'] * cos(throw_method['throw_angle']),
-                throw_method['throw_speed'] * sin(throw_method['throw_angle'])
+                -throw_method['throw_speed'] * cos(angle),
+                throw_method['throw_speed'] * sin(angle)
             )
 
-        obj = class_(
-            self.scene,
-            *position,
-            throw_method['start_angle'],
-        )
-        obj.body.velocity = velocity
-        obj.body.angular_velocity = throw_method['angular_speed']
-        self.scene.objects.append(obj)
+        if target is not None:
+            if isinstance(target, SupportsFloat):
+                angle = target
+            elif isinstance(target, Vec2d):
+                angle = self._throw_aiming_at_target(target, position, throw_method)
+
+        # Пересчитываем скорость с учётом направления взгляда
+        if self.horizontal_view_direction == 'right':
+            velocity = self.body.velocity + Vec2d(
+                throw_method['throw_speed'] * cos(angle),
+                throw_method['throw_speed'] * sin(angle)
+            )
+        else:
+            velocity = self.body.velocity + Vec2d(
+                -throw_method['throw_speed'] * cos(angle),
+                throw_method['throw_speed'] * sin(angle)
+            )
+
+        # Кидание
+        self._throw(throw_method, position, velocity, angle)
 
     def save_data(self):
         return {'class': self.__class__.__name__, 'vector': list(self.position), 'brain': self.brain.__class__.__name__}

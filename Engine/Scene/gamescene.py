@@ -11,10 +11,11 @@ from pygame.draw import rect, circle
 
 from Engine.Scene.game_objects import *
 from Engine.utils.physical_primitives import PhysicalRect
+from settings import g
 from .entities import PersonRegistry
 from ..EntityControllers import ControllerRegistry
 
-GRAVITY = Vec2d(0, -9.81)
+GRAVITY = Vec2d(0, -g)
 
 
 class Background:
