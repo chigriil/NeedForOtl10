@@ -111,5 +111,79 @@
       [ 1881, 1, 1961, 139 ]
     ],
     'direction': 'right'
-  }
+  },
+  'throw_1': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 375, 149, 450, 280 ]
+    ],
+    'direction': 'right'
+  },
+  'udar_1': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 600, 292, 671, 422 ]
+    ],
+    'direction': 'right'
+  },
+  'udar_2': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 748, 286, 818, 418 ]
+    ],
+    'direction': 'right'
+  },
+  'udar_3': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 903, 292, 972, 422 ]
+    ],
+    'direction': 'right'
+  },
+  'win': {
+    'type': 'periodic',
+    'locking': true,
+    'period': 1,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 977, 144, 1045, 278 ]
+    ],
+    'direction': 'right'
+  },
+  'dying': {
+    'type': 'semi_periodic',
+    'locking': false,
+    'non_periodic_time': 0.4,
+    'period': 1,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'non_periodic_coords': [
+      [ 1238, 149, 1348, 273 ]
+    ],
+    'coords': [
+      [ 1352, 149, 1577, 213 ]
+    ],
+    'direction': 'right'
+  },
+  'low_health': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 688, 156, 814, 277 ]
+    ],
+    'direction': 'right'
+  },
 }

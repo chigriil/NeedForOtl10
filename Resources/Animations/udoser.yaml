@@ -111,5 +111,79 @@
       [ 1882, 0, 1956, 136 ]
     ],
     'direction': 'right'
-  }
+  },
+  'throw_1': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 374, 141, 448, 277 ]
+    ],
+    'direction': 'right'
+  },
+  'udar_1': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 600, 285, 671, 417 ]
+    ],
+    'direction': 'right'
+  },
+  'udar_2': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 748, 281, 817, 415 ]
+    ],
+    'direction': 'right'
+  },
+  'udar_3': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 903, 282, 974, 417 ]
+    ],
+    'direction': 'right'
+  },
+  'win': {
+    'type': 'periodic',
+    'locking': true,
+    'period': 1,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 976, 147, 1044, 277 ]
+    ],
+    'direction': 'right'
+  },
+  'dying': {
+    'type': 'semi_periodic',
+    'locking': false,
+    'non_periodic_time': 0.4,
+    'period': 1,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'non_periodic_coords': [
+      [ 1210, 153, 1351, 270 ]
+    ],
+    'coords': [
+      [ 1368, 144, 1577, 212 ]
+    ],
+    'direction': 'right'
+  },
+  'low_health': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 688, 140, 806, 273 ]
+    ],
+    'direction': 'right'
+  },
 }

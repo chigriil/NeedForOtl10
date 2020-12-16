@@ -460,11 +460,11 @@ class BaseCharacter(Entity):
             v = throw_method['throw_speed']
             # Физика 9 класса
             # Считаем тангенс угла
-            # Для этого дискрименант делёный на dx^2
+            # Для этого дискрименант делёный на V^4*dx^2
             d = 1 - 2 * g * dy / v / v - g * g * dx * dx * dx * dx / v / v / v / v
 
             # Кидаем на максимально возможную дистанцию
-            tga = v * v / g / dx
+            tga = v * v / g / dx 
 
             # print(d)
 

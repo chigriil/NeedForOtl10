@@ -116,9 +116,73 @@
     'type': 'non_periodic',
     'locking': true,
     'time_length': 0.3,
-    'file': 'Resources/Animations/sprites_danya.png',
+    'file': 'Resources/Animations/sprites_maincharacter.png',
     'coords': [
-      [ 1882, 0, 1957, 135 ]
+      [ 373, 145, 449, 279 ]
+    ],
+    'direction': 'right'
+  },
+  'udar_1': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+    [ 600, 295, 671, 420 ]
+    ],
+    'direction': 'right'
+  },
+  'udar_2': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 748, 290, 818, 419 ]
+    ],
+    'direction': 'right'
+  },
+  'udar_3': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 978, 289, 1049, 418 ]
+    ],
+    'direction': 'left'
+  },
+  'win': {
+    'type': 'periodic',
+    'locking': true,
+    'period': 1,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 976, 147, 1044, 277 ]
+    ],
+    'direction': 'right'
+  },
+  'dying': {
+    'type': 'semi_periodic',
+    'locking': false,
+    'non_periodic_time': 0.4,
+    'period': 1,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'non_periodic_coords': [
+    [ 1215, 156, 1351, 272 ]
+    ],
+    'coords': [
+    [ 1356, 142, 1576, 216 ]
+    ],
+    'direction': 'right'
+  },
+  'low_health': {
+    'type': 'non_periodic',
+    'locking': true,
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 688, 143, 803, 276 ]
     ],
     'direction': 'right'
   },
