@@ -1,0 +1,105 @@
+{
+  'idle': {
+    'type': 'periodic',
+    'period': 2,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 0, 7, 70, 140 ],
+      [ 72, 7, 140, 139 ]
+    ],
+    'direction': 'right'
+  }
+  ,
+  'walking': {
+    'type': 'periodic',
+    'period': 0.5,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 0, 7, 70, 140 ],
+      [ 301, 8, 375, 140 ],
+      [ 378, 0, 447, 139 ],
+      [ 72, 7, 140, 139 ],
+      [ 449, 9, 522, 139 ],
+      [ 525, 9, 598, 138 ]
+    ],
+    'direction': 'right'
+  },
+  'running': {
+    'type': 'periodic',
+    'period': 0.3,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 900, 6, 973, 137 ],
+      [ 975, 10, 1048, 139 ],
+      [ 1050, 6, 1120, 138 ],
+      [ 1123, 7, 1192, 141 ],
+      [ 1197, 15, 1273, 140 ]
+    ],
+    'direction': 'right'
+  },
+  'sitting': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 228, 150, 297, 283 ]
+    ],
+    'direction': 'right'
+  },
+  'squatting': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 1662, 0, 1733, 140 ],
+      [ 1734, 0, 1807, 137 ],
+      [ 1809, 0, 1881, 137 ]
+    ],
+    'direction': 'right'
+  },
+  'lying': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 155, 282, 359, 354 ]
+    ],
+    'direction': 'right'
+  },
+  'jumping': {
+    'type': 'non_periodic',
+    'time_length': 0.1,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 1663, 0, 1733, 139 ]
+    ],
+    'direction': 'right'
+  },
+  'flying_up': {
+    'type' : 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 1735, 0, 1807, 138 ]
+    ],
+    'direction': 'right'
+  },
+  'flying_down': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 1809, 0, 1881, 139 ]
+    ],
+    'direction': 'right'
+  },
+  'landing': {
+    'type': 'non_periodic',
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_maincharacter.png',
+    'coords': [
+      [ 1883, 0, 1961, 137 ]
+    ],
+    'direction': 'right'
+  }
+}

@@ -1,0 +1,105 @@
+{
+  'idle': {
+    'type': 'periodic',
+    'period': 2,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 0, 0, 68, 143 ],
+      [ 74, 0, 140, 140 ]
+    ],
+    'direction': 'right'
+  }
+  ,
+  'walking': {
+    'type': 'periodic',
+    'period': 0.5,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 0, 0, 68, 143 ],
+      [ 300, 0, 376, 141 ],
+      [ 378, 0, 447, 141 ],
+      [ 74, 0, 140, 140 ],
+      [ 448, 0, 521, 141 ],
+      [ 523, 0, 597, 141 ]
+    ],
+    'direction': 'right'
+  },
+  'running': {
+    'type': 'periodic',
+    'period': 0.3,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 901, 6, 965, 139 ],
+      [ 974, 5, 1049, 141 ],
+      [ 1050, 7, 1124, 140 ],
+      [ 1133, 8, 1195, 143 ],
+      [ 1202, 5, 1274, 141 ]
+    ],
+    'direction': 'right'
+  },
+  'sitting': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 227, 146, 302, 284 ]
+    ],
+    'direction': 'right'
+  },
+  'squatting': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 1661, 2, 1726, 140 ],
+      [ 1733, 1, 1806, 139 ],
+      [ 1808, 1, 1878, 140 ]
+    ],
+    'direction': 'right'
+  },
+  'lying': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 155, 288, 358, 351 ]
+    ],
+    'direction': 'right'
+  },
+  'jumping': {
+    'type': 'non_periodic',
+    'time_length': 0.1,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 1661, 1, 1726, 140 ]
+    ],
+    'direction': 'right'
+  },
+  'flying_up': {
+    'type' : 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 1733, 1, 1806, 139 ]
+    ],
+    'direction': 'right'
+  },
+  'flying_down': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 1808, 1, 1878, 140 ]
+    ],
+    'direction': 'right'
+  },
+  'landing': {
+    'type': 'non_periodic',
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_difurmen.png',
+    'coords': [
+      [ 1881, 1, 1961, 139 ]
+    ],
+    'direction': 'right'
+  }
+}
