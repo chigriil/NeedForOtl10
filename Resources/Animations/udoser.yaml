@@ -1,0 +1,105 @@
+{
+  'idle': {
+    'type': 'periodic',
+    'period': 2,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 0, 0, 67, 138 ],
+      [ 72, 0, 137, 136 ]
+    ],
+    'direction': 'right'
+  }
+  ,
+  'walking': {
+    'type': 'periodic',
+    'period': 0.5,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 0, 0, 67, 138 ],
+      [ 300, 0, 369, 137 ],
+      [ 374, 0, 438, 137 ],
+      [ 72, 0, 137, 136 ],
+      [ 448, 0, 516, 137 ],
+      [ 522, 0, 586, 137 ]
+    ],
+    'direction': 'right'
+  },
+  'running': {
+    'type': 'periodic',
+    'period': 0.3,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 900, 0, 961, 135 ],
+      [ 973, 0, 1049, 135 ],
+      [ 1051, 0, 1118, 135 ],
+      [ 1126, 0, 1186, 137 ],
+      [ 1202, 0, 1274, 137 ]
+    ],
+    'direction': 'right'
+  },
+  'sitting': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 228, 146, 298, 278 ]
+    ],
+    'direction': 'right'
+  },
+  'squatting': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 1661, 0, 1725, 137 ],
+      [ 1733, 0, 1803, 134 ],
+      [ 1807, 0, 1877, 135 ]
+    ],
+    'direction': 'right'
+  },
+  'lying': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 156, 282, 364, 351 ]
+    ],
+    'direction': 'right'
+  },
+  'jumping': {
+    'type': 'non_periodic',
+    'time_length': 0.1,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 1732, 0, 1803, 134 ]
+    ],
+    'direction': 'right'
+  },
+  'flying_up': {
+    'type' : 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 1661, 0, 1725, 137 ]
+    ],
+    'direction': 'right'
+  },
+  'flying_down': {
+    'type': 'periodic',
+    'period': 1,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 1807, 0, 1876, 135 ]
+    ],
+    'direction': 'right'
+  },
+  'landing': {
+    'type': 'non_periodic',
+    'time_length': 0.3,
+    'file': 'Resources/Animations/sprites_udoser.png',
+    'coords': [
+      [ 1882, 0, 1956, 136 ]
+    ],
+    'direction': 'right'
+  }
+}
