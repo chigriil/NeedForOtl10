@@ -1,6 +1,7 @@
 {
   'idle': {
     'type': 'periodic',
+    'locking': false,
     'period': 2,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
@@ -12,6 +13,7 @@
   ,
   'walking': {
     'type': 'periodic',
+    'locking': false,
     'period': 0.5,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
@@ -26,6 +28,7 @@
   },
   'running': {
     'type': 'periodic',
+    'locking': false,
     'period': 0.3,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
@@ -39,6 +42,7 @@
   },
   'sitting': {
     'type': 'periodic',
+    'locking': false,
     'period': 1,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
@@ -48,6 +52,7 @@
   },
   'squatting': {
     'type': 'periodic',
+    'locking': false,
     'period': 1,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
@@ -59,6 +64,7 @@
   },
   'lying': {
     'type': 'periodic',
+    'locking': false,
     'period': 1,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
@@ -68,6 +74,7 @@
   },
   'jumping': {
     'type': 'non_periodic',
+    'locking': false,
     'time_length': 0.1,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
@@ -76,7 +83,8 @@
     'direction': 'right'
   },
   'flying_up': {
-    'type' : 'periodic',
+    'type': 'periodic',
+    'locking': false,
     'period': 1,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
@@ -86,6 +94,7 @@
   },
   'flying_down': {
     'type': 'periodic',
+    'locking': false,
     'period': 1,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [
@@ -95,6 +104,7 @@
   },
   'landing': {
     'type': 'non_periodic',
+    'locking': false,
     'time_length': 0.3,
     'file': 'Resources/Animations/sprites_danya.png',
     'coords': [

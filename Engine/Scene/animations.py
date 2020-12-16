@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from enum import Enum
 from os import PathLike
 from typing import Union
+from warnings import warn
 
 import pygame
 
@@ -90,15 +91,18 @@ class AnimationLoader:
     """
 
     @staticmethod
-    def load_periodic_animation(config, flip_x=False, flip_y=True, adaptive_width=True, adaptive_height=False):
+    def load_periodic_animation(config, flip_x=False, flip_y=True,
+                                adaptive_width=True, adaptive_height=False, name=''):
         """
         Конфигурация должна быть словарём со следущими ключами:
 
         'type': 'periodic' # вот тут строго
+        'locking': true/false # определяет, является ли анимация блокирующей
         'file': путь до файла со спрайтами
         'period': период анимации
         'coords': список кропов картинки
 
+        :param name: Название анимации
         :param config: файл с конфигом анимации
         :param flip_x: нужно ли отразить по оси x
         :param flip_y: нужно ли отразить по оси y
@@ -117,22 +121,26 @@ class AnimationLoader:
             return PeriodicAnimation(
                 crop_image(source, config['coords'], flip_x, flip_y),
                 config['period'],
-                adaptive_width=adaptive_width, adaptive_height=adaptive_height
+                adaptive_width=adaptive_width, adaptive_height=adaptive_height,
+                locking=config['locking']
             )
         except KeyError as e:
-            raise IncorrectConfig(f'Нет нужного параметра для загрузки анимации: {e}')
+            raise IncorrectConfig(f'Нет нужного параметра для загрузки анимации {name}: {e}')
 
     @staticmethod
-    def load_semi_periodic_animation(config, flip_x=False, flip_y=True, adaptive_width=True, adaptive_height=False):
+    def load_semi_periodic_animation(config, flip_x=False, flip_y=True,
+                                     adaptive_width=True, adaptive_height=False, name=''):
         """
         Конфигурация должна быть словарём со следущими ключами:
 
         'type': 'semi_periodic' # вот тут строго
+        'locking': true/false # определяет, является ли анимация блокирующей
         'file': путь до файла со спрайтами
         'non_periodic_time': время непериодической части анимации
         'period': период периодической части анимации
         'non_periodic_coords': список кропов картинки для непериодической части
 
+        :param name: Название анимации
         :param config: файл с конфигом анимации
         :param flip_x: нужно ли отразить по оси x
         :param flip_y: нужно ли отразить по оси y
@@ -155,21 +163,25 @@ class AnimationLoader:
                 config['non_periodic_time'],
                 config['period'],
                 adaptive_width=adaptive_width,
-                adaptive_height=adaptive_height
+                adaptive_height=adaptive_height,
+                locking=config['locking']
             )
         except KeyError as e:
-            raise IncorrectConfig(f'Нет нужного параметра для загрузки анимации: {e}')
+            raise IncorrectConfig(f'Нет нужного параметра для загрузки анимации {name}: {e}')
 
     @staticmethod
-    def load_non_periodic_animation(config, flip_x=False, flip_y=True, adaptive_width=True, adaptive_height=False):
+    def load_non_periodic_animation(config, flip_x=False, flip_y=True,
+                                    adaptive_width=True, adaptive_height=False, name=''):
         """
         Конфигурация должна быть словарём со следущими ключами:
 
         'type': 'periodic' # вот тут строго
+        'locking': true/false # определяет, является ли анимация блокирующей
         'file': путь до файла со спрайтами
         'time_length': время анимации
         'coords': список кропов картинки
 
+        :param name: Название анимации
         :param config: файл с конфигом анимации
         :param flip_x: нужно ли отразить по оси x
         :param flip_y: нужно ли отразить по оси y
@@ -190,10 +202,11 @@ class AnimationLoader:
                 crop_image(source, config['coords'], flip_x, flip_y),
                 config['time_length'],
                 adaptive_width=adaptive_width,
-                adaptive_height=adaptive_height
+                adaptive_height=adaptive_height,
+                locking=config['locking']
             )
         except KeyError as e:
-            raise IncorrectConfig(f'Нет нужного параметра для загрузки анимации: {e}')
+            raise IncorrectConfig(f'Нет нужного параметра для загрузки анимации {name}: {e}')
 
 
 @dataclass
@@ -204,7 +217,8 @@ class PeriodicAnimation:
     интервал времени между картинками одинаковый
     """
 
-    def __init__(self, frames: list[pygame.Surface] = None, period=1., adaptive_width=True, adaptive_height=False):
+    def __init__(self, frames: list[pygame.Surface] = None, period=1.,
+                 adaptive_width=True, adaptive_height=False, locking=False):
         """
         Конструктор без параметров создаеёт пустой класс,
         который выдаёт зелёный прямоугольник при запросе картинки
@@ -216,7 +230,15 @@ class PeriodicAnimation:
         :param adaptive_height: Пропорциональное изменение высоты картинки
         :param frames: картинки анимации (экземпляры pygame.Surface)
         :param period: период анимации
+        :param locking: блокирует ли эта анимация выполнение других,
+         у переодической анимации это очень не желательно выставлять в True
         """
+
+        # Может ли блокировать
+        self.locking = locking
+
+        if type(self) == PeriodicAnimation and self.locking:
+            warn('Не стоит делать периодическую анимацию блокирующей')
 
         # Флаги, отвечающие за адаптивную подстройку ширины и высоты картинок
         # Если оба отключены, то в методе check_camera_distance картинки будут подстраивать под размер size
@@ -316,9 +338,9 @@ class SemiPeriodicAnimation(PeriodicAnimation):
     TODO: Дописать класс в случае необходимости
     """
 
-    def __init__(self, non_frames_periodic=None, frames=None, non_periodic_time=1, period=1, adaptive_width=True,
-                 adaptive_height=False):
-        super(SemiPeriodicAnimation, self).__init__(frames, period, adaptive_width, adaptive_height)
+    def __init__(self, non_frames_periodic=None, frames=None, non_periodic_time=1, period=1,
+                 adaptive_width=True, adaptive_height=False, locking=False):
+        super(SemiPeriodicAnimation, self).__init__(frames, period, adaptive_width, adaptive_height, locking)
         self.non_periodic_frames = non_frames_periodic
         self.non_periodic_time = non_periodic_time
 
@@ -341,11 +363,12 @@ class NonPeriodicAnimation(PeriodicAnimation):
     """
 
     def __init__(self, frames: list[pygame.Surface] = None, time_length=0.5, adaptive_width=True,
-                 adaptive_height=False):
+                 adaptive_height=False, locking=False):
         super(NonPeriodicAnimation, self).__init__(frames=frames,
                                                    period=time_length,
                                                    adaptive_width=adaptive_width,
-                                                   adaptive_height=adaptive_height)
+                                                   adaptive_height=adaptive_height,
+                                                   locking=locking)
 
         self.time_length = time_length
         self.finished = False
@@ -457,6 +480,14 @@ class EntityAnimations:
         self.landing_left = NonPeriodicAnimation()  # приземление влево
         self.landing_right = NonPeriodicAnimation()  # приземлениеф вправо
 
+    def __contains__(self, animation):
+        """
+        Проверяет, прописана ли анимация animation для персонажа
+        :param animation: анимация
+        :return:
+        """
+        return animation in self.__dict__
+
     @property
     def current_animation(self) -> str:
         """
@@ -476,11 +507,37 @@ class EntityAnimations:
         if newvalue == self.__current_animation:
             return
 
-        # обновляем внутреннюю переменную состояния
-        self.__current_animation = newvalue
+        # Старая анимация
+        old_animation = self.__dict__[self.__current_animation]
 
-        # перезапускаем проигрываемую сечас анимацию
-        self.__dict__[self.__current_animation].reset()
+        # Если анимация блокирующая
+        if old_animation.locking:
+            # print('locking')
+            # Если есть артибут finished
+            if hasattr(old_animation, 'finished'):
+                # Если завершена
+                # print('finishable')
+                if not old_animation.finished:
+                    return
+                # print('not finished')
+            else:
+                return
+
+        try:
+            # обновляем внутреннюю переменную состояния
+            self.__current_animation = newvalue
+
+            # перезапускаем проигрываемую сечас анимацию
+            self.__dict__[self.__current_animation].reset()
+
+            # # Для дебага, не стоит удалять
+            # print(f'Changed animation state {self.__current_animation} -> {newvalue}')
+
+        except KeyError as e:
+            msg = f'Не верная конфигурация. У {self.player.__class__.__name__}' \
+                  f' нет анимации {"_".join(newvalue.split("_")[:-1])}.' \
+                  f' Проверьте конфигурации персонажа'
+            raise IncorrectConfig(msg) from e
 
     def step(self, dt):
         """
@@ -623,13 +680,18 @@ class EntityAnimations:
                 else:
                     directions = ('left', 'right')
 
-                # Анимация в прямом направлении
-                self.__dict__[f'{animation_name}_{directions[0]}'] = loader[animation['type']](
-                    animation,
-                    flip_x=True
-                )
-                # Анимация в зеркальном направлении
-                self.__dict__[f'{animation_name}_{directions[1]}'] = loader[animation['type']](
-                    animation,
-                    flip_x=False
-                )
+                try:
+                    # Анимация в прямом направлении
+                    self.__dict__[f'{animation_name}_{directions[0]}'] = loader[animation['type']](
+                        animation,
+                        flip_x=True,
+                        name=animation_name
+                    )
+                    # Анимация в зеркальном направлении
+                    self.__dict__[f'{animation_name}_{directions[1]}'] = loader[animation['type']](
+                        animation,
+                        flip_x=False,
+                        name=animation_name
+                    )
+                except IncorrectConfig as e:
+                    raise IncorrectConfig(f'Неправильный конфиг для {self.player.__class__.__name__}') from e

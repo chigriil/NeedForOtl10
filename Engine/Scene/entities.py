@@ -6,6 +6,7 @@ from math import degrees, sin, cos, atan, sqrt
 from os import PathLike
 from random import choice
 from typing import SupportsFloat, Union
+from warnings import warn
 
 import pygame
 import pymunk
@@ -493,23 +494,25 @@ class BaseCharacter(Entity):
         # Выбираем способ броска
         throw_method = self.throwing[choice(self.throwing_types)]
 
+        # Устанавливаем анимацию кадания, проверяю прописана ли она в конфиге
+        new_animation_name = f'{throw_method["animation"]}_{self.horizontal_view_direction}'
+        if new_animation_name in self.animations:
+            self.animations.current_animation = new_animation_name
+        else:
+            msg = f'У персонажа {self.__class__.__name__}' \
+                  f' нет анимации броска {"_".join(new_animation_name.split("_")[:-1])}.' \
+                  f' Проверьте конфигурации персонажа'
+            warn(msg)
+
         angle = throw_method['throw_angle']
 
         # Пересчитываем координаты с учётом направления взгляда
         if self.horizontal_view_direction == 'right':
             position = self.position + throw_method['position']
-            velocity = self.body.velocity + Vec2d(
-                throw_method['throw_speed'] * cos(angle),
-                throw_method['throw_speed'] * sin(angle)
-            )
         else:
             position = self.position + Vec2d(
                 self.width - throw_method['position'][0],
                 throw_method['position'][1]
-            )
-            velocity = self.body.velocity + Vec2d(
-                -throw_method['throw_speed'] * cos(angle),
-                throw_method['throw_speed'] * sin(angle)
             )
 
         if target is not None:
