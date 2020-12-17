@@ -14,7 +14,7 @@ class GameObject:
     Базовый класс игровго объекта
     """
 
-    def __init__(self, x, y, width=0.3, height=0.3, sprite_adress=None, sprite=None):
+    def __init__(self, x, y, width=0.3, height=0.3, sprite=None):
         """
 
         :param x: x координата левого нижнего угла объекта
@@ -29,7 +29,7 @@ class GameObject:
         self.sprite = sprite
         if self.sprite is not None:
             # Переворачиваем спрайт
-            self.sprite = pygame.transform.flip(self.sprite, False, True)
+            self.sprite = pygame.transform.flip(self.sprite, False, True).convert_alpha()
 
         self.body_rect = PhysicalRect(x, y, width, height)
 

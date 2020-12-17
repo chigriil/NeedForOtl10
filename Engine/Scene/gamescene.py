@@ -100,18 +100,18 @@ class PictureBackground(Background):
     def __init__(self, scene=None):
         super(PictureBackground, self).__init__(scene=scene)
         self.image = pygame.image.load(self.image_path).convert_alpha()
-        self.image = pygame.transform.flip(self.image, True, True)
+        self.image = pygame.transform.flip(self.image, True, True).convert_alpha()
 
         self.scaled_image = self.image
         self.last_camera_distance = -1
 
     def __view__(self, camera):
-
         borders = self.scene.borders
         screen_rect = camera.projection_of_rect(borders)
 
         if camera.distance != self.last_camera_distance:
             self.scaled_image = pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3]))
+            self.last_camera_distance = camera.distance
 
         camera.temp_surface.blit(self.scaled_image, screen_rect)
 
@@ -533,12 +533,12 @@ class Level(Scene):
         self.borders = PhysicalRect(**data['borders']) if data['borders'] is not None else PhysicalRect(-10, -5, 20, 10)
         self.invisible_segments = data['invisible_segments']
         self.add_borders()
-        self.background = data['background']
-        if self.background == 'dorm':
+        background = data['background']
+        if background == 'dorm':
             self.bg = Dorm(self)
-        if self.background == 'corr':
+        if background == 'corr':
             self.bg = Corridor(self)
-        if self.background == 'base':
+        if background == 'base':
             self.bg = Basment(self)
         # Загрузка объектов
         for object_ in data['objects'].values():

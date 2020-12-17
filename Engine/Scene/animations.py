@@ -78,7 +78,7 @@ def crop_image(picture, crops, flip_x, flip_y) -> list[pygame.Surface]:
     :param flip_y: нужно ли отразить по оси y
     :return: список pygame.Surface с кропами изображения
     """
-    return [pygame.transform.flip(pil_to_pygame(picture.crop(coord)), flip_x, flip_y) for coord in crops]
+    return [pygame.transform.flip(pil_to_pygame(picture.crop(coord)), flip_x, flip_y).convert_alpha() for coord in crops]
 
 
 class AnimationLoader:
