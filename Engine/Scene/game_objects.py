@@ -5,6 +5,7 @@ import pymunk
 from pymunk import Vec2d, Space
 
 from Engine.utils.physical_primitives import PhysicalRect, BoundingBox
+from settings import no_rotate_delta
 
 ObjectRegistry = {}
 
@@ -194,6 +195,11 @@ class PhysicalGameObject(GameObject):
 
         self.physical_space.add(self.body, self.body_shape)
 
+        # Оптимизация связанная с вращение
+        # Если объект повернулся не сильно, то не будем его вращать его спрайт
+        self.rotated_sprite = self.sprite
+        self.last_angle = float('inf')
+
     def step(self, dt):
         # пересчитываем позицию описанного прямоугольника
         self.body_rect.centre = self.body.position
@@ -272,15 +278,27 @@ class PhysicalGameObject(GameObject):
 
         # Если преобразованный спрайт считался для другой дистанции от камеры до сцены
         # То пересчитываем его
-        if self.last_camera_distance != camera.distance:
+        # Рисуем спрайт игрока
+        # Поварачиваем
+        # Если прошлый спрайт повернулся не сильно, то не применяем трансформацию
+
+        # поменялось ли расстояние до камеры
+        changed_camera_distance = self.last_camera_distance != camera.distance
+        # повернулся ли объект достаточно, что пересчитать спрайт
+        rotated = abs(self.last_angle - self.body.angle) > no_rotate_delta
+        if changed_camera_distance:
             self.scaled_sprite = pygame.transform.scale(self.sprite, camera.projection_of_rect(self.body_rect).size)
             self.last_camera_distance = camera.distance
 
-        # Рисуем спрайт игрока
-        # Поварачиваем
-        prepared_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
+            self.rotated_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
+            self.last_angle = self.body.angle
+        elif rotated:
+            self.rotated_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
+            self.last_angle = self.body.angle
+
         # Рисуем
-        camera.temp_surface.blit(prepared_sprite, prepared_sprite.get_rect(center=rect_for_camera.center).topleft)
+        camera.temp_surface.blit(self.rotated_sprite,
+                                 self.rotated_sprite.get_rect(center=rect_for_camera.center).topleft)
 
     def __devview__(self, camera):
         """

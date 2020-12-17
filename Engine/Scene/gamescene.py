@@ -430,11 +430,11 @@ class Level(Scene):
         save_data_final['MainCharacter'] = self.player.save_data()
 
         # Сохраннение фона
-        if self.background.__class__.__name__ == Dorm:
+        if self.bg.__class__.__name__ == Dorm:
             save_data_final['background'] = 'dorm'
-        if self.background.__class__.__name__ == Basment:
+        if self.bg.__class__.__name__ == Basment:
             save_data_final['background'] = 'base'
-        if self.background.__class__.__name__ == Corridor:
+        if self.bg.__class__.__name__ == Corridor:
             save_data_final['background'] = 'corr'
 
         with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save'), 'w') as write_file:

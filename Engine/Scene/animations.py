@@ -78,7 +78,8 @@ def crop_image(picture, crops, flip_x, flip_y) -> list[pygame.Surface]:
     :param flip_y: нужно ли отразить по оси y
     :return: список pygame.Surface с кропами изображения
     """
-    return [pygame.transform.flip(pil_to_pygame(picture.crop(coord)), flip_x, flip_y).convert_alpha() for coord in crops]
+    return [pygame.transform.flip(pil_to_pygame(picture.crop(coord)), flip_x, flip_y).convert_alpha()
+            for coord in crops]
 
 
 class AnimationLoader:
@@ -278,6 +279,8 @@ class PeriodicAnimation:
     def check_camera_distance(self, distance, size):
         if self.last_camera_distance == distance:
             return
+
+        self.last_camera_distance = distance
 
         if self.adaptive_width:
             size = size[1] * self.frame_width // self.frame_height, size[1]
