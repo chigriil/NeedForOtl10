@@ -59,7 +59,18 @@ class ManualController(EntityController):
 
         # Бросок
         if pressed_keys[pygame.K_q] and hasattr(self.entity, 'throw'):
-            self.entity.throw()
+            target = None
+            distance = float('inf')
+            # наводка на ближайщую сущность
+            for entity in self.entity.scene.entities_and_player:
+                if entity == self.entity:
+                    continue
+
+                if (distance_ := (self.entity.body.position - entity.body.position).length) < distance:
+                    target = entity.body.position
+                    distance = distance_
+
+            self.entity.throw(target)
 
         if pressed_keys[pygame.K_v] and hasattr(self.entity, 'hand_hit'):
             self.entity.hand_hit()

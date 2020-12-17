@@ -519,7 +519,6 @@ class BaseCharacter(Entity):
     def _throw_aiming_at_target(self, target: Vec2d, position: Vec2d, throw_method: dict) -> float:
         """
         Возращает угол, под которым надо просить тело, чтобы попасть в цель
-        TODO: пофиксить это, т. к. наводка не верна. Скорее всего беды с формулами
         :param target: цель
         :param position: позиция, из которой происходит бросок
         :param throw_method: способ бросания
@@ -534,19 +533,22 @@ class BaseCharacter(Entity):
             dx = abs(dx)
             # Скорость броска
             v = throw_method['throw_speed']
+
             # Физика 9 класса
             # Считаем тангенс угла
-            # Для этого дискрименант делёный на V^4*dx^2
-            d = 1 - 2 * g * dy / v / v - g * g * dx * dx * dx * dx / v / v / v / v
+
+            k = 2 * v * v / g / dx
+
+            d = k * k - 4 * k * dy / dx - 4
 
             # Кидаем на максимально возможную дистанцию
-            tga = v * v / g / dx
+            tga = k / 2
 
             # print(d)
 
-            # При положительном дискрименанте можно папасть, поэтому считаем угол
+            # При положительном дискрименанте можно папасть, поэтому достчитываем угол
             if d >= 0:
-                tga *= 1 - sqrt(d)
+                tga -= sqrt(d) / 2
 
             return atan(tga)
 
@@ -591,12 +593,12 @@ class BaseCharacter(Entity):
 
         # Пересчитываем скорость с учётом направления взгляда
         if self.horizontal_view_direction == 'right':
-            velocity = self.body.velocity + Vec2d(
+            velocity = Vec2d(
                 throw_method['throw_speed'] * cos(angle),
                 throw_method['throw_speed'] * sin(angle)
             )
         else:
-            velocity = self.body.velocity + Vec2d(
+            velocity = Vec2d(
                 -throw_method['throw_speed'] * cos(angle),
                 throw_method['throw_speed'] * sin(angle)
             )

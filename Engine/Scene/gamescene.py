@@ -15,6 +15,7 @@ from pymunk import Vec2d
 from Engine.Scene.game_objects import PhysicalGameObject, ObjectRegistry
 from Engine.utils.physical_primitives import PhysicalRect
 from settings import g
+from .camera import Camera
 from .entities import PersonRegistry
 from ..EntityControllers import ControllerRegistry
 
@@ -198,7 +199,7 @@ class Scene:
             new_segment.friction = 1
             self.physical_space.add(new_segment)
 
-    def __view__(self, camera):
+    def __view__(self, camera: Camera):
         """
         Отрисовка
         :param camera: камера, на поверхности которой рисуем
@@ -210,7 +211,7 @@ class Scene:
         for ent in self.entities:
             camera.view(ent)
 
-    def __devview__(self, camera):
+    def __devview__(self, camera: Camera):
         """
         Отрисовка параметров для разработчиков
         :param camera: камера, на поверхности которой рисуем
@@ -254,6 +255,24 @@ class Scene:
             (139, 69, 19),
             3
         )
+
+        for x in range(int(self.borders.left), int(self.borders.right) + 1):
+            pygame.draw.line(
+                camera.temp_surface,
+                (0, 0, 0),
+                (camera.projection_of_point((x, 0)).x, 0),
+                (camera.projection_of_point((x, 0)).x, camera.temp_surface.get_height()),
+                2
+            )
+
+        for y in range(int(self.borders.bottom), int(self.borders.top) + 1):
+            pygame.draw.line(
+                camera.temp_surface,
+                (0, 0, 0),
+                (0, camera.projection_of_point((0, y)).y),
+                (camera.temp_surface.get_width(), camera.projection_of_point((0, y)).y),
+                2
+            )
 
     def step(self, dt):
         """
@@ -317,6 +336,10 @@ class Level(Scene):
         super(Level, self).__devview__(camera)
         camera.devview(self.player)
 
+    @property
+    def entities_and_player(self):
+        return self.entities + [self.player]
+
     def damage_in_area(self, area: PhysicalRect, damage, type_, impulse=None, skip=None, **kwargs):
         """
         Наносит урон всем сущностям в заданых границах
@@ -341,7 +364,7 @@ class Level(Scene):
                     object_.body.apply_impulse_at_local_point(impulse)
 
         # Наносим урон сущностям и игроку
-        for entity in self.entities + [self.player]:
+        for entity in self.entities_and_player:
 
             # Пропускаем нужных сущностей
             if id(entity) in skip:
