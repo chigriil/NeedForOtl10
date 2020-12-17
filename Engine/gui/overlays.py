@@ -243,6 +243,8 @@ class DevMode(Overlay):
             'Player vertical view direction': player.vertical_view_direction,
             'Player horizontal view direction': player.horizontal_view_direction,
             'Player can lean on feet': player.can_lean_on_feet(),
+            'Player health': player.health,
+            'Enemy health': self.data_source.scene.entities[0].health
         }
 
         data_right = {

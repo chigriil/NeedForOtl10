@@ -264,6 +264,16 @@ class Level(Scene):
         super(Level, self).__devview__(camera)
         camera.devview(self.player)
 
+    def damage_in_area(self, area: PhysicalRect, damage):
+        """
+        Наносит урон всем сущностям в заданых границах
+        :param area: границы
+        :return:
+        """
+        for entity in self.entities:
+            if area.check_intersection(entity.body_rect):
+                entity.damage(damage)
+
     # Методы, отвечающие за сохранение уровня в файла
 
     def save_level(self, username="defaultName"):

@@ -168,16 +168,18 @@ class PhysicalRect:
         :param rect: другой прямоугольник
         :return:
         """
-        # Поочерёдная проверка попадания вершины прямоугольника rect внуть self
-        return \
-            self.__x <= rect.__x <= self.__x + self.__width and \
-            self.__y <= rect.__y <= self.__y + self.__height or \
-            self.__x <= rect.__x <= self.__x + self.__width and \
-            self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
-            self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
-            self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
-            self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
-            self.__y <= rect.__y <= self.__y + self.__height
+        # Считаем описанный прямогольник для этих двух
+        # Левая граница
+        left = min(self.left, rect.left)
+        # Верхняя граница
+        top = max(self.top, rect.top)
+        # Правая граница
+        right = max(self.right, rect.right)
+        # Нижняя граница
+        bottom = min(self.bottom, rect.bottom)
+
+        # Если описанный прямогольник имеет достаточно малые размеры, то прямоугольники пересекаются
+        return self.__width + rect.__width > right - left and self.__height + rect.__height > top - bottom
 
     def check_overlap(self, rect: 'PhysicalRect'):
         """
@@ -245,6 +247,9 @@ class PhysicalRect:
             h *= other
 
         return PhysicalRect(self.__x, self.__y, w, h)
+
+    def __str__(self):
+        return f'PhysicalRect({self.__x}, {self.__y}, {self.__width}, {self.__height})'
 
 
 class BoundingBox(PhysicalRect):
