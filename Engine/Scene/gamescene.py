@@ -382,6 +382,14 @@ class Level(Scene):
         # Сохранение гг
         save_data_final['MainCharacter'] = self.player.save_data()
 
+        #Сохраннение фона
+        if self.background.__class__.__name__ == Dorm:
+            save_data_final['background'] = 'dorm'
+        if self.background.__class__.__name__ == Basment:
+            save_data_final['background'] = 'base'
+        if self.background.__class__.__name__ == Corridor:
+            save_data_final['background'] = 'corr'
+
         with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save'), 'w') as write_file:
             yaml.dump(save_data_final, write_file)
 
@@ -478,7 +486,13 @@ class Level(Scene):
         self.borders = PhysicalRect(**data['borders']) if data['borders'] is not None else PhysicalRect(-10, -5, 20, 10)
         self.invisible_segments = data['invisible_segments']
         self.add_borders()
-
+        self.background = data['background']
+        if self.background == 'dorm':
+            self.bg = Dorm(self)
+        if self.background == 'corr':
+            self.bg = Corridor(self)
+        if self.background == 'base':
+            self.bg = Basment(self)
         # Загрузка объектов
         for object_ in data['objects'].values():
             self.load_object(object_)
