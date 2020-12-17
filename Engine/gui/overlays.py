@@ -234,20 +234,26 @@ class DevMode(Overlay):
         camera_position = self.data_source.camera.position
 
         data_left = {
-            'Camera position': f'{round(camera_position[0], self.digits)}, {round(camera_position[1], self.digits)}',
-            'Operator target': 'yes' if self.data_source.camera_operator.target is not None else 'no',
-            'Operator type': self.data_source.camera_operator.targeting_method.value,
-            'Operator aiming': self.data_source.camera_operator.aiming,
             'Player position': f'{round(player_position[0], self.digits)}, {round(player_position[1], self.digits)}',
             'Player state': player.state,
             'Player vertical view direction': player.vertical_view_direction,
             'Player horizontal view direction': player.horizontal_view_direction,
             'Player can lean on feet': player.can_lean_on_feet(),
             'Player health': player.health,
-            'Enemy health': self.data_source.scene.entities[0].health
         }
 
+        enemy_health = {
+            f'Enemy {number} ({entity.__class__.__name__}) health': entity.health
+            for number, entity in enumerate(self.data_source.scene.entities)
+        }
+
+        data_left |= enemy_health
+
         data_right = {
+            'Camera position': f'{round(camera_position[0], self.digits)}, {round(camera_position[1], self.digits)}',
+            'Operator target': 'yes' if self.data_source.camera_operator.target is not None else 'no',
+            'Operator type': self.data_source.camera_operator.targeting_method.value,
+            'Operator aiming': self.data_source.camera_operator.aiming,
             'Number of objects': len(self.data_source.scene.objects),
             'Number of entities': len(self.data_source.scene.entities),
             'Number of physical bodies': len(self.data_source.scene.physical_space.bodies),
