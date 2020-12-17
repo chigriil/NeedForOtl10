@@ -11,6 +11,7 @@ from Engine.Scene.camera import Camera, Operator, TargetingMethod
 from Engine.Scene.gamescene import Level
 from Engine.apps import MicroApp
 from Engine.gui.overlays import FPS, DevMode, HealthBar, PauseButton, SaveButton
+from Engine.gui.in_game_menu import InGameMenu
 from settings import *
 from .persons import load_characters
 
@@ -137,7 +138,6 @@ class Game(MicroApp):
         super(Game, self).__init__(screen, clock, lifetime=float('inf'))
         self.username = username
         self.FPS = 0
-        self.game_paused = False
 
         self.scene = Level(Game)
         self.scene.load_level(username)
@@ -151,7 +151,7 @@ class Game(MicroApp):
             'HealthBar': HealthBar(self.screen, self.clock, self.scene.player, self.camera)
         }
 
-        self.buttons = [SaveButton(self.screen, self.clock), PauseButton(self.screen, self.clock)]
+        self.buttons = []
         self.DEVMODE = DEVMODE
 
         if DEVMODE:
@@ -173,9 +173,8 @@ class Game(MicroApp):
         pygame.display.update()
 
     def step(self, dt):
-        if not self.game_paused:
-            self.scene.step(dt)
-            self.camera_operator.step(dt)
+        self.scene.step(dt)
+        self.camera_operator.step(dt)
         for overlay in self.overlays.values():
             overlay.update(dt)
 
@@ -190,50 +189,49 @@ class Game(MicroApp):
                 for button in self.buttons:
                     button.activate(event)
 
-            if event.type == pygame.USEREVENT:
-                self.game_paused = not self.game_paused
+            # Двжение камеры
+            if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[0]:
+                self.camera_operator.aiming = False
+                self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
 
-            if not self.game_paused:
-                # Двжение камеры
-                if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed(3)[0]:
-                    self.camera_operator.aiming = False
-                    self.camera.position += np.array(event.rel) * [-1, 1] / self.camera.scale_factor
+            # Меняем зум камеры (точнее расстояние от камеры до сцены)
+            if event.type == pygame.MOUSEWHEEL:
+                self.camera.distance -= event.y
 
-                # Меняем зум камеры (точнее расстояние от камеры до сцены)
-                if event.type == pygame.MOUSEWHEEL:
-                    self.camera.distance -= event.y
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    InGameMenu(self.screen, self.clock).run()
 
-                if event.type == pygame.KEYDOWN:
-                    # Сбрасываем позицию камеры
-                    if event.key == pygame.K_r:
-                        self.camera.position = 0, 0
-                        self.camera.distance = 14
+                # Сбрасываем позицию камеры
+                if event.key == pygame.K_r:
+                    self.camera.position = 0, 0
+                    self.camera.distance = 14
 
-                    # Переключаем режим разработчика
-                    if event.key == pygame.K_F3:
-                        self.DEVMODE = not self.DEVMODE
+                # Переключаем режим разработчика
+                if event.key == pygame.K_F3:
+                    self.DEVMODE = not self.DEVMODE
 
-                    # Возрат камеры в границы уровня
-                    if event.key == pygame.K_b:
-                        self.camera.return_to_borders(self.scene.borders)
+                # Возрат камеры в границы уровня
+                if event.key == pygame.K_b:
+                    self.camera.return_to_borders(self.scene.borders)
 
-                    # Возрат камеры в границы уровня
-                    if event.key == pygame.K_z:
-                        for s in self.scene.physical_space.shapes:
-                            print(s)
+                # Возрат камеры в границы уровня
+                if event.key == pygame.K_z:
+                    for s in self.scene.physical_space.shapes:
+                        print(s)
 
-                    # Тест фокусировки на игроке
-                    if event.key == pygame.K_f:
-                        if self.camera_operator.target is None:
-                            self.camera_operator.target = self.scene.player
-                        self.camera_operator.aiming = not self.camera_operator.aiming
+                # Тест фокусировки на игроке
+                if event.key == pygame.K_f:
+                    if self.camera_operator.target is None:
+                        self.camera_operator.target = self.scene.player
+                    self.camera_operator.aiming = not self.camera_operator.aiming
 
-                        # Переключение фокусировки фокусировки на игроке
-                    if event.key == pygame.K_s:
-                        if self.camera_operator.targeting_method == TargetingMethod.SMOOTH:
-                            self.camera_operator.targeting_method = TargetingMethod.INSTANT
-                        else:
-                            self.camera_operator.targeting_method = TargetingMethod.SMOOTH
+                    # Переключение фокусировки фокусировки на игроке
+                if event.key == pygame.K_s:
+                    if self.camera_operator.targeting_method == TargetingMethod.SMOOTH:
+                        self.camera_operator.targeting_method = TargetingMethod.INSTANT
+                    else:
+                        self.camera_operator.targeting_method = TargetingMethod.SMOOTH
 
     def run_once(self):
         super(Game, self).run_once()
