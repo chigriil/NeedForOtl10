@@ -243,12 +243,24 @@ class DevMode(Overlay):
             'Player vertical view direction': player.vertical_view_direction,
             'Player horizontal view direction': player.horizontal_view_direction,
             'Player can lean on feet': player.can_lean_on_feet(),
+        }
+
+        data_right = {
             'Number of objects': len(self.data_source.scene.objects),
-            'Number of entities': len(self.data_source.scene.entities)
+            'Number of entities': len(self.data_source.scene.entities),
+            'Number of physical bodies': len(self.data_source.scene.physical_space.bodies),
+            'Number of physical shapes': len(self.data_source.scene.physical_space.shapes)
         }
 
         for pos, (key, value) in enumerate(data_left.items()):
             self.screen.blit(
                 self.font.render(f'{key}: {value}', True, (255, 255, 0)),
                 (self.screen.get_width() / 40, self.screen.get_height() / 1.8 + pos * self.font.get_height() * 1.2)
+            )
+
+        for pos, (key, value) in enumerate(data_right.items()):
+            self.screen.blit(
+                self.font.render(f'{key}: {value}', True, (255, 255, 0)),
+                (self.screen.get_width() - self.screen.get_width() / 4,
+                 self.screen.get_height() / 1.8 + pos * self.font.get_height() * 1.2)
             )

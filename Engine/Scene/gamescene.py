@@ -104,7 +104,6 @@ class Scene:
     На основе сцены будут делаться уровни
     TODO: придумать систему ИГРОВЫХ событий, вызывающихся, в зависимости от услових
     TODO: например, по времени, здоровью игрока, от рандома, от колва очков игрока
-    TODO: придумать, как сохранять состояние уровня
     """
 
     def __init__(self, game_app, background=SunnyField(), borders=None):
@@ -223,8 +222,13 @@ class Scene:
         # Расчёт физики
         self.physical_space.step(dt)
 
-        for sub in self.objects:
-            sub.step(dt)
+        for number, obj in enumerate(self.objects):
+            obj.step(dt)
+            # Если у объекта не осталось времени жизни, то удаляем его
+            if obj.lifetime <= 0:
+                obj.kill()
+                self.objects.pop(number)
+
         for ent in self.entities:
             ent.step(dt)
 

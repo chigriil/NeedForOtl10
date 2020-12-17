@@ -105,7 +105,7 @@ class PhysicalGameObject(GameObject):
     Базовый класс физического игрового объекта
     """
 
-    def __init__(self, x, y, width=1, height=1, sprite=None,
+    def __init__(self, x, y, width=1, height=1, sprite=None, lifetime=1,
                  scene=None, body: pymunk.Body = None, shape: pymunk.Shape = None,
                  angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
         """
@@ -148,7 +148,12 @@ class PhysicalGameObject(GameObject):
         if scene is None:
             raise AttributeError("Нужно задать обязательно сцену")
 
+        # Игровая сцена, на которой находится объект
         self.scene = scene
+
+        # Оставшееся время жизни объекта
+        self.lifetime = lifetime
+
         # Цыганская магия
         self.physical_space = scene.physical_space
 
@@ -177,6 +182,17 @@ class PhysicalGameObject(GameObject):
     def step(self, dt):
         # пересчитываем позицию описанного прямоугольника
         self.body_rect.centre = self.body.position
+
+        # уменьшаем оставшееся время жизни
+        self.lifetime -= dt
+
+    def kill(self):
+        """
+        Удаляет объект из физического пространства
+        :return:
+        """
+        self.physical_space.remove(self.body)
+        self.physical_space.remove(self.body_shape)
 
     def no_sprite_view(self, camera):
         """
@@ -252,25 +268,25 @@ class PhysicalGameObject(GameObject):
 
 class StaticRectangularObject(PhysicalGameObject):
     def __init__(self, x, y, width=0.3, height=0.3, sprite=None,
-                 physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
+                 scene=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
         super(StaticRectangularObject, self).__init__(x=x, y=y, width=width, height=height,
-                                                      sprite=sprite, physical_space=physical_space, angle=angle,
+                                                      sprite=sprite, scene=scene, angle=angle,
                                                       mass=mass, moment=moment, elasticity=elasticity,
                                                       friction=friction, type_=pymunk.Body.STATIC)
 
 
 class DynamicRectangularObject(PhysicalGameObject):
     def __init__(self, x, y, width=0.3, height=0.3, sprite=None,
-                 physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
+                 scene=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
         super(DynamicRectangularObject, self).__init__(x=x, y=y, width=width, height=height, sprite=sprite,
-                                                       physical_space=physical_space, angle=angle,
+                                                       scene=scene, angle=angle,
                                                        mass=mass, moment=moment, elasticity=elasticity,
                                                        friction=friction, type_=pymunk.Body.DYNAMIC)
 
 
 class DynamicCircularObject(PhysicalGameObject):
     def __init__(self, x, y, radius=0.3, sprite=None,
-                 physical_space=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
+                 scene=None, angle=0, mass=1, moment=None, elasticity=0, friction=0.6):
         if moment is None:
             moment = pymunk.moment_for_box(mass, (radius, radius))
 
@@ -278,7 +294,7 @@ class DynamicCircularObject(PhysicalGameObject):
         shape = pymunk.Circle(body, radius=radius)
 
         super(DynamicCircularObject, self).__init__(x=x, y=y, width=radius, height=radius,
-                                                    physical_space=physical_space, sprite=sprite,
+                                                    scene=scene, sprite=sprite,
                                                     body=body, shape=shape,
                                                     angle=angle, mass=mass, moment=moment, elasticity=elasticity,
                                                     friction=friction, type_=pymunk.Body.DYNAMIC)
