@@ -19,7 +19,7 @@ def load_yaml(path):
     Считываект yaml файл
     :param path: путь
     """
-    with open(path, 'r') as file:
+    with open(path, 'r', encoding='utf-8') as file:
         return yaml.load(file, Loader=yaml.Loader)
 
 
