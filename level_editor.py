@@ -8,6 +8,7 @@ bg_select
 Выбор бэкграунда стрелками
 Вправо - след бг
 Влево - пред бг
+S - утвердить бэкграунд
 
 Создание границы уровня:
 border_placer
@@ -51,7 +52,7 @@ import pymunk
 
 import Engine.utils.__dark_magic__ as dark_magic
 from Engine.Scene.camera import Camera
-from Engine.Scene.gamescene import Level
+from Engine.Scene.gamescene import Level, Dorm, Corridor, Basment
 from Engine.apps import App, MicroApp
 from Engine.gui.overlays import FPS
 from Engine.utils.utils import load_yaml
@@ -109,7 +110,7 @@ class LevelEditor(MicroApp):
         self.FPS = 0
         self.load_file = load_file
         self.saving_file = saving_file
-        self.scene = Level(Game)
+        self.scene = Level(Game, background=Dorm())
         self.scene.load_level(self.load_file)
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
@@ -120,8 +121,10 @@ class LevelEditor(MicroApp):
         self.mode_number = 0
         self.objects = parse_objects()
         self.persons = parse_persons()
+        self.backgrounds = ['dorm', 'corr', 'base']
         self.object_number = 0
         self.person = 'MainCharacter'
+        self.background = 'dorm'
         self.static = True
         self.last_placed_is_object = True
         self.a_bord = []
@@ -188,7 +191,15 @@ class LevelEditor(MicroApp):
             self.person = self.persons[0]
         if self.modes[self.mode_number] == 'entity_placer':
             print(self.person)
-
+        if self.backgrounds.index(self.background) + 1 < len(self.backgrounds):
+            self.background = self.backgrounds[self.backgrounds.index(self.background) + 1]
+        else:
+            self.background = self.backgrounds[0]
+        if self.modes[self.mode_number] == 'bg_select':
+            print(self.background)
+        
+        
+        
     def pers_left(self):
         if self.persons.index(self.person) + 1 > 0:
             self.person = self.persons[self.persons.index(self.person) - 1]
@@ -196,6 +207,12 @@ class LevelEditor(MicroApp):
             self.person = self.persons[len(self.persons) - 1]
         if self.modes[self.mode_number] == 'entity_placer':
             print(self.person)
+        if self.backgrounds.index(self.background) + 1 > 0:
+            self.background = self.backgrounds[self.backgrounds.index(self.background) - 1]
+        else:
+            self.background = self.backgrounds[len(self.backgrounds) - 1]
+        if self.modes[self.mode_number] == 'bg_select':
+            print(self.background)
 
     def mainCharacter_placed(self):
         for i in self.scene.entities:
@@ -212,12 +229,20 @@ class LevelEditor(MicroApp):
         Добавление выбранного объекта по позиции мыши
         """
         # Координаты клика мыши, переведенные в физические
-        coords = self.camera.screen_coords_to_physical(screencoords)
-        if self.modes[self.mode_number] == 'object_placer':
+        if screencoords != None:
+            coords = self.camera.screen_coords_to_physical(screencoords)
+        if buttontype == 'z':
+            if self.last_placed_is_object == True:
+               if self.scene.objects != []:
+                     self.scene.objects.pop()
+            else:
+                if self.scene.entities != []:
+                    self.scene.entities.pop()
+        if self.modes[self.mode_number] == 'object_placer' and buttontype != 'z':
             self.scene.spawn_object(self.objects[self.object_number], coords)
             print(f'The {self.objects[self.object_number]} is placed'
                   f' in the position ({round(coords[0], 2)}, {round(coords[1], 2)})')
-
+            self.last_placed_is_object = True
         elif self.modes[self.mode_number] == 'border_placer':
             if buttontype == 'leftbutton':
                 self.a_bord = coords
@@ -230,11 +255,21 @@ class LevelEditor(MicroApp):
                     self.scene.physical_space.add(pymunk.Segment(self.scene.physical_space.static_body,
                                                                  self.a_bord, self.b_bord, 1))
                 print('border set')
-
+                self.last_placed_is_object = True
         elif self.modes[self.mode_number] == 'entity_placer' and buttontype == 'leftbutton':
             print(self.person == 'MainCharacter')
             if self.person == 'MainCharacter' and not self.mainCharacter_placed():
                 self.scene.init_player(coords[0], coords[1])
+                self.last_placed_is_object = False
+            else:
+                self.scene.spawn_entity(self.person, coords)
+        elif self.modes[self.mode_number] == 'bg_select' and buttontype == 's':
+            if self.background == 'dorm':
+                self.scene.bg = Dorm(self.scene)
+            if self.background == 'corr':
+                self.scene.bg = Corridor(self.scene)
+            if self.background == 'base':
+                self.scene.bg = Basment(self.scene)
 
     def save_to_file(self, filename='default_level'):
         """
@@ -287,6 +322,8 @@ class LevelEditor(MicroApp):
                     self.save_to_file(filename=self.saving_file)
                 if pygame.key.get_pressed()[pygame.K_s]:
                     self.object_appender('s')
+                if pygame.key.get_pressed()[pygame.K_z]:
+                    self.object_appender('z')
 
     def atexit(self):
         """
