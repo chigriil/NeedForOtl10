@@ -31,6 +31,13 @@ class Background:
     def __init__(self, scene=None):
         self.scene = scene
 
+    def step(self, dt):
+        """
+        Эволюция фона во времени
+        :param dt: квант времени
+        :return:
+        """
+
     def __view__(self, camera):
         """
         Проекция заднего фона на камеру
@@ -87,43 +94,38 @@ class SunnyField(Background):
         circle(camera.temp_surface, (255, 255, 0), pt, camera.projection_of_length(1))
 
 
-class Dorm(Background):
+class PictureBackground(Background):
+    image_path = os.path.join('Resources', 'pictures', 'Backgrounds', 'back_six.png')
+
     def __init__(self, scene=None):
-        super(Dorm, self).__init__(scene=scene)
-        self.image = pygame.image.load(os.path.join('Resources', 'pictures', 'Backgrounds',
-                                                    'back_six.png'))
+        super(PictureBackground, self).__init__(scene=scene)
+        self.image = pygame.image.load(self.image_path).convert_alpha()
         self.image = pygame.transform.flip(self.image, True, True)
 
-    def __view__(self, camera):
-        borders = self.scene.borders
-        screen_rect = camera.projection_of_rect(borders)
-        camera.temp_surface.blit(pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3])), screen_rect)
-
-
-class Basment(Background):
-    def __init__(self, scene=None):
-        super(Basment, self).__init__(scene=scene)
-        self.image = pygame.image.load(os.path.join('Resources', 'pictures', 'Backgrounds',
-                                                    'back_basment.png'))
-        self.image = pygame.transform.flip(self.image, True, True)
+        self.scaled_image = self.image
+        self.last_camera_distance = -1
 
     def __view__(self, camera):
+
         borders = self.scene.borders
         screen_rect = camera.projection_of_rect(borders)
-        camera.temp_surface.blit(pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3])), screen_rect)
+
+        if camera.distance != self.last_camera_distance:
+            self.scaled_image = pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3]))
+
+        camera.temp_surface.blit(self.scaled_image, screen_rect)
 
 
-class Corridor(Background):
-    def __init__(self, scene=None):
-        super(Corridor, self).__init__(scene=scene)
-        self.image = pygame.image.load(os.path.join('Resources', 'pictures', 'Backgrounds',
-                                                    'back_corridor.png'))
-        self.image = pygame.transform.flip(self.image, True, True)
+class Dorm(PictureBackground):
+    image_path = os.path.join('Resources', 'pictures', 'Backgrounds', 'back_six.png')
 
-    def __view__(self, camera):
-        borders = self.scene.borders
-        screen_rect = camera.projection_of_rect(borders)
-        camera.temp_surface.blit(pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3])), screen_rect)
+
+class Basment(PictureBackground):
+    image_path = os.path.join('Resources', 'pictures', 'Backgrounds', 'back_basment.png')
+
+
+class Corridor(PictureBackground):
+    image_path = os.path.join('Resources', 'pictures', 'Backgrounds', 'back_corridor.png')
 
 
 class GameEvent:
@@ -296,6 +298,8 @@ class Scene:
         for ent in self.entities:
             ent.step(dt)
 
+        self.bg.step(dt)
+
 
 class Level(Scene):
     """
@@ -425,7 +429,7 @@ class Level(Scene):
         # Сохранение гг
         save_data_final['MainCharacter'] = self.player.save_data()
 
-        #Сохраннение фона
+        # Сохраннение фона
         if self.background.__class__.__name__ == Dorm:
             save_data_final['background'] = 'dorm'
         if self.background.__class__.__name__ == Basment:
