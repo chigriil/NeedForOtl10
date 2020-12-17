@@ -323,11 +323,38 @@ class Level(Scene):
     def load_object(self, config):
         """
         Методы для помещения объектов в уровень
+        Делает тоже почти тоже самое, что и spawn_object
         """
         self.objects.append(ObjectRegistry[config['class']](
             self,
             **config['init']
         ))
+
+    def spawn_object(self, type_, position, velocity=Vec2d(0, 0), start_angle=0, angular_velocity=0):
+        """
+        Спавнит объект на игровой сцене
+        :param type_: тип объекта
+        :param position: позиция объекта
+        :param velocity: начальная скорость
+        :param start_angle: начальный угол
+        :param angular_velocity: начальная угловая скорость
+        :return:
+        """
+
+        # Класс объекта
+        class_ = ObjectRegistry[type_]
+        # Создаём объект
+        obj = class_(
+            self,
+            *position,
+            start_angle,
+        )
+        # Устанавливает скорость
+        obj.body.velocity = velocity
+        # Устанавливаем угловую скорость
+        obj.body.angular_velocity = angular_velocity
+        # Добавляем объект на сцену
+        self.objects.append(obj)
 
     def load_level(self, username):
         """

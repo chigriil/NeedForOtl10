@@ -185,7 +185,7 @@ class Camera:
         :return: точка с физическими координатами
         """
         if not isinstance(point, Vec2d):
-            point = Vec2d(point)
+            point = Vec2d(point[0], point[1])
 
         return Vec2d(point.x, SCREEN_HEIGHT - point.y) / self.scale_factor - (
             self.window_width / 2 - self.__position[0],

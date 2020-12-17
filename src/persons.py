@@ -35,7 +35,7 @@ def load_characters():
     """
     for person_config_file in os.listdir(person_configs_path):
 
-        if not person_config_file.endswith('.yaml') and not person_config_file.startswith('_'):
+        if not person_config_file.endswith('.yaml') or person_config_file.startswith('_'):
             continue
 
         config = load_yaml(os.path.join(person_configs_path, person_config_file))

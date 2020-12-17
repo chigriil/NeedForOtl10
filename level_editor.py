@@ -42,7 +42,7 @@ entity_placer
 CTRL + Z
 
 """
-
+import os
 import sys
 
 import numpy as np
@@ -51,12 +51,52 @@ import pymunk
 
 import Engine.utils.__dark_magic__ as dark_magic
 from Engine.Scene.camera import Camera
-from Engine.apps import App
-from Engine.apps import MicroApp
+from Engine.Scene.gamescene import Level
+from Engine.apps import App, MicroApp
 from Engine.gui.overlays import FPS
+from Engine.utils.utils import load_yaml
 from settings import *
-from src.Levels.testlevel import TestLevel
 from src.game import Game
+
+
+def parse_objects():
+    """
+    ВОзвращает список доступных игровых объектов
+    :return:
+    """
+
+    objects = []
+
+    for game_object_config_file in os.listdir(game_objects_configs_path):
+
+        if not game_object_config_file.endswith('.yaml'):
+            continue
+
+        config = load_yaml(os.path.join(game_objects_configs_path, game_object_config_file))
+
+        objects.append(config['name'])
+
+    return objects
+
+
+def parse_persons():
+    """
+    Возвращает список персонажей
+    :return:
+    """
+
+    persons = []
+
+    for person_config_file in os.listdir(person_configs_path):
+
+        if not person_config_file.endswith('.yaml') or person_config_file.startswith('_'):
+            continue
+
+        config = load_yaml(os.path.join(person_configs_path, person_config_file))
+
+        persons.append(config['name'])
+
+    return persons
 
 
 class LevelEditor(MicroApp):
@@ -69,7 +109,7 @@ class LevelEditor(MicroApp):
         self.FPS = 0
         self.load_file = load_file
         self.saving_file = saving_file
-        self.scene = TestLevel(Game)
+        self.scene = Level(Game)
         self.scene.load_level(self.load_file)
         self.camera = Camera(self.screen, distance=16)
         self.camera.start()
@@ -78,16 +118,8 @@ class LevelEditor(MicroApp):
         self.modes = ['bg_select', 'border_placer', 'object_placer', 'entity_placer', 'camera_motion', 'load_from',
                       'save_to']
         self.mode_number = 0
-        self.objects = ['fridge', 'closet', 'alarm', 'mouse']
-        self.placeable_objects = {'fridge': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/holodos.png',
-                                             'shape': 'rect'},
-                                  'closet': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/closet.png',
-                                             'shape': 'rect'},
-                                  'alarm': {'height': 1, 'radius': 1, 'sprite_adress': 'Resources/pictures/alarm.png',
-                                            'shape': 'circle'},
-                                  'mouse': {'height': 1, 'width': 1, 'sprite_adress': 'Resources/pictures/mouse.png',
-                                            'shape': 'rect'}}
-        self.persons = ['MainCharacter', 'Enemy1']
+        self.objects = parse_objects()
+        self.persons = parse_persons()
         self.object_number = 0
         self.person = 'MainCharacter'
         self.static = True
@@ -169,8 +201,7 @@ class LevelEditor(MicroApp):
         for i in self.scene.entities:
             if i.save_data()['class'] == 'MainCharacter':
                 return True
-            else:
-                return False
+        return False
 
     """
     Добавление выбранного объекта по позиции мыши
@@ -180,29 +211,13 @@ class LevelEditor(MicroApp):
         """
         Добавление выбранного объекта по позиции мыши
         """
+        # Координаты клика мыши, переведенные в физические
         coords = self.camera.screen_coords_to_physical(screencoords)
-        # coords[1] = -coords[1]
         if self.modes[self.mode_number] == 'object_placer':
-            object_name = self.objects[self.object_number]
-            char_dict = self.placeable_objects[object_name]
-            if char_dict['shape'] == 'rect':
-                if self.static == True:
-                    self.scene.add_to_level('StaticRectangularObject', coords[0], coords[1],
-                                            char_dict['width'],
-                                            char_dict['height'],
-                                            char_dict['sprite_adress'])
-                    print('static rect object placed')
-                else:
-                    self.scene.add_to_level('DynamicRectangularObject', coords[0], coords[1],
-                                            char_dict['width'],
-                                            char_dict['height'],
-                                            char_dict['sprite_adress'])
-                    print('dynamic rect object placed')
-            else:
-                self.scene.add_to_level('StaticRectangularObject', coords[0], coords[1],
-                                        char_dict['radius'],
-                                        char_dict['sprite_adress'])
-                print('dynamic circ object placed')
+            self.scene.spawn_object(self.objects[self.object_number], coords)
+            print(f'The {self.objects[self.object_number]} is placed'
+                  f' in the position ({round(coords[0], 2)}, {round(coords[1], 2)})')
+
         elif self.modes[self.mode_number] == 'border_placer':
             if buttontype == 'leftbutton':
                 self.a_bord = coords
@@ -215,6 +230,7 @@ class LevelEditor(MicroApp):
                     self.scene.physical_space.add(pymunk.Segment(self.scene.physical_space.static_body,
                                                                  self.a_bord, self.b_bord, 1))
                 print('border set')
+
         elif self.modes[self.mode_number] == 'entity_placer' and buttontype == 'leftbutton':
             print(self.person == 'MainCharacter')
             if self.person == 'MainCharacter' and not self.mainCharacter_placed():
@@ -280,10 +296,7 @@ class LevelEditor(MicroApp):
         self.scene.save_level(self.saving_file + 'editor_exit')
 
 
-if __name__ == '__main__':
-    if sys.hexversion < 0x30900f0:
-        raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
-
+def main():
     dark_magic.init()
     pygame.mixer.pre_init()
     pygame.init()
@@ -301,3 +314,9 @@ if __name__ == '__main__':
         load_file = 'basic'
     app = App(micro_apps=[LevelEditor(screen, clock, saving_file=saving_file, load_file=load_file)])
     app.run()
+
+
+if __name__ == '__main__':
+    if sys.hexversion < 0x30900f0:
+        raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
+    main()
