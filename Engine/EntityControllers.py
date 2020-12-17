@@ -61,6 +61,9 @@ class ManualController(EntityController):
         if pressed_keys[pygame.K_q] and hasattr(self.entity, 'throw'):
             self.entity.throw()
 
+        if pressed_keys[pygame.K_v] and hasattr(self.entity, 'hand_hit'):
+            self.entity.hand_hit()
+
         # Если сущность имеет опору под ногами
         if self.entity.can_lean_on_feet():
             # Ходьба

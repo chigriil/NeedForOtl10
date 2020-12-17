@@ -73,6 +73,14 @@ class PhysicalRect:
                      self.y + self.__height)
 
     @property
+    def midbottom(self) -> Vec2d:
+        """
+        Возращает координаты середины нижней стороны
+        :return:
+        """
+        return Vec2d(self.__x + self.__width / 2, self.__y)
+
+    @property
     def left(self):
         """
         Возвращает координату x левой границы
@@ -168,16 +176,18 @@ class PhysicalRect:
         :param rect: другой прямоугольник
         :return:
         """
-        # Поочерёдная проверка попадания вершины прямоугольника rect внуть self
-        return \
-            self.__x <= rect.__x <= self.__x + self.__width and \
-            self.__y <= rect.__y <= self.__y + self.__height or \
-            self.__x <= rect.__x <= self.__x + self.__width and \
-            self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
-            self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
-            self.__y <= rect.__y + rect.__height <= self.__y + self.__height or \
-            self.__x <= rect.__x + rect.__width <= self.__x + self.__width and \
-            self.__y <= rect.__y <= self.__y + self.__height
+        # Считаем описанный прямогольник для этих двух
+        # Левая граница
+        left = min(self.left, rect.left)
+        # Верхняя граница
+        top = max(self.top, rect.top)
+        # Правая граница
+        right = max(self.right, rect.right)
+        # Нижняя граница
+        bottom = min(self.bottom, rect.bottom)
+
+        # Если описанный прямогольник имеет достаточно малые размеры, то прямоугольники пересекаются
+        return self.__width + rect.__width > right - left and self.__height + rect.__height > top - bottom
 
     def check_overlap(self, rect: 'PhysicalRect'):
         """
@@ -245,6 +255,16 @@ class PhysicalRect:
             h *= other
 
         return PhysicalRect(self.__x, self.__y, w, h)
+
+    def __str__(self):
+        return f'PhysicalRect({self.__x}, {self.__y}, {self.__width}, {self.__height})'
+
+    def isymmetry_vertical_line(self, x0):
+        """
+        Симметрирует себя относительно линии x=x0
+        :return:
+        """
+        self.__x = 2 * x0 - self.__x - self.__width
 
 
 class BoundingBox(PhysicalRect):

@@ -76,11 +76,21 @@ class Entity(PhysicalGameObject):
         self.flying_rect = PhysicalRect(0, 0, rects['flying_rect'][0], rects['flying_rect'][1])
         self.landing_rect = PhysicalRect(0, 0, rects['landing_rect'][0], rects['landing_rect'][1])
 
+        # Не меняющиеся атрибуты
         # Свойства сущности
         properties: dict = default_person['properties']
         self.walk_speed = properties['walk_speed']  # Скорость ходьбы сущности
         self.run_speed = properties['run_speed']  # Скорость бега сущности
         self.jump_speed = properties['jump_speed']  # Скорость прыжка
+        # Максимальное здоровье
+        self.max_health = properties['max_health']
+        # Вероятность уклонения
+        self.dodge = properties['dodge']
+        # Сопротивление урону
+        self.resistance = properties['resistance']
+
+        # Атрибуты, которые в данный момент
+        self.health = self.max_health
 
         # Далее флаги, нужные для удобной обработки
 
@@ -127,6 +137,19 @@ class Entity(PhysicalGameObject):
         self.__state = new_state
         # Меняем геометрию
         self.set_new_shape(new_state.value)
+
+    def damage(self, damage, type_):
+        """
+        Получение персонажем урона
+        :param damage: количество урона
+        :param type_: тип урона
+        :return:
+        """
+        # Если урон был нанесён руками, то есть сопротивление
+        if type_ == 'hand':
+            damage /= (1 + self.resistance)
+
+        self.health -= damage
 
     def set_new_shape(self, shape: str):
         """
@@ -358,13 +381,6 @@ class BaseCharacter(Entity):
         # Описание персонажа
         self.description = None
 
-        # Не меняющиеся атрибуты
-        # Здоровье
-        properties: dict = default_person['properties']
-        self.max_health = properties['max_health']
-        # Вероятность уклонения
-        self.dodge = properties['dodge']
-
         # Боёвка
         hits: dict = default_person['hits']
         # Удары рукой
@@ -391,7 +407,6 @@ class BaseCharacter(Entity):
                 self.__dict__[name_] = PhysicalRect(0, 0, width_, height_)
 
         # Атрибуты, которые в данный момент
-        self.health = 0
         self.__arming_reload = 0
         self.__throwing_reload = 0
 
@@ -420,12 +435,58 @@ class BaseCharacter(Entity):
         self.arming_reload -= dt
         self.throwing_reload -= dt
 
+    def set_attack_animation(self, method):
+        """
+        Устанавливает анимацию удара, проверяю прописана ли она в конфиге
+        :param method:
+        :return:
+        """
+        new_animation_name = f'{method["animation"]}_{self.horizontal_view_direction}'
+        if new_animation_name in self.animations:
+            self.animations.current_animation = new_animation_name
+        else:
+            msg = f'У персонажа {self.__class__.__name__}' \
+                  f' нет анимации {method["animation"]} {"_".join(new_animation_name.split("_")[:-1])}.' \
+                  f' Проверьте конфигурации персонажа'
+            warn(msg)
+
+    def _hit_box_to_physical_rect(self, box):
+        physical_box = PhysicalRect(*box.values())
+        physical_box.bottomleft += self.body_rect.bottomleft
+        return physical_box
+
     def hand_hit(self):
         """
         Удар
         :return:
         """
-        pass
+        if self.arming_reload > critical_reloading:
+            return
+
+        # Выбираем тип удара
+        arming_method = self.arming[choice(self.arming_types)]
+
+        # Устанавливаем анимацию удара, проверяю прописана ли она в конфиге
+        self.set_attack_animation(arming_method)
+
+        hit_rect = self._hit_box_to_physical_rect(arming_method['box'])
+        m = 1
+
+        if self.horizontal_view_direction == 'left':
+            m = -1
+            hit_rect.isymmetry_vertical_line(self.body_rect.midbottom.x)
+
+        # Засчитываем урон
+        self.scene.damage_in_area(hit_rect,
+                                  arming_method['damage'],
+                                  type_='hand',
+                                  impulse=(
+                                      m * arming_method['impulse'] * cos(arming_method['impulse_angle']),
+                                      arming_method['impulse'] * sin(arming_method['impulse_angle'])
+                                  ))
+
+        # Устанавливаем время новое перезараядки
+        self.arming_reload = arming_method['reload_time']
 
     def _throw(self, throw_method: dict, position: Vec2d, velocity: Vec2d, angle: SupportsFloat):
         """
@@ -450,8 +511,6 @@ class BaseCharacter(Entity):
         obj.body.angular_velocity = throw_method['angular_speed']
         # Добавляем объект на сцену
         self.scene.objects.append(obj)
-        # Устанавливаем время новое перезараядки
-        self.throwing_reload = throw_method['reload_time']
 
     def _throw_aiming_at_target(self, target: Vec2d, position: Vec2d, throw_method: dict) -> float:
         """
@@ -507,14 +566,7 @@ class BaseCharacter(Entity):
         throw_method = self.throwing[choice(self.throwing_types)]
 
         # Устанавливаем анимацию кадания, проверяю прописана ли она в конфиге
-        new_animation_name = f'{throw_method["animation"]}_{self.horizontal_view_direction}'
-        if new_animation_name in self.animations:
-            self.animations.current_animation = new_animation_name
-        else:
-            msg = f'У персонажа {self.__class__.__name__}' \
-                  f' нет анимации броска {"_".join(new_animation_name.split("_")[:-1])}.' \
-                  f' Проверьте конфигурации персонажа'
-            warn(msg)
+        self.set_attack_animation(throw_method)
 
         angle = throw_method['throw_angle']
 
@@ -547,6 +599,9 @@ class BaseCharacter(Entity):
 
         # Кидание
         self._throw(throw_method, position, velocity, angle)
+
+        # Устанавливаем время новое перезараядки
+        self.throwing_reload = throw_method['reload_time']
 
     def save_data(self):
         return {'class': self.__class__.__name__, 'vector': list(self.position), 'brain': self.brain.__class__.__name__}

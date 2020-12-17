@@ -10,6 +10,7 @@ properties:
   description: null
   max_health: 100
   dodge: 0.1
+  resistance: 0.1
   walk_speed: 1.5  # Скорость ходьбы сущности
   run_speed: 4  # Скорость бега сущности
   jump_speed: 4.5 # Скорость прыжка
@@ -19,13 +20,47 @@ hits:
   arming:
     hit_1:
       damage: 10
-      reload_time: 1
+
+      impulse: 200
+      impulse_angle: 1
+
+      reload_time: 0.2
       box:
-        x: 0.5
-        y: 1.0
+        x: 0.8
+        y: 0.7
         w: 0.5
-        h: 0.5
-      animation: 'arming_1'
+        h: 0.8
+      animation: 'udar_1'
+      animation_hatting_phase: 0.3
+
+    hit_2:
+      damage: 10
+
+      impulse: 100
+      impulse_angle: 1
+
+      reload_time: 0.2
+      box:
+        x: 0.8
+        y: 0.7
+        w: 0.5
+        h: 0.8
+      animation: 'udar_2'
+      animation_hatting_phase: 0.3
+
+    hit_3:
+      damage: 10
+
+      impulse: 100
+      impulse_angle: 1
+
+      reload_time: 0.2
+      box:
+        x: 0.8
+        y: 0.7
+        w: 0.5
+        h: 0.8
+      animation: 'udar_3'
       animation_hatting_phase: 0.3
 
   throwing:
