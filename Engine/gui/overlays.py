@@ -231,10 +231,13 @@ class DevMode(Overlay):
 
         player_position = player.body.position
 
+        player_velocity = player.body.velocity
+
         camera_position = self.data_source.camera.position
 
         data_left = {
             'Player position': f'{round(player_position[0], self.digits)}, {round(player_position[1], self.digits)}',
+            'Player velocity': f'{round(player_velocity[0], self.digits)}, {round(player_velocity[1], self.digits)}',
             'Player state': player.state,
             'Player vertical view direction': player.vertical_view_direction,
             'Player horizontal view direction': player.horizontal_view_direction,

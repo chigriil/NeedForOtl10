@@ -73,6 +73,14 @@ class PhysicalRect:
                      self.y + self.__height)
 
     @property
+    def midbottom(self) -> Vec2d:
+        """
+        Возращает координаты середины нижней стороны
+        :return:
+        """
+        return Vec2d(self.__x + self.__width / 2, self.__y)
+
+    @property
     def left(self):
         """
         Возвращает координату x левой границы
@@ -250,6 +258,13 @@ class PhysicalRect:
 
     def __str__(self):
         return f'PhysicalRect({self.__x}, {self.__y}, {self.__width}, {self.__height})'
+
+    def isymmetry_vertical_line(self, x0):
+        """
+        Симметрирует себя относительно линии x=x0
+        :return:
+        """
+        self.__x = 2 * x0 - self.__x - self.__width
 
 
 class BoundingBox(PhysicalRect):

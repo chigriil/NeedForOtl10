@@ -31,7 +31,7 @@ class RectangularObject(PhysicalGameObject):
 
     def save_data(self):
         return {
-            'type': self.body.body_type,
+            'type_': self.body.body_type,
             'x': self.position.x,
             'y': self.position.y,
             'angle': self.body.angle,
