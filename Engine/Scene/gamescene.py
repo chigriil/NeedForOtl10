@@ -315,12 +315,28 @@ class Level(Scene):
         """
         self.player = PersonRegistry['MainCharacter'](self, x, y)
 
-    def spawn_entity(self, configs):
+    def load_entity(self, configs):
         self.entities.append(
             PersonRegistry[configs['class']](
                 self,
                 *configs['vector'],
                 ControllerRegistry[configs['brain']]
+            )
+        )
+
+    def spawn_entity(self, name, position, brain='Idle'):
+        """
+        Спавнит персонажа на уровне
+        :param name: имя персонажа
+        :param position: позиция
+        :param brain: мозги
+        :return:
+        """
+        self.entities.append(
+            PersonRegistry[name](
+                self,
+                *position,
+                ControllerRegistry[brain]
             )
         )
 
@@ -391,4 +407,4 @@ class Level(Scene):
 
         # Загрузка сущностей
         for entity_config in data['entities'].values():
-            self.spawn_entity(entity_config)
+            self.load_entity(entity_config)
