@@ -253,37 +253,3 @@ class CustomisationMenu(Menu):
 
     def atexit(self):
         return Game(self.screen, self.clock, self.name_input.username).run()
-
-
-class GameMenu(Menu):
-    def __init__(self, screen, clock):
-        super(GameMenu, self).__init__(screen, clock)
-        self.FPS = 10
-        self.background_color = (0, 0, 0)
-        self.fontcolor = (255, 255, 255)
-        self.buttoncolor = (15, 29, 219)
-
-        self.font = pygame.font.SysFont('Comic Sans MS', int(50 / 900 * self.screen_height))
-
-    def draw(self):
-        self.screen.fill(self.background_color)
-
-        self.pretty_text_button(self.font, "Выход", self.buttoncolor, self.fontcolor,
-                                self.screen_width // 2, self.screen_height * 9 // 12)
-
-    def on_iteration(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if pygame.key.get_pressed()[pygame.K_ESCAPE]:
-                self.alive = False
-            if event.type == pygame.MOUSEBUTTONDOWN and \
-                    self.pretty_text_button(self.font, "Выход", self.buttoncolor, self.fontcolor,
-                                            self.screen_width // 2,
-                                            self.screen_height * 9 // 12).collidepoint(event.pos):
-                pygame.quit()
-                sys.exit()
-        self.draw()
-        self.clock.tick(self.FPS)
-        pygame.display.flip()

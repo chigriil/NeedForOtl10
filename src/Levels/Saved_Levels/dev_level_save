@@ -69,3 +69,4 @@ objects:
       type_: 0
       angle: 0.76
       lifetime: .inf
+background: base

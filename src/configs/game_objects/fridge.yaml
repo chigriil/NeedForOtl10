@@ -3,7 +3,7 @@ sprite: 'Resources/pictures/Items_for_levels/holodos.png'
 type: 'RectangularObject'
 init:
   width: 0.7
-  height: 1.5
+  height: 1.8
 
   mass: 50
   moment: null
