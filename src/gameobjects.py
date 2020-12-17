@@ -12,29 +12,46 @@ from settings import game_objects_configs_path
 class RectangularObject(PhysicalGameObject):
     configs = load_yaml('src/configs/game_objects/fridge.yaml')
 
-    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC):
+    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC, lifetime=5):
+        """
+        :param scene: игровая сценв
+        :param x: координата x объекта
+        :param y: координата y объекта
+        :param angle: начальный угол поворота объекта
+        :param type_: тип объекта (статический, кинематический или динамический)
+        :param lifetime: время жизни, через lifetime сек объект изчезнет.
+        Чтобы он не изчес можно установить float('inf')
+        """
         sprite = None
         if self.configs['sprite'] is not None:
             sprite = pil_to_pygame(load_image(self.configs['sprite']))
 
-        super(RectangularObject, self).__init__(x, y, angle=angle, sprite=sprite, scene=scene,
+        super(RectangularObject, self).__init__(x, y, angle=angle, sprite=sprite, scene=scene, lifetime=lifetime,
                                                 type_=type_, **self.configs['init'])
 
     def save_data(self):
-        print(self.position)
         return {
             'type': self.body.body_type,
             'x': self.position.x,
             'y': self.position.y,
-            'angle': self.body.angle
+            'angle': self.body.angle,
+            'lifetime': self.lifetime
         }
 
 
 class CircularObject(PhysicalGameObject):
     configs = load_yaml('src/configs/game_objects/alarm_clock.yaml')
 
-    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC):
-
+    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC, lifetime=5):
+        """
+        :param scene: игровая сценв
+        :param x: координата x объекта
+        :param y: координата y объекта
+        :param angle: начальный угол поворота объекта
+        :param type_: тип объекта (статический, кинематический или динамический)
+        :param lifetime: время жизни, через lifetime сек объект изчезнет.
+        Чтобы он не изчес можно установить float('inf')
+        """
         sprite = None
         if self.configs['sprite'] is not None:
             sprite = pil_to_pygame(load_image(self.configs['sprite']))
@@ -50,7 +67,7 @@ class CircularObject(PhysicalGameObject):
         shape = pymunk.Circle(body, radius)
 
         super(CircularObject, self).__init__(x=x, y=y, width=radius, height=radius,
-                                             scene=scene, sprite=sprite,
+                                             scene=scene, sprite=sprite, lifetime=lifetime,
                                              body=body, shape=shape, angle=angle,
                                              mass=init_config['mass'], moment=init_config['moment'],
                                              elasticity=init_config['elasticity'],
@@ -63,9 +80,10 @@ class CircularObject(PhysicalGameObject):
 
     def save_data(self):
         return {
-            'type': self.body.body_type,
+            'type_': self.body.body_type,
             'x': self.position.x,
-            'y': self.position.y
+            'y': self.position.y,
+            'lifetime': self.lifetime
         }
 
 

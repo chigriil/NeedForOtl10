@@ -36,12 +36,14 @@ objects:
       x: 2
       y: 0
       type_: 0
+      lifetime: .inf
   1:
     class: AlarmClock
     init:
       x: 2.5
       y: 3
       type_: 0
+      lifetime: .inf
   2:
     class: Closet
     init:
@@ -49,6 +51,7 @@ objects:
       y: 1.5
       type_: 0
       angle: 0.76
+      lifetime: .inf
 
   3:
     class: Calculator
@@ -57,6 +60,7 @@ objects:
       y: 1.5
       type_: 0
       angle: 0.76
+      lifetime: .inf
   4:
     class: TennisBall
     init:
@@ -64,3 +68,4 @@ objects:
       y: 1.5
       type_: 0
       angle: 0.76
+      lifetime: .inf
