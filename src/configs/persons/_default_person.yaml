@@ -20,6 +20,10 @@ hits:
   arming:
     hit_1:
       damage: 10
+
+      impulse: 200
+      impulse_angle: 1
+
       reload_time: 0.2
       box:
         x: 0.8
@@ -31,6 +35,10 @@ hits:
 
     hit_2:
       damage: 10
+
+      impulse: 100
+      impulse_angle: 1
+
       reload_time: 0.2
       box:
         x: 0.8
@@ -42,6 +50,10 @@ hits:
 
     hit_3:
       damage: 10
+
+      impulse: 100
+      impulse_angle: 1
+
       reload_time: 0.2
       box:
         x: 0.8

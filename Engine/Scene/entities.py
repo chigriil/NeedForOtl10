@@ -138,8 +138,18 @@ class Entity(PhysicalGameObject):
         # Меняем геометрию
         self.set_new_shape(new_state.value)
 
-    def damage(self, damage):
-        self.health -= damage / (1 + self.resistance)
+    def damage(self, damage, type_):
+        """
+        Получение персонажем урона
+        :param damage: количество урона
+        :param type_: тип урона
+        :return:
+        """
+        # Если урон был нанесён руками, то есть сопротивление
+        if type_ == 'hand':
+            damage /= (1 + self.resistance)
+
+        self.health -= damage
 
     def set_new_shape(self, shape: str):
         """
@@ -452,7 +462,6 @@ class BaseCharacter(Entity):
         """
         if self.arming_reload > critical_reloading:
             return
-        print('hit')
 
         # Выбираем тип удара
         arming_method = self.arming[choice(self.arming_types)]
@@ -460,8 +469,21 @@ class BaseCharacter(Entity):
         # Устанавливаем анимацию удара, проверяю прописана ли она в конфиге
         self.set_attack_animation(arming_method)
 
+        hit_rect = self._hit_box_to_physical_rect(arming_method['box'])
+        m = 1
+
+        if self.horizontal_view_direction == 'left':
+            m = -1
+            hit_rect.isymmetry_vertical_line(self.body_rect.midbottom.x)
+
         # Засчитываем урон
-        self.scene.damage_in_area(self._hit_box_to_physical_rect(arming_method['box']), arming_method['damage'])
+        self.scene.damage_in_area(hit_rect,
+                                  arming_method['damage'],
+                                  type_='hand',
+                                  impulse=(
+                                      m * arming_method['impulse'] * cos(arming_method['impulse_angle']),
+                                      arming_method['impulse'] * sin(arming_method['impulse_angle'])
+                                  ))
 
         # Устанавливаем время новое перезараядки
         self.arming_reload = arming_method['reload_time']

@@ -83,83 +83,44 @@ class SunnyField(Background):
         circle(camera.temp_surface, (255, 255, 0), pt, camera.projection_of_length(1))
 
 
-class SunnyField(Background):
-    """
-    Класс простого заднего фона
-    Солнце + небо + земля
-    Горизонт на линии y = 0
-    """
-
-    def __view__(self, camera):
-
-        # Проверка, пересекает ли плоскость камеры горизонт
-        # Если пересекает
-        if camera.position[1] ** 2 - camera.window_height ** 2 / 4 < 0:
-            # Прямоугольник неба
-            sky_rect = np.array([
-                0,
-                (camera.window_height / 2 - camera.position[1]),
-                camera.window_width,
-                (camera.window_height / 2 + camera.position[1]),
-            ]) * camera.scale_factor
-
-            # Прямоугольник земли
-            ground_rect = np.array([
-                0,
-                0,
-                camera.window_width,
-                (camera.window_height / 2 - camera.position[1]),
-            ]) * camera.scale_factor
-
-            # Рисование
-            rect(camera.temp_surface, (135, 206, 250), sky_rect)
-            rect(camera.temp_surface, (34, 139, 34), ground_rect)
-
-        # Камера выше горизонта
-        elif camera.camera_rect.y > 0:
-            # Заливаем экран небом
-            rect(camera.temp_surface, (135, 206, 250), camera.temp_surface.get_rect())
-
-        # Камера ниже горизонта
-        elif camera.camera_rect.y < 0:
-            # Заливаем экран землёй
-            rect(camera.temp_surface, (34, 139, 34), camera.temp_surface.get_rect())
-
-        # Рисекм солнце
-        pt = camera.projection_of_point(np.array([2, 5]))
-        circle(camera.temp_surface, (255, 255, 0), pt, camera.projection_of_length(1))
-
-
 class Dorm(Background):
     def __init__(self, scene=None):
         super(Dorm, self).__init__(scene=scene)
         self.image = pygame.image.load(os.path.join('Resources', 'pictures', 'Backgrounds',
-                                                           'back_six.png'))
+                                                    'back_six.png'))
         self.image = pygame.transform.flip(self.image, True, True)
+
     def __view__(self, camera):
         borders = self.scene.borders
         screen_rect = camera.projection_of_rect(borders)
         camera.temp_surface.blit(pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3])), screen_rect)
+
+
 class Basment(Background):
     def __init__(self, scene=None):
         super(Basment, self).__init__(scene=scene)
         self.image = pygame.image.load(os.path.join('Resources', 'pictures', 'Backgrounds',
-                                                           'back_basment.png'))
+                                                    'back_basment.png'))
         self.image = pygame.transform.flip(self.image, True, True)
+
     def __view__(self, camera):
         borders = self.scene.borders
         screen_rect = camera.projection_of_rect(borders)
         camera.temp_surface.blit(pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3])), screen_rect)
+
+
 class Corridor(Background):
     def __init__(self, scene=None):
         super(Corridor, self).__init__(scene=scene)
         self.image = pygame.image.load(os.path.join('Resources', 'pictures', 'Backgrounds',
-                                                           'back_corridor.png'))
+                                                    'back_corridor.png'))
         self.image = pygame.transform.flip(self.image, True, True)
+
     def __view__(self, camera):
         borders = self.scene.borders
         screen_rect = camera.projection_of_rect(borders)
         camera.temp_surface.blit(pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3])), screen_rect)
+
 
 class GameEvent:
     """
@@ -345,15 +306,26 @@ class Level(Scene):
         super(Level, self).__devview__(camera)
         camera.devview(self.player)
 
-    def damage_in_area(self, area: PhysicalRect, damage):
+    def damage_in_area(self, area: PhysicalRect, damage, type_, **kwargs):
         """
         Наносит урон всем сущностям в заданых границах
         :param area: границы
+        :param damage: урон
+        :param type_: тип урона
         :return:
         """
+
+        # Пинаем объекты
+        if 'impulse' in kwargs:
+            for object_ in self.objects:
+                if area.check_intersection(object_.body_rect):
+                    object_.body.apply_impulse_at_local_point(kwargs['impulse'])
+
         for entity in self.entities:
             if area.check_intersection(entity.body_rect):
-                entity.damage(damage)
+                entity.damage(damage, type_)
+                if 'impulse' in kwargs:
+                    entity.body.apply_impulse_at_local_point(kwargs['impulse'])
 
     # Методы, отвечающие за сохранение уровня в файла
 
