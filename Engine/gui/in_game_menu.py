@@ -24,7 +24,7 @@ class InGameMenu(MicroApp):
                                                self.text_surface_2.get_height())
         self.text_surface_3 = self.font.render('Вернуться в игру', True, self.font_color)
         self.text_surface_3_rect = pygame.Rect(self.screen.get_width() // 2 - self.text_surface_3.get_width() // 2,
-                                               self.screen.get_height() * 14 // 24,
+                                               self.screen.get_height() * 13 // 24,
                                                self.text_surface_3.get_width(),
                                                self.text_surface_3.get_height())
         # self.text_surface_4 = self.font.render('Выход к главному меню', True, self.font_color)
