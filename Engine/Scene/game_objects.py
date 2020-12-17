@@ -5,6 +5,7 @@ import pymunk
 from pymunk import Vec2d, Space
 
 from Engine.utils.physical_primitives import PhysicalRect, BoundingBox
+from settings import no_rotate_delta
 
 ObjectRegistry = {}
 
@@ -14,7 +15,7 @@ class GameObject:
     Базовый класс игровго объекта
     """
 
-    def __init__(self, x, y, width=0.3, height=0.3, sprite_adress=None, sprite=None):
+    def __init__(self, x, y, width=0.3, height=0.3, sprite=None):
         """
 
         :param x: x координата левого нижнего угла объекта
@@ -29,7 +30,7 @@ class GameObject:
         self.sprite = sprite
         if self.sprite is not None:
             # Переворачиваем спрайт
-            self.sprite = pygame.transform.flip(self.sprite, False, True)
+            self.sprite = pygame.transform.flip(self.sprite, False, True).convert_alpha()
 
         self.body_rect = PhysicalRect(x, y, width, height)
 
@@ -107,7 +108,8 @@ class PhysicalGameObject(GameObject):
 
     def __init__(self, x, y, width=1, height=1, sprite=None, lifetime=1,
                  scene=None, body: pymunk.Body = None, shape: pymunk.Shape = None,
-                 angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
+                 angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC,
+                 damage=None, owner=None, if_damaged='none', if_damaged_many='disappear'):
         """
         Если вы хотите установить свою фарму объекта, то при наследовании перед вызовом super().__init__
         нужно определить body и shape, чтобы всё корректно работало.
@@ -133,6 +135,7 @@ class PhysicalGameObject(GameObject):
         :param width: ширина описанного прямоугольника объекта
         :param height: высота описанного прямоугольника объекта
         :param sprite: спрайт объекта
+        :param lifetime: время жизни объекта
         :param scene: игровая сцена
         :param shape: физическая форма тела
         :param angle: начальный угол поворота тела против часовой (в радианах)
@@ -141,6 +144,10 @@ class PhysicalGameObject(GameObject):
         :param elasticity: эластичность
         :param friction: коэффициент трения
         :param type_: тип объекта (DYNAMIC, KINEMATIC, STATIC)
+        :param damage: урон при попадании в сущность, не являющейся владельцем, мб None
+        :param owner: владелеец (точнее id), мб None
+        :param if_damaged: действие после нанесения урона 1 раз
+        :param if_damaged_many: действие после нанесения урона на 1 итерации цикла проверки урона
         """
         super(PhysicalGameObject, self).__init__(x, y, width, height, sprite=sprite)
         if isinstance(scene, Space):
@@ -153,6 +160,15 @@ class PhysicalGameObject(GameObject):
 
         # Оставшееся время жизни объекта
         self.lifetime = lifetime
+
+        # Владелец
+        self.owner = owner
+
+        # Урон
+        self.damage = damage
+        self.if_damaged = if_damaged
+        self.if_damaged_many = if_damaged_many
+        # Подробнее про состояния можно почитать в self._damaged
 
         # Цыганская магия
         self.physical_space = scene.physical_space
@@ -179,6 +195,11 @@ class PhysicalGameObject(GameObject):
 
         self.physical_space.add(self.body, self.body_shape)
 
+        # Оптимизация связанная с вращение
+        # Если объект повернулся не сильно, то не будем его вращать его спрайт
+        self.rotated_sprite = self.sprite
+        self.last_angle = float('inf')
+
     def step(self, dt):
         # пересчитываем позицию описанного прямоугольника
         self.body_rect.centre = self.body.position
@@ -193,6 +214,39 @@ class PhysicalGameObject(GameObject):
         """
         self.physical_space.remove(self.body)
         self.physical_space.remove(self.body_shape)
+
+    def _damaged(self, action):
+        # Ничего не делать при none
+        if action == 'none':
+            return
+
+        # Пропасть
+        elif action == 'disappear':
+            self.lifetime = -1
+
+        # Потерять урон
+        elif action == 'lose_damage':
+            self.damage = None
+
+        # устанавливает новое время жизни
+        # формат действия 'new_lifetime_{time}'
+        # time - новое время жизни
+        elif action.startswith('new_lifetime'):
+            self.lifetime = float(action.split('_')[-1])
+
+    def damaged(self):
+        """
+        действие при нанесении урона персонажу 1 раз
+        :return:
+        """
+        self._damaged(self.if_damaged)
+
+    def damaged_many(self):
+        """
+        действие при нанесении урона после 1 цикла проверки урона
+        :return:
+        """
+        self._damaged(self.if_damaged_many)
 
     def no_sprite_view(self, camera):
         """
@@ -224,15 +278,27 @@ class PhysicalGameObject(GameObject):
 
         # Если преобразованный спрайт считался для другой дистанции от камеры до сцены
         # То пересчитываем его
-        if self.last_camera_distance != camera.distance:
+        # Рисуем спрайт игрока
+        # Поварачиваем
+        # Если прошлый спрайт повернулся не сильно, то не применяем трансформацию
+
+        # поменялось ли расстояние до камеры
+        changed_camera_distance = self.last_camera_distance != camera.distance
+        # повернулся ли объект достаточно, что пересчитать спрайт
+        rotated = abs(self.last_angle - self.body.angle) > no_rotate_delta
+        if changed_camera_distance:
             self.scaled_sprite = pygame.transform.scale(self.sprite, camera.projection_of_rect(self.body_rect).size)
             self.last_camera_distance = camera.distance
 
-        # Рисуем спрайт игрока
-        # Поварачиваем
-        prepared_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
+            self.rotated_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
+            self.last_angle = self.body.angle
+        elif rotated:
+            self.rotated_sprite = pygame.transform.rotate(self.scaled_sprite, -degrees(self.body.angle))
+            self.last_angle = self.body.angle
+
         # Рисуем
-        camera.temp_surface.blit(prepared_sprite, prepared_sprite.get_rect(center=rect_for_camera.center).topleft)
+        camera.temp_surface.blit(self.rotated_sprite,
+                                 self.rotated_sprite.get_rect(center=rect_for_camera.center).topleft)
 
     def __devview__(self, camera):
         """
@@ -264,6 +330,14 @@ class PhysicalGameObject(GameObject):
     @property
     def position(self):
         return self.body.position - Vec2d(self.width / 2, self.height / 2)
+
+    def save_data(self):
+        """
+        Выдаёт данные для сериализации.
+        Обязательно перегрузить при наследоывании
+        :return:
+        """
+        return self
 
 
 class StaticRectangularObject(PhysicalGameObject):

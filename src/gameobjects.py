@@ -12,8 +12,10 @@ from settings import game_objects_configs_path
 class RectangularObject(PhysicalGameObject):
     configs = load_yaml('src/configs/game_objects/fridge.yaml')
 
-    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC, lifetime=5):
+    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC, lifetime=5,
+                 damage=None, owner=None, if_damaged='none', if_damaged_many='disappear'):
         """
+        Можно ещё передать параметр damage, если нужно, чтобы объект наносил урон
         :param scene: игровая сценв
         :param x: координата x объекта
         :param y: координата y объекта
@@ -21,13 +23,18 @@ class RectangularObject(PhysicalGameObject):
         :param type_: тип объекта (статический, кинематический или динамический)
         :param lifetime: время жизни, через lifetime сек объект изчезнет.
         Чтобы он не изчес можно установить float('inf')
+        :param damage: урон при попадании в сущность, не являющейся владельцем, мб None
+        :param owner: владелеец (точнее id), мб None
+        :param if_damaged: действие после нанесения урона 1 раз
+        :param if_damaged_many: действие после нанесения урона на 1 итерации цикла проверки урона
         """
         sprite = None
         if self.configs['sprite'] is not None:
             sprite = pil_to_pygame(load_image(self.configs['sprite']))
 
         super(RectangularObject, self).__init__(x, y, angle=angle, sprite=sprite, scene=scene, lifetime=lifetime,
-                                                type_=type_, **self.configs['init'])
+                                                type_=type_, **self.configs['init'], damage=damage, owner=owner,
+                                                if_damaged=if_damaged, if_damaged_many=if_damaged_many)
 
     def save_data(self):
         return {
@@ -42,8 +49,10 @@ class RectangularObject(PhysicalGameObject):
 class CircularObject(PhysicalGameObject):
     configs = load_yaml('src/configs/game_objects/alarm_clock.yaml')
 
-    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC, lifetime=5):
+    def __init__(self, scene, x, y, angle=0, type_=Body.STATIC, lifetime=5,
+                 damage=None, owner=None, if_damaged='none', if_damaged_many='disappear'):
         """
+        Можно ещё передать параметр damage, если нужно, чтобы объект наносил урон
         :param scene: игровая сценв
         :param x: координата x объекта
         :param y: координата y объекта
@@ -51,6 +60,10 @@ class CircularObject(PhysicalGameObject):
         :param type_: тип объекта (статический, кинематический или динамический)
         :param lifetime: время жизни, через lifetime сек объект изчезнет.
         Чтобы он не изчес можно установить float('inf')
+        :param damage: урон при попадании в сущность, не являющейся владельцем, мб None
+        :param owner: владелеец (точнее id), мб None
+        :param if_damaged: действие после нанесения урона 1 раз
+        :param if_damaged_many: действие после нанесения урона на 1 итерации цикла проверки урона
         """
         sprite = None
         if self.configs['sprite'] is not None:
@@ -71,7 +84,9 @@ class CircularObject(PhysicalGameObject):
                                              body=body, shape=shape, angle=angle,
                                              mass=init_config['mass'], moment=init_config['moment'],
                                              elasticity=init_config['elasticity'],
-                                             friction=init_config['friction'], type_=type_)
+                                             friction=init_config['friction'], type_=type_,
+                                             damage=damage, owner=owner,
+                                             if_damaged=if_damaged, if_damaged_many=if_damaged_many)
 
         self.body_rect = PhysicalRect(x - radius / 2, y - radius / 2, 2 * radius, 2 * radius)
 

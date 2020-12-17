@@ -36,7 +36,7 @@ objects:
       x: 2
       y: 0
       type_: 0
-      lifetime: .inf
+      lifetime: 1
   1:
     class: AlarmClock
     init:

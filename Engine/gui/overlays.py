@@ -254,6 +254,7 @@ class DevMode(Overlay):
 
         data_right = {
             'Camera position': f'{round(camera_position[0], self.digits)}, {round(camera_position[1], self.digits)}',
+            'Camera distance': f'{round(self.data_source.camera.distance)}',
             'Operator target': 'yes' if self.data_source.camera_operator.target is not None else 'no',
             'Operator type': self.data_source.camera_operator.targeting_method.value,
             'Operator aiming': self.data_source.camera_operator.aiming,

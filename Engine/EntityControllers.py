@@ -6,7 +6,6 @@ from math import copysign
 import pygame
 
 from .Scene.animations import State
-from .utils.utils import *
 
 ControllerRegistry = {}
 
@@ -50,42 +49,7 @@ class ManualController(EntityController):
     """
     Управление сущностья с клавиатуры
     TODO: разрешить менять игроку взгляд и направление вдоль x во время полёта
-    TODO: разберись в разнице между name и config
     """
-
-    def __init__(self, entity, config='config_wasd.yaml', name='default_contr_name'):
-        super(ManualController, self).__init__(entity, name)
-
-        self.config = config
-
-        self.throw = 0
-        self.hand_hit = 0
-        self.walk_left = 0
-        self.walk_right = 0
-        self.run = 0
-        self.jump = 0
-
-        self.unload_config()
-
-    def unload_config(self):
-        """
-        Принимает yaml файл со списком кнопок в следующем порядке:
-        Бросок,
-        Удар,
-        Идти влево,
-        Идти вправо,
-        Бег,
-        Прыжок
-        :return: list
-        """
-        control_list = load_yaml('src/configs/controllers/' + str(self.config))
-
-        self.throw = control_list[0]
-        self.hand_hit = control_list[1]
-        self.walk_left = control_list[2]
-        self.walk_right = control_list[3]
-        self.run = control_list[4]
-        self.jump = control_list[5]
 
     def step(self, dt):
 
@@ -95,7 +59,18 @@ class ManualController(EntityController):
 
         # Бросок
         if pressed_keys[self.throw] and hasattr(self.entity, 'throw'):
-            self.entity.throw()
+            target = None
+            distance = float('inf')
+            # наводка на ближайщую сущность
+            for entity in self.entity.scene.entities_and_player:
+                if entity == self.entity:
+                    continue
+
+                if (distance_ := (self.entity.body.position - entity.body.position).length) < distance:
+                    target = entity.body.position
+                    distance = distance_
+
+            self.entity.throw(target)
 
         if pressed_keys[self.hand_hit] and hasattr(self.entity, 'hand_hit'):
             self.entity.hand_hit()

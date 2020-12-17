@@ -6,12 +6,16 @@
 import os
 
 import numpy as np
+import pygame
+import pymunk
 import yaml
 from pygame.draw import rect, circle
+from pymunk import Vec2d
 
-from Engine.Scene.game_objects import *
+from Engine.Scene.game_objects import PhysicalGameObject, ObjectRegistry
 from Engine.utils.physical_primitives import PhysicalRect
 from settings import g
+from .camera import Camera
 from .entities import PersonRegistry
 from ..EntityControllers import ControllerRegistry
 
@@ -26,6 +30,13 @@ class Background:
 
     def __init__(self, scene=None):
         self.scene = scene
+
+    def step(self, dt):
+        """
+        Эволюция фона во времени
+        :param dt: квант времени
+        :return:
+        """
 
     def __view__(self, camera):
         """
@@ -83,43 +94,38 @@ class SunnyField(Background):
         circle(camera.temp_surface, (255, 255, 0), pt, camera.projection_of_length(1))
 
 
-class Dorm(Background):
+class PictureBackground(Background):
+    image_path = os.path.join('Resources', 'pictures', 'Backgrounds', 'back_six.png')
+
     def __init__(self, scene=None):
-        super(Dorm, self).__init__(scene=scene)
-        self.image = pygame.image.load(os.path.join('Resources', 'pictures', 'Backgrounds',
-                                                    'back_six.png'))
-        self.image = pygame.transform.flip(self.image, True, True)
+        super(PictureBackground, self).__init__(scene=scene)
+        self.image = pygame.image.load(self.image_path).convert_alpha()
+        self.image = pygame.transform.flip(self.image, True, True).convert_alpha()
+
+        self.scaled_image = self.image
+        self.last_camera_distance = -1
 
     def __view__(self, camera):
         borders = self.scene.borders
         screen_rect = camera.projection_of_rect(borders)
-        camera.temp_surface.blit(pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3])), screen_rect)
+
+        if camera.distance != self.last_camera_distance:
+            self.scaled_image = pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3]))
+            self.last_camera_distance = camera.distance
+
+        camera.temp_surface.blit(self.scaled_image, screen_rect)
 
 
-class Basment(Background):
-    def __init__(self, scene=None):
-        super(Basment, self).__init__(scene=scene)
-        self.image = pygame.image.load(os.path.join('Resources', 'pictures', 'Backgrounds',
-                                                    'back_basment.png'))
-        self.image = pygame.transform.flip(self.image, True, True)
-
-    def __view__(self, camera):
-        borders = self.scene.borders
-        screen_rect = camera.projection_of_rect(borders)
-        camera.temp_surface.blit(pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3])), screen_rect)
+class Dorm(PictureBackground):
+    image_path = os.path.join('Resources', 'pictures', 'Backgrounds', 'back_six.png')
 
 
-class Corridor(Background):
-    def __init__(self, scene=None):
-        super(Corridor, self).__init__(scene=scene)
-        self.image = pygame.image.load(os.path.join('Resources', 'pictures', 'Backgrounds',
-                                                    'back_corridor.png'))
-        self.image = pygame.transform.flip(self.image, True, True)
+class Basment(PictureBackground):
+    image_path = os.path.join('Resources', 'pictures', 'Backgrounds', 'back_basment.png')
 
-    def __view__(self, camera):
-        borders = self.scene.borders
-        screen_rect = camera.projection_of_rect(borders)
-        camera.temp_surface.blit(pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3])), screen_rect)
+
+class Corridor(PictureBackground):
+    image_path = os.path.join('Resources', 'pictures', 'Backgrounds', 'back_corridor.png')
 
 
 class GameEvent:
@@ -156,7 +162,7 @@ class Scene:
         # Игровые события
         self.game_events: list[GameEvent] = []
         # Предметы на игровом поле, например летающие ножи, частицы и т.д.
-        self.objects = []
+        self.objects: list[PhysicalGameObject] = []
         # Живые сущности, например враги
         self.entities = []
         # Задний фон
@@ -195,7 +201,7 @@ class Scene:
             new_segment.friction = 1
             self.physical_space.add(new_segment)
 
-    def __view__(self, camera):
+    def __view__(self, camera: Camera):
         """
         Отрисовка
         :param camera: камера, на поверхности которой рисуем
@@ -207,7 +213,7 @@ class Scene:
         for ent in self.entities:
             camera.view(ent)
 
-    def __devview__(self, camera):
+    def __devview__(self, camera: Camera):
         """
         Отрисовка параметров для разработчиков
         :param camera: камера, на поверхности которой рисуем
@@ -252,6 +258,24 @@ class Scene:
             3
         )
 
+        for x in range(int(self.borders.left), int(self.borders.right) + 1):
+            pygame.draw.line(
+                camera.temp_surface,
+                (0, 0, 0),
+                (camera.projection_of_point((x, 0)).x, 0),
+                (camera.projection_of_point((x, 0)).x, camera.temp_surface.get_height()),
+                2
+            )
+
+        for y in range(int(self.borders.bottom), int(self.borders.top) + 1):
+            pygame.draw.line(
+                camera.temp_surface,
+                (0, 0, 0),
+                (0, camera.projection_of_point((0, y)).y),
+                (camera.temp_surface.get_width(), camera.projection_of_point((0, y)).y),
+                2
+            )
+
     def step(self, dt):
         """
         Эволюция системы во времени
@@ -273,6 +297,8 @@ class Scene:
 
         for ent in self.entities:
             ent.step(dt)
+
+        self.bg.step(dt)
 
 
 class Level(Scene):
@@ -298,6 +324,14 @@ class Level(Scene):
         # Возвращаем игрока в границы уровня
         self.player.check_scene_border(self.borders)
 
+        # Проверяем урон по персонажам от объектов
+        for obj in self.objects:
+            # если объект способен наносить урон
+            if obj.damage is not None:
+                # считаем, что бросивший не получает урон от этого объекта
+                if self.damage_in_area(obj.body_rect, obj.damage, 'from_dynamic_object', object_=obj, skip=[obj.owner]):
+                    obj.damaged_many()
+
     def __view__(self, camera):
         super(Level, self).__view__(camera)
         camera.view(self.player)
@@ -306,26 +340,57 @@ class Level(Scene):
         super(Level, self).__devview__(camera)
         camera.devview(self.player)
 
-    def damage_in_area(self, area: PhysicalRect, damage, type_, **kwargs):
+    @property
+    def entities_and_player(self):
+        return self.entities + [self.player]
+
+    def damage_in_area(self, area: PhysicalRect, damage, type_, impulse=None, skip=None, **kwargs):
         """
         Наносит урон всем сущностям в заданых границах
         :param area: границы
         :param damage: урон
         :param type_: тип урона
-        :return:
+        :param impulse: импуль при нанесении урона (кулаком)
+        :param skip: список id сущностей, которые по какой-либо причине не получат урон
+        :return: True, если был нанесён урон, False иначе
         """
 
+        if skip is None:
+            skip = []
+
+        # флаг, отвечающий за то, что был нанесён урон
+        damaged = False
+
         # Пинаем объекты
-        if 'impulse' in kwargs:
+        if impulse is not None:
             for object_ in self.objects:
                 if area.check_intersection(object_.body_rect):
-                    object_.body.apply_impulse_at_local_point(kwargs['impulse'])
+                    object_.body.apply_impulse_at_local_point(impulse)
 
-        for entity in self.entities:
+        # Наносим урон сущностям и игроку
+        for entity in self.entities_and_player:
+
+            # Пропускаем нужных сущностей
+            if id(entity) in skip:
+                continue
+
+            # Если сущность в области нанесения урона
             if area.check_intersection(entity.body_rect):
-                entity.damage(damage, type_)
-                if 'impulse' in kwargs:
-                    entity.body.apply_impulse_at_local_point(kwargs['impulse'])
+
+                # подробнее читать в документации на этот метод
+                if 'object_' in kwargs:
+                    kwargs['object_'].damaged()
+
+                # нанесение урона
+                entity.get_damage(damage, type_)
+                # флаг, был нанесён урон
+                damaged = True
+
+                # Передаём импульс, если он есть
+                if impulse is not None:
+                    entity.body.apply_impulse_at_local_point(impulse)
+
+        return damaged
 
     # Методы, отвечающие за сохранение уровня в файла
 
@@ -364,12 +429,12 @@ class Level(Scene):
         # Сохранение гг
         save_data_final['MainCharacter'] = self.player.save_data()
 
-        #Сохраннение фона
-        if self.background.__class__.__name__ == Dorm:
+        # Сохраннение фона
+        if self.bg.__class__.__name__ == Dorm:
             save_data_final['background'] = 'dorm'
-        if self.background.__class__.__name__ == Basment:
+        if self.bg.__class__.__name__ == Basment:
             save_data_final['background'] = 'base'
-        if self.background.__class__.__name__ == Corridor:
+        if self.bg.__class__.__name__ == Corridor:
             save_data_final['background'] = 'corr'
 
         with open(os.path.join('src', 'Levels', 'Saved_Levels', username + '_save'), 'w') as write_file:
@@ -468,12 +533,12 @@ class Level(Scene):
         self.borders = PhysicalRect(**data['borders']) if data['borders'] is not None else PhysicalRect(-10, -5, 20, 10)
         self.invisible_segments = data['invisible_segments']
         self.add_borders()
-        self.background = data['background']
-        if self.background == 'dorm':
+        background = data['background']
+        if background == 'dorm':
             self.bg = Dorm(self)
-        if self.background == 'corr':
+        if background == 'corr':
             self.bg = Corridor(self)
-        if self.background == 'base':
+        if background == 'base':
             self.bg = Basment(self)
         # Загрузка объектов
         for object_ in data['objects'].values():
