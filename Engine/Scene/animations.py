@@ -674,7 +674,7 @@ class EntityAnimations:
         for animation_name, animation in animations.items():
 
             # Если анимации ориентированны влево или вправо
-            if direction := animation['direction'].lower() in ('right', 'left'):
+            if (direction := animation['direction'].lower()) in ('right', 'left'):
                 if direction == 'right':
                     directions = ('right', 'left')
                 else:
@@ -684,13 +684,13 @@ class EntityAnimations:
                     # Анимация в прямом направлении
                     self.__dict__[f'{animation_name}_{directions[0]}'] = loader[animation['type']](
                         animation,
-                        flip_x=True,
+                        flip_x=False,
                         name=animation_name
                     )
                     # Анимация в зеркальном направлении
                     self.__dict__[f'{animation_name}_{directions[1]}'] = loader[animation['type']](
                         animation,
-                        flip_x=False,
+                        flip_x=True,
                         name=animation_name
                     )
                 except IncorrectConfig as e:
