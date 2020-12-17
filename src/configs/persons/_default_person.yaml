@@ -1,8 +1,8 @@
 name: 'Default'
 
 init:
-  width: 0.96
-  height: 1.8
+  width: &width 0.96
+  height: &height 1.8
   mass: 75
   animations: 'Resources/Animations/DanyaPers.yaml'
 
@@ -10,6 +10,9 @@ properties:
   description: null
   max_health: 100
   dodge: 0.1
+  walk_speed: 1.5  # Скорость ходьбы сущности
+  run_speed: 4  # Скорость бега сущности
+  jump_speed: 4.5 # Скорость прыжка
 
 hits:
 
@@ -43,3 +46,41 @@ hits:
 
       animation: 'throw_1'
       animation_hatting_phase: 0.5
+
+rects:
+  idle_rect:
+    - *width
+    - *height
+  walking_rect:
+    - *width
+    - *height
+  running_rect:
+    - *width
+    - 1.72
+
+  sitting_rect:
+    - *width
+    - 0.9
+  squatting_rect:
+    - *width
+    - 0.9
+
+  lying_rect:
+    - *width
+    - *height
+  crawling_rect:
+    - *width
+    - *height
+
+  soaring_rect:
+    - *width
+    - *height
+  jumping_rect:
+    - *width
+    - *height
+  flying_rect:
+    - *width
+    - *height
+  landing_rect:
+    - *width
+    - *height

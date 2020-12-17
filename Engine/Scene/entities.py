@@ -33,8 +33,6 @@ class Entity(PhysicalGameObject):
     TODO: добавить объект кулаков и ног, чтобы можно было легко реализовать засчитывание урона
     TODO: очень желателдьно добавить подсчёт очков, нужно если вруг мы решим завести ии от OpenAI
     TODO: прикрутить анимацию удара
-    TODO: прикрутить анимацию кидания
-    TODO: придумать, как сохранять состояние игрока
     TODO: разделить толо игрока на само тело, ноги, руки, голову (нужно для удобной анимации ударов)
     """
 
@@ -53,32 +51,36 @@ class Entity(PhysicalGameObject):
                                      mass=mass, moment=float('inf'), elasticity=0,
                                      friction=0.6, type_=pymunk.Body.DYNAMIC)
         # float('inf'), чтобы исключить вращение
-        # Сцена сущностит
+
+        # Сцена сущности
         self.scene = scene
         # Мозг сущности
         self.brain = brain(self)
 
         # Описанные прямоугольники для разных состояний игрока
         # Нужны для пересчёта геометрии при смене состояния игрока
-        # Названия говорят сами за себяф
-        self.idle_rect = PhysicalRect(0, 0, width, height)
-        self.walking_rect = PhysicalRect(0, 0, width, height)
-        self.running_rect = PhysicalRect(0, 0, width, height * 134 / 140)
+        # Названия говорят сами за себя
+        # Прописывание всего этого рукими можно удалить, но оно нужно для наглядности
+        rects: dict = default_person['rects']
+        self.idle_rect = PhysicalRect(0, 0, rects['idle_rect'][0], rects['idle_rect'][1])
+        self.walking_rect = PhysicalRect(0, 0, rects['walking_rect'][0], rects['walking_rect'][1])
+        self.running_rect = PhysicalRect(0, 0, rects['running_rect'][0], rects['running_rect'][1])
 
-        self.sitting_rect = PhysicalRect(0, 0, width, height / 2)
-        self.squatting_rect = PhysicalRect(0, 0, width, height / 2)
+        self.sitting_rect = PhysicalRect(0, 0, rects['sitting_rect'][0], rects['sitting_rect'][1])
+        self.squatting_rect = PhysicalRect(0, 0, rects['squatting_rect'][0], rects['squatting_rect'][1])
+        self.lying_rect = PhysicalRect(0, 0, rects['lying_rect'][0], rects['lying_rect'][1])
+        self.crawling_rect = PhysicalRect(0, 0, rects['crawling_rect'][0], rects['crawling_rect'][1])
 
-        self.lying_rect = PhysicalRect(0, 0, height, width)
-        self.crawling_rect = PhysicalRect(0, 0, height, width)
+        self.soaring_rect = PhysicalRect(0, 0, rects['soaring_rect'][0], rects['soaring_rect'][1])
+        self.jumping_rect = PhysicalRect(0, 0, rects['jumping_rect'][0], rects['jumping_rect'][1])
+        self.flying_rect = PhysicalRect(0, 0, rects['flying_rect'][0], rects['flying_rect'][1])
+        self.landing_rect = PhysicalRect(0, 0, rects['landing_rect'][0], rects['landing_rect'][1])
 
-        self.soaring_rect = PhysicalRect(0, 0, width, height)
-        self.jumping_rect = PhysicalRect(0, 0, width, height)
-        self.flying_rect = PhysicalRect(0, 0, width, height)
-        self.landing_rect = PhysicalRect(0, 0, width, height)
-
-        self.walk_speed = 1.5  # Скорость ходьбы сущности
-        self.run_speed = 4  # Скорость бега сущности
-        self.jump_speed = 4.5  # Скорость прыжка
+        # Свойства сущности
+        properties: dict = default_person['properties']
+        self.walk_speed = properties['walk_speed']  # Скорость ходьбы сущности
+        self.run_speed = properties['run_speed']  # Скорость бега сущности
+        self.jump_speed = properties['jump_speed']  # Скорость прыжка
 
         # Далее флаги, нужные для удобной обработки
 
@@ -129,24 +131,25 @@ class Entity(PhysicalGameObject):
     def set_new_shape(self, shape: str):
         """
         Меняет физическое тело
-        Нужно для корретной обрабьотки физики при приседаниях и беге
-        TODO: написать документацию
+        Нужно для корретной обработки физики при приседаниях и беге
         :param shape: новая форма
         :return:
         """
         # Удаляем старое тело
-        self.physical_space.remove(self.body)
-        self.physical_space.remove(self.body_shape)
+        self.kill()
 
         # Новое тело
         self.body_shape = pymunk.Poly.create_box(self.body, self.__dict__[f'{shape}_rect'].size)
         self.body_shape.friction = 0.6
         self.body_shape.elasticity = 0
+
+        old_bottom_left = self.body_rect.bottomleft
         self.body_rect = self.__dict__[f'{shape}_rect']
-        self.body_rect.centre = self.body.position
 
         # считаем, что нижняя граница человека остаётся постоянной, типо он отталкивается ногами
-        self.body.position += ((self.__dict__[f'{shape}_rect'].height - self.body_rect.height) / 2, 0)
+        self.body_rect.bottomleft = old_bottom_left
+
+        self.body.position = self.body_rect.centre
 
         self.physical_space.add(self.body, self.body_shape)
 
@@ -252,7 +255,6 @@ class Entity(PhysicalGameObject):
         """
         Проверяем статус сущности
         в частности проверяем на FLYING и IDLE
-        TODO: поправить проверку статуса FLYING, т. к. она слишком примитивная
         :return:
         """
 
@@ -326,7 +328,6 @@ class Entity(PhysicalGameObject):
         :param camera: сама камера
         :return:
         """
-        # TODO: ОПТИМИЗАЦИЯ
         # Проекция описанного прямоугольника на камеру
         rect_for_camera: pygame.Rect = camera.projection_of_rect(self.boundingbox2)
 
@@ -366,16 +367,28 @@ class BaseCharacter(Entity):
 
         # Боёвка
         hits: dict = default_person['hits']
+        # Удары рукой
         self.arming = hits['arming']
+        # Бросания
         self.throwing = hits['throwing']
+
+        # Список названий ударов рукой
         self.arming_types = list(self.arming)
+        # Список названия бросков
         self.throwing_types = list(self.throwing)
 
+        # Обновляем свойства, согласно конфигу
         if 'properties' in self.configs:
             self.__dict__ |= self.configs['properties']
 
+        # Обновляем удары, согласно конфигу
         if 'hits' in self.configs:
             self.__dict__ |= self.configs['hit']
+
+        # Обновляем описанные прямоугольники для разных состояний, согласно конфигу
+        if 'rects' in self.configs:
+            for name_, (width_, height_) in self.configs['rects'].items():
+                self.__dict__[name_] = PhysicalRect(0, 0, width_, height_)
 
         # Атрибуты, которые в данный момент
         self.health = 0
@@ -464,7 +477,7 @@ class BaseCharacter(Entity):
             d = 1 - 2 * g * dy / v / v - g * g * dx * dx * dx * dx / v / v / v / v
 
             # Кидаем на максимально возможную дистанцию
-            tga = v * v / g / dx 
+            tga = v * v / g / dx
 
             # print(d)
 
@@ -476,10 +489,9 @@ class BaseCharacter(Entity):
 
         return throw_method['throw_angle']
 
-    def throw(self, target=Vec2d(2, 2)):
+    def throw(self, target=None):
         """
         Кидание
-        TODO: заменить Vec2d(2, 2) на None. Это было для теста
         :param target: цель,
         Если None, то угол броска берётся из конфига
         Если число, то угол броска = target
