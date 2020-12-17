@@ -107,7 +107,8 @@ class PhysicalGameObject(GameObject):
 
     def __init__(self, x, y, width=1, height=1, sprite=None, lifetime=1,
                  scene=None, body: pymunk.Body = None, shape: pymunk.Shape = None,
-                 angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC):
+                 angle=0, mass=1, moment=None, elasticity=0, friction=0.6, type_=pymunk.Body.STATIC,
+                 damage=None, owner=None, if_damaged='none', if_damaged_many='disappear'):
         """
         Если вы хотите установить свою фарму объекта, то при наследовании перед вызовом super().__init__
         нужно определить body и shape, чтобы всё корректно работало.
@@ -133,6 +134,7 @@ class PhysicalGameObject(GameObject):
         :param width: ширина описанного прямоугольника объекта
         :param height: высота описанного прямоугольника объекта
         :param sprite: спрайт объекта
+        :param lifetime: время жизни объекта
         :param scene: игровая сцена
         :param shape: физическая форма тела
         :param angle: начальный угол поворота тела против часовой (в радианах)
@@ -141,6 +143,10 @@ class PhysicalGameObject(GameObject):
         :param elasticity: эластичность
         :param friction: коэффициент трения
         :param type_: тип объекта (DYNAMIC, KINEMATIC, STATIC)
+        :param damage: урон при попадании в сущность, не являющейся владельцем, мб None
+        :param owner: владелеец (точнее id), мб None
+        :param if_damaged: действие после нанесения урона 1 раз
+        :param if_damaged_many: действие после нанесения урона на 1 итерации цикла проверки урона
         """
         super(PhysicalGameObject, self).__init__(x, y, width, height, sprite=sprite)
         if isinstance(scene, Space):
@@ -153,6 +159,15 @@ class PhysicalGameObject(GameObject):
 
         # Оставшееся время жизни объекта
         self.lifetime = lifetime
+
+        # Владелец
+        self.owner = owner
+
+        # Урон
+        self.damage = damage
+        self.if_damaged = if_damaged
+        self.if_damaged_many = if_damaged_many
+        # Подробнее про состояния можно почитать в self._damaged
 
         # Цыганская магия
         self.physical_space = scene.physical_space
@@ -193,6 +208,39 @@ class PhysicalGameObject(GameObject):
         """
         self.physical_space.remove(self.body)
         self.physical_space.remove(self.body_shape)
+
+    def _damaged(self, action):
+        # Ничего не делать при none
+        if action == 'none':
+            return
+
+        # Пропасть
+        elif action == 'disappear':
+            self.lifetime = -1
+
+        # Потерять урон
+        elif action == 'lose_damage':
+            self.damage = None
+
+        # устанавливает новое время жизни
+        # формат действия 'new_lifetime_{time}'
+        # time - новое время жизни
+        elif action.startswith('new_lifetime'):
+            self.lifetime = float(action.split('_')[-1])
+
+    def damaged(self):
+        """
+        действие при нанесении урона персонажу 1 раз
+        :return:
+        """
+        self._damaged(self.if_damaged)
+
+    def damaged_many(self):
+        """
+        действие при нанесении урона после 1 цикла проверки урона
+        :return:
+        """
+        self._damaged(self.if_damaged_many)
 
     def no_sprite_view(self, camera):
         """
@@ -264,6 +312,14 @@ class PhysicalGameObject(GameObject):
     @property
     def position(self):
         return self.body.position - Vec2d(self.width / 2, self.height / 2)
+
+    def save_data(self):
+        """
+        Выдаёт данные для сериализации.
+        Обязательно перегрузить при наследоывании
+        :return:
+        """
+        return self
 
 
 class StaticRectangularObject(PhysicalGameObject):

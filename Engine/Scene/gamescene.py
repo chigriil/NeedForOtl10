@@ -6,10 +6,13 @@
 import os
 
 import numpy as np
+import pygame
+import pymunk
 import yaml
 from pygame.draw import rect, circle
+from pymunk import Vec2d
 
-from Engine.Scene.game_objects import *
+from Engine.Scene.game_objects import PhysicalGameObject, ObjectRegistry
 from Engine.utils.physical_primitives import PhysicalRect
 from settings import g
 from .entities import PersonRegistry
@@ -156,7 +159,7 @@ class Scene:
         # Игровые события
         self.game_events: list[GameEvent] = []
         # Предметы на игровом поле, например летающие ножи, частицы и т.д.
-        self.objects = []
+        self.objects: list[PhysicalGameObject] = []
         # Живые сущности, например враги
         self.entities = []
         # Задний фон
@@ -298,6 +301,14 @@ class Level(Scene):
         # Возвращаем игрока в границы уровня
         self.player.check_scene_border(self.borders)
 
+        # Проверяем урон по персонажам от объектов
+        for obj in self.objects:
+            # если объект способен наносить урон
+            if obj.damage is not None:
+                # считаем, что бросивший не получает урон от этого объекта
+                if self.damage_in_area(obj.body_rect, obj.damage, 'from_dynamic_object', object_=obj, skip=[obj.owner]):
+                    obj.damaged_many()
+
     def __view__(self, camera):
         super(Level, self).__view__(camera)
         camera.view(self.player)
@@ -306,26 +317,53 @@ class Level(Scene):
         super(Level, self).__devview__(camera)
         camera.devview(self.player)
 
-    def damage_in_area(self, area: PhysicalRect, damage, type_, **kwargs):
+    def damage_in_area(self, area: PhysicalRect, damage, type_, impulse=None, skip=None, **kwargs):
         """
         Наносит урон всем сущностям в заданых границах
         :param area: границы
         :param damage: урон
         :param type_: тип урона
-        :return:
+        :param impulse: импуль при нанесении урона (кулаком)
+        :param skip: список id сущностей, которые по какой-либо причине не получат урон
+        :return: True, если был нанесён урон, False иначе
         """
 
+        if skip is None:
+            skip = []
+
+        # флаг, отвечающий за то, что был нанесён урон
+        damaged = False
+
         # Пинаем объекты
-        if 'impulse' in kwargs:
+        if impulse is not None:
             for object_ in self.objects:
                 if area.check_intersection(object_.body_rect):
-                    object_.body.apply_impulse_at_local_point(kwargs['impulse'])
+                    object_.body.apply_impulse_at_local_point(impulse)
 
-        for entity in self.entities:
+        # Наносим урон сущностям и игроку
+        for entity in self.entities + [self.player]:
+
+            # Пропускаем нужных сущностей
+            if id(entity) in skip:
+                continue
+
+            # Если сущность в области нанесения урона
             if area.check_intersection(entity.body_rect):
-                entity.damage(damage, type_)
-                if 'impulse' in kwargs:
-                    entity.body.apply_impulse_at_local_point(kwargs['impulse'])
+
+                # подробнее читать в документации на этот метод
+                if 'object_' in kwargs:
+                    kwargs['object_'].damaged()
+
+                # нанесение урона
+                entity.get_damage(damage, type_)
+                # флаг, был нанесён урон
+                damaged = True
+
+                # Передаём импульс, если он есть
+                if impulse is not None:
+                    entity.body.apply_impulse_at_local_point(impulse)
+
+        return damaged
 
     # Методы, отвечающие за сохранение уровня в файла
 

@@ -138,7 +138,7 @@ class Entity(PhysicalGameObject):
         # Меняем геометрию
         self.set_new_shape(new_state.value)
 
-    def damage(self, damage, type_):
+    def get_damage(self, damage, type_):
         """
         Получение персонажем урона
         :param damage: количество урона
@@ -504,6 +504,10 @@ class BaseCharacter(Entity):
             self.scene,
             *position,
             angle,
+            damage=throw_method['damage'],
+            owner=id(self),
+            if_damaged=throw_method['if_damaged'],
+            if_damaged_many=throw_method['if_damaged_many']
         )
         # Устанавливает скорость
         obj.body.velocity = velocity
