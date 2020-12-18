@@ -442,21 +442,22 @@ class Level(Scene):
 
     # Методы, отвечающие за загрузку уровня из файла
 
-    def init_player(self, x=0, y=0):
+    def init_player(self, x=0, y=0, **kwargs):
         """
         Инициализирует игрока
         :param x: x координата левого нижнего угла описанного прямоугольника игрока
         :param y: y координата левого нижнего угла описанного прямоугольника игрока
         :return:
         """
-        self.player = PersonRegistry['MainCharacter'](self, x, y)
+        self.player = PersonRegistry['MainCharacter'](self, x, y, **kwargs)
 
     def load_entity(self, configs):
         self.entities.append(
             PersonRegistry[configs['class']](
                 self,
                 *configs['vector'],
-                ControllerRegistry[configs['brain']]
+                ControllerRegistry[configs['brain']['name']],
+                brain_init=configs['brain']['init']
             )
         )
 
@@ -545,7 +546,7 @@ class Level(Scene):
             self.load_object(object_)
 
         # Инициализация игрока
-        self.init_player(*data['MainCharacter']['vector'])
+        self.init_player(*data['MainCharacter']['vector'], **data['MainCharacter']['brain']['init'])
 
         # Загрузка сущностей
         for entity_config in data['entities'].values():

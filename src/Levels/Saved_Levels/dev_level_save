@@ -16,14 +16,21 @@ invisible_segments:
 
 
 MainCharacter:
-  brain: ManualController
+  brain:
+    name: ManualController
+    init:
+      config: 'config_wasd.yaml'
   class: MainCharacter
   vector:
   - 0
   - 0.1
+
 entities:
   0:
-    brain: Idle
+    brain:
+      name: ManualController
+      init:
+        config: 'config_arrows.yaml'
     class: Danilio
     vector:
     - 3

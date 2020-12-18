@@ -1,6 +1,7 @@
 """
 Модуль с мозгами для сущностей
 """
+import os
 from math import copysign
 
 import pygame
@@ -17,13 +18,13 @@ class EntityController:
     Отвечает за принятия сущностью решения о том, что делать в каждый момент времени
     """
 
-    def __init__(self, entity, name='default_contr_name'):
+    def __init__(self, entity, config=None, **kwargs):
         """
-
+        :param config: нужен для совместимости с наследниками
         :param entity: сама сущность
         """
         self.entity = entity
-        self.name = name
+        self.config = config
 
     def step(self, dt):
         """
@@ -36,10 +37,14 @@ class EntityController:
     def __init_subclass__(cls, **kwargs):
         ControllerRegistry[cls.__name__] = cls
 
+    def save_data(self):
+        return {'name': self.__class__.__name__,
+                'init': {}}
+
 
 class Idle(EntityController):
-    def __init__(self, entity, name='default_contr_name'):
-        super(Idle, self).__init__(entity=entity, name=name)
+    def __init__(self, entity, **kwargs):
+        super(Idle, self).__init__(entity=entity, **kwargs)
 
     """
     Ничего не делающий контроллер
@@ -53,10 +58,9 @@ class ManualController(EntityController):
     TODO: разберись в разнице между name и config
     """
 
-    def __init__(self, entity, config='config_wasd.yaml', name='default_contr_name'):
-        super(ManualController, self).__init__(entity, name)
-
-        self.config = config
+    def __init__(self, entity, config='config_wasd.yaml', **kwargs):
+        super(ManualController, self).__init__(entity, config, **kwargs)
+        self._config = load_yaml(os.path.join('src', 'configs', 'controllers', config))
 
         self.throw = 0
         self.hand_hit = 0
@@ -78,14 +82,9 @@ class ManualController(EntityController):
         Прыжок
         :return: list
         """
-        control_list = load_yaml('src/configs/controllers/' + str(self.config))
-
-        self.throw = control_list[0]
-        self.hand_hit = control_list[1]
-        self.walk_left = control_list[2]
-        self.walk_right = control_list[3]
-        self.run = control_list[4]
-        self.jump = control_list[5]
+        exec('from pygame import constants')
+        for key in self._config:
+            self.__dict__[key] = eval(f'constants.{self._config[key]}')
 
     def step(self, dt):
 
@@ -135,3 +134,7 @@ class ManualController(EntityController):
 
         self.entity.body.velocity = velocity
         self.entity.state = new_state, 'keyboard handler'
+
+    def save_data(self):
+        return {'name': self.__class__.__name__,
+                'init': {'config': self.config}}
