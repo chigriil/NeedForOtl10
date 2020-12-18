@@ -4,49 +4,49 @@ idle:
 
 walking:
   file: 'Resources/Music/States_of_player/walking.ogg'
-  volume: 1.0
+  volume: 0.3
 
 running:
   file: 'Resources/Music/States_of_player/running.ogg'
-  volume: 1.0
+  volume: 0.3
 
 sitting:
   file: 'Resources/Music/States_of_player/sitting.ogg'
-  volume: 1.0
+  volume: 0.3
 
 squatting:
   file: 'Resources/Music/States_of_player/squatting.ogg'
-  volume: 1.0
+  volume: 0.3
 
 lying:
   file: 'Resources/Music/States_of_player/lying.ogg'
-  volume: 1.0
+  volume: 0.3
 
 crawling:
   file: 'Resources/Music/States_of_player/crawling.ogg'
-  volume: 1.0
+  volume: 0.3
 
 soaring:
   file: 'Resources/Music/States_of_player/soaring.ogg'
-  volume: 1.0
+  volume: 0.3
 
 jumping:
   file: 'Resources/Music/States_of_player/jumping.ogg'
-  volume: 1.0
+  volume: 0.1
 
 flying:
   file: 'Resources/Music/States_of_player/flying.ogg'
-  volume: 1.0
+  volume: 0.1
 
 landing:
   file: 'Resources/Music/States_of_player/landing.ogg'
-  volume: 1.0
+  volume: 0.1
 
 
 throw:
   file: 'Resources/Music/States_of_player/throw.ogg'
-  volume: 1.0
+  volume: 0.1
 
 hand_hit:
   file: 'Resources/Music/States_of_player/udar.ogg'
-  volume: 1.0
+  volume: 0.3
