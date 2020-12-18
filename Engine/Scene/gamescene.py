@@ -108,7 +108,7 @@ class PictureBackground(Background):
     def __view__(self, camera):
         borders = self.scene.borders
         screen_rect = camera.projection_of_rect(borders)
-
+        camera.temp_surface.fill('grey')
         if camera.distance != self.last_camera_distance:
             self.scaled_image = pygame.transform.scale(self.image, (screen_rect[2], screen_rect[3]))
             self.last_camera_distance = camera.distance
