@@ -3,7 +3,7 @@ sprite: 'Resources/pictures/Items_for_levels/closet.png'
 type: 'RectangularObject'
 init:
   width: 1
-  height: 1
+  height: 0.8
 
   mass: 5
   moment: null
