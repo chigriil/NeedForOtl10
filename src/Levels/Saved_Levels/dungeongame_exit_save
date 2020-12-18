@@ -5,8 +5,8 @@ MainCharacter:
     name: ManualController
   class: MainCharacter
   vector:
-  - -4.0600000014901205
-  - 0.5199999985098814
+  - -5.076198383999966
+  - -5.0
 borders:
   height: 10
   width: 20
@@ -20,8 +20,8 @@ entities:
       name: ManualController
     class: Difurmen
     vector:
-    - 7.595699724498255
-    - -5.001526758714327
+    - 8.720000001490096
+    - -5.600334751767455
 invisible_segments: {}
 objects:
   0:

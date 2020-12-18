@@ -138,7 +138,7 @@ class MainMenu(Menu):
         self.titlefont = pygame.font.SysFont('ariel', int(300 / 900 * self.screen_height))
 
         pygame.mixer.music.set_volume(menu_music_volume)
-        next_song()
+
 
     def draw(self):
         self.screen.fill(self.background_color)
@@ -149,6 +149,10 @@ class MainMenu(Menu):
                                 self.screen_width // 2, self.screen_height * 6 // 12)
         self.pretty_text_button(self.font, "Выход", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height * 9 // 12)
+
+    def run_once(self):
+        super(MainMenu, self).run_once()
+        next_song()
 
     def on_iteration(self):
         for event in pygame.event.get():

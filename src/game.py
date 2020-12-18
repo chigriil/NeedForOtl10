@@ -176,7 +176,6 @@ class Game(MicroApp):
 
         pygame.mixer.music.stop()
         pygame.mixer.music.set_volume(game_music_volume * music_volume * global_volume)
-        next_song()
 
     def draw(self):
         self.camera.view(self.scene)
@@ -271,6 +270,7 @@ class Game(MicroApp):
         # Это нужно сделать дважды
         self.clock.tick()
         self.clock.tick()
+        next_song()
 
     def atexit(self):
         """
