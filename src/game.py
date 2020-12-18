@@ -7,11 +7,11 @@ import pygame
 from pygame.draw import polygon
 
 import src.gameobjects as gameobjects
-from Engine.Scene.camera import Camera, Operator, TargetingMethod
+from Engine.Scene.camera import Camera, Operator, TargetingMethod, MidPoint
 from Engine.Scene.gamescene import Level
 from Engine.apps import MicroApp
-from Engine.gui.overlays import FPS, DevMode, HealthBar, PauseButton, SaveButton
 from Engine.gui.in_game_menu import InGameMenu
+from Engine.gui.overlays import FPS, DevMode, HealthBar
 from settings import *
 from .persons import load_characters
 
@@ -225,6 +225,8 @@ class Game(MicroApp):
                 if event.key == pygame.K_f:
                     if self.camera_operator.target is None:
                         self.camera_operator.target = self.scene.player
+                        if len(self.scene.entities) != 0:
+                            self.camera_operator.target = MidPoint(self.scene.player, self.scene.entities[0])
                     self.camera_operator.aiming = not self.camera_operator.aiming
 
                     # Переключение фокусировки фокусировки на игроке
