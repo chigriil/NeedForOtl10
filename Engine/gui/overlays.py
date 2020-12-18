@@ -293,15 +293,20 @@ class DevMode(Overlay):
 
 class WinHandler(Overlay):
     def __init__(self, screen, scene):
-        super(WinHandler, self).__init__(screen, scene, SCREEN_HEIGHT/5)
+        super(WinHandler, self).__init__(screen, scene, SCREEN_HEIGHT / 5)
         self.text = None
 
     def update(self, dt):
-        if self.data_source.player.state == State.WIN:
-            self.text = 'LEFT WON!'
-        if self.data_source.entities[0].state == State.WIN:
-            self.text = 'LEFT WON!'
+        try:
+            if self.data_source.player.state == State.WIN:
+                self.text = 'LEFT WON!'
+
+            if self.data_source.entities[0].state == State.WIN:
+                self.text = 'RIGHT WON!'
+        except IndexError:
+            pass
 
     def draw(self):
-        text_surf = self.font.render(self.text, True, (255, 255, 0))
-        self.screen.blit(text_surf, text_surf.get_rect(center=self.screen.get_rect().center).topleft)
+        if self.text is not None:
+            text_surf = self.font.render(self.text, True, (255, 255, 0))
+            self.screen.blit(text_surf, text_surf.get_rect(center=self.screen.get_rect().center).topleft)

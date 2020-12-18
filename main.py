@@ -26,5 +26,5 @@ pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 
-app = App(micro_apps=[Init(screen, clock), LoadingScreen(screen, clock, lifetime=0), MainMenu(screen, clock)])
+app = App(micro_apps=[Init(screen, clock), LoadingScreen(screen, clock, lifetime=3), MainMenu(screen, clock)])
 app.run()
