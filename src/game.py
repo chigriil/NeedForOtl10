@@ -161,7 +161,8 @@ class Game(MicroApp):
             'FPS': FPS(self.screen, self.clock),
             'DevMode': DevMode(self.screen, self),
             'HealthBar_player_1': HealthBar(self.screen, self.clock, self.scene.player, self.camera, left=True),
-            'HealthBar_player_2': HealthBar(self.screen, self.clock, self.scene.player, self.camera, left=False)
+            'HealthBar_player_2': HealthBar(self.screen, self.clock, self.scene.entities[0] if self.scene.entities \
+                else self.scene.player, self.camera, left=False)
         }
 
         self.buttons = []

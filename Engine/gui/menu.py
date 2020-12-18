@@ -133,8 +133,8 @@ class MainMenu(Menu):
         self.FPS = 10
         self.customisationmenu = CustomisationMenu(self.screen, self.clock)
         self.fontcolor = (255, 255, 255)
-        self.buttoncolor = (15, 29, 219)
-        self.font = pygame.font.SysFont('Comic Sans MS', int(70 / 900 * self.screen_height))
+        self.buttoncolor = (15, 29, 180)
+        self.font = pygame.font.SysFont('Comic Sans MS', int(90 / 900 * self.screen_height))
         self.titlefont = pygame.font.SysFont('ariel', int(300 / 900 * self.screen_height))
 
         pygame.mixer.music.set_volume(menu_music_volume)
@@ -145,10 +145,8 @@ class MainMenu(Menu):
 
         self.pretty_text_button(self.titlefont, "Need for Otl(10)", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height // 7)
-        self.pretty_text_button(self.font, "Выжившие", self.buttoncolor, self.fontcolor,
-                                self.screen_width // 2, self.screen_height * 5 // 12)
         self.pretty_text_button(self.font, "Начать", self.buttoncolor, self.fontcolor,
-                                self.screen_width // 2, self.screen_height * 7 // 12)
+                                self.screen_width // 2, self.screen_height * 6 // 12)
         self.pretty_text_button(self.font, "Выход", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height * 9 // 12)
 
@@ -226,27 +224,37 @@ class CustomisationMenu(Menu):
         self.FPS = 30
         self.fontcolor = (255, 255, 255)
         self.buttoncolor = (15, 29, 219)
-        self.font = pygame.font.SysFont('Comic Sans MS', int(50 / 900 * self.screen_height))
-        self.titlefont = pygame.font.SysFont('ariel', int(100 / 900 * self.screen_height))
+        self.font = pygame.font.SysFont('Comic Sans MS', int(70 / 900 * self.screen_height))
+        self.titlefont = pygame.font.SysFont('ariel', int(120 / 900 * self.screen_height))
         self.name_input = InputBox(self.screen,
-                                   self.screen_width * 1 // 2 - 500 // 2,
-                                   self.screen_height * 9 // 24 - 50 // 2,
-                                   500, 50)
+                                   self.screen_width * 1 // 2 - (500 * self.screen_width // 1600) // 2,
+                                   self.screen_height * 15 // 24 - (50 * self.screen_height // 900) // 2,
+                                   500 * self.screen_width // 1600,
+                                   50 * self.screen_height // 900)
 
     def draw(self):
         self.screen.fill(self.background_color)
 
-        self.pretty_text_button(self.font, "Меню кастомизации", self.buttoncolor, self.fontcolor,
-                                self.screen_width // 2, self.screen_height * 3 // 12)
+        self.pretty_text_button(self.titlefont, "Choose the location", self.buttoncolor, self.fontcolor,
+                                self.screen_width // 2, self.screen_height * 2 // 24)
+
+        self.pretty_text_button(self.font, "Dungeon", self.buttoncolor, self.fontcolor,
+                                self.screen_width // 2, self.screen_height * 5 // 24)
+        self.pretty_text_button(self.font, "Six", self.buttoncolor, self.fontcolor,
+                                self.screen_width // 2, self.screen_height * 7 // 24)
+        self.pretty_text_button(self.font, "Corridor", self.buttoncolor, self.fontcolor,
+                                self.screen_width // 2, self.screen_height * 9 // 24)
+        self.pretty_text_button(self.font, "Dzo", self.buttoncolor, self.fontcolor,
+                                self.screen_width // 2, self.screen_height * 11 // 24)
 
         self.pretty_text_button(self.font, "Начать игру", self.buttoncolor, self.fontcolor,
-                                self.screen_width // 2, self.screen_height * 7 // 12)
+                                self.screen_width // 2, self.screen_height * 18 // 24)
         if self.name_input.name_recorded:
-            self.pretty_text_button(self.font, 'Имя записано', self.buttoncolor, self.fontcolor,
-                                    self.screen_width // 2, self.screen_height * 9 // 12)
+            self.pretty_text_button(self.font, 'Выбор зарегистрирован', self.buttoncolor, self.fontcolor,
+                                    self.screen_width // 2, self.screen_height * 20 // 24)
         else:
-            self.pretty_text_button(self.font, 'Введите имя и нажмите enter', self.buttoncolor, self.fontcolor,
-                                    self.screen_width // 2, self.screen_height * 9 // 12)
+            self.pretty_text_button(self.font, 'Выберите локацию', self.buttoncolor, self.fontcolor,
+                                    self.screen_width // 2, self.screen_height * 20 // 24)
 
     def on_iteration(self):
         for event in pygame.event.get():
@@ -258,9 +266,21 @@ class CustomisationMenu(Menu):
                                            self.buttoncolor,
                                            self.fontcolor,
                                            self.screen_width // 2,
-                                           self.screen_height * 7 // 12).collidepoint(event.pos) and \
-                        self.name_input.name_recorded:
+                                           self.screen_height * 18 // 24).collidepoint(event.pos):
                     self.alive = False
+
+                if self.pretty_text_button(self.font, "Dungeon", self.buttoncolor, self.fontcolor,
+                                           self.screen_width // 2, self.screen_height * 5 // 24).collidepoint(event.pos):
+                    self.username = 'dungeon'
+                if self.pretty_text_button(self.font, "Six", self.buttoncolor, self.fontcolor,
+                                           self.screen_width // 2, self.screen_height * 7 // 24).collidepoint(event.pos):
+                    self.username = 'six'
+                if self.pretty_text_button(self.font, "Corridor", self.buttoncolor, self.fontcolor,
+                                           self.screen_width // 2, self.screen_height * 9 // 24).collidepoint(event.pos):
+                    self.username = 'corridor'
+                if self.pretty_text_button(self.font, "Dzo", self.buttoncolor, self.fontcolor,
+                                           self.screen_width // 2, self.screen_height * 11 // 24).collidepoint(event.pos):
+                    self.username = ''
 
             self.name_input.handle_event(event)
             # Checks for the end of writing
@@ -274,4 +294,4 @@ class CustomisationMenu(Menu):
         pygame.display.flip()
 
     def atexit(self):
-        return Game(self.screen, self.clock, self.name_input.username).run()
+        return Game(self.screen, self.clock, self.username).run()
