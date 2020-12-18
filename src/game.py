@@ -1,5 +1,6 @@
 import sys
 from math import pi, cos
+from random import choice
 from time import perf_counter
 
 import numpy as np
@@ -12,7 +13,8 @@ from Engine.Scene.gamescene import Level
 from Engine.apps import MicroApp
 from Engine.gui.in_game_menu import InGameMenu
 from Engine.gui.overlays import FPS, DevMode, HealthBar
-from settings import *
+from Engine.utils.utils import load_music_from_folder
+from settings import game_music_path, SCREEN_WIDTH, SCREEN_HEIGHT, DEVMODE, SONG_END, game_music_volume
 from .persons import load_characters
 
 gameobjects.register()
@@ -133,6 +135,16 @@ class LoadingScreen(MicroApp):
         pygame.display.update()
 
 
+game_songs = load_music_from_folder(game_music_path)
+pygame.mixer.music.set_endevent(SONG_END)
+
+
+def next_song():
+    pygame.mixer.music.unload()
+    pygame.mixer.music.load(choice(game_songs))
+    pygame.mixer.music.play()
+
+
 class Game(MicroApp):
     def __init__(self, screen, clock, username):
         super(Game, self).__init__(screen, clock, lifetime=float('inf'))
@@ -157,6 +169,9 @@ class Game(MicroApp):
 
         if DEVMODE:
             dev_message()
+
+        pygame.mixer.music.set_volume(game_music_volume)
+        pygame.mixer.music.stop()
 
     def draw(self):
         self.camera.view(self.scene)
@@ -185,6 +200,9 @@ class Game(MicroApp):
                 self.atexit()
                 pygame.quit()
                 sys.exit()
+
+            if event.type == SONG_END:
+                next_song()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for button in self.buttons:

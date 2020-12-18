@@ -1,3 +1,7 @@
+import os
+
+from pygame.constants import USEREVENT
+
 # Разрешение экрана
 SCREEN_WIDTH = 1600
 SCREEN_HEIGHT = 900
@@ -27,7 +31,27 @@ g = 9.81
 DEVMODE = True
 
 # Путь до папки с конфигарациями персонажей
-person_configs_path = 'src/configs/persons'
+person_configs_path = os.path.join('src', 'configs', 'persons')
 
 # Путь до папки с конфигарациями статичных объектов
-game_objects_configs_path = 'src/configs/game_objects'
+game_objects_configs_path = os.path.join('src', 'configs', 'game_objects')
+
+# Путь до папки с фоновой музыкой для меню
+menu_music_path = os.path.join('Resources', 'Music', 'Menu')
+
+# Путь до папки с фоновой музыкой для игры
+game_music_path = os.path.join('Resources', 'Music', 'Fight')
+
+# Путь до папки со звуками для игры
+game_sounds_path = os.path.join('Resources', 'Music', 'States_of_player')
+
+# Событие конца музыки
+SONG_END = USEREVENT + 1
+
+# Уровень громкости фоновой музыки в меню
+menu_music_volume = 0.1
+# Уровень громкости фоновой музыки в игре
+game_music_volume = 0.1
+
+# Шаг регулировки громкости
+volume_delta = 0.1
