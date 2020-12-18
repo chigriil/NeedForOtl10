@@ -1,0 +1,55 @@
+idle:
+  file: 'Resources/Music/States_of_player/idle.ogg'
+  volume: 1.0
+
+walking:
+  file: 'Resources/Music/States_of_player/walking.ogg'
+  volume: 1.0
+
+running:
+  file: 'Resources/Music/States_of_player/running.ogg'
+  volume: 1.0
+
+sitting:
+  file: 'Resources/Music/States_of_player/sitting.ogg'
+  volume: 1.0
+
+squatting:
+  file: 'Resources/Music/States_of_player/squatting.ogg'
+  volume: 1.0
+
+lying:
+  file: 'Resources/Music/States_of_player/lying.ogg'
+  volume: 1.0
+
+crawling:
+  file: 'Resources/Music/States_of_player/crawling.ogg'
+  volume: 1.0
+
+soaring:
+  file: 'Resources/Music/States_of_player/soaring.ogg'
+  volume: 1.0
+
+jumping:
+  file: 'Resources/Music/States_of_player/jumping.ogg'
+  volume: 1.0
+
+flying:
+  file: 'Resources/Music/States_of_player/flying.ogg'
+  volume: 1.0
+
+landing:
+  file: 'Resources/Music/States_of_player/landing.ogg'
+  volume: 1.0
+
+dying:
+  file: 'Resources/Music/States_of_player/dying.ogg'
+  volume: 1.0
+
+throw:
+  file: 'Resources/Music/States_of_player/throw.ogg'
+  volume: 1.0
+
+hand_hit:
+  file: 'Resources/Music/States_of_player/udar.ogg'
+  volume: 1.0
