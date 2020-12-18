@@ -95,7 +95,7 @@ class Entity(PhysicalGameObject):
         self.resistance = properties['resistance']
 
         # Атрибуты, которые в данный момент
-        self.health = self.max_health
+        self.__health = self.max_health
 
         # Далее флаги, нужные для удобной обработки
 
@@ -115,6 +115,14 @@ class Entity(PhysicalGameObject):
         self.sounds = EntitySounds(self)
         if sounds is not None:
             self.load_sounds(sounds)
+
+    @property
+    def health(self):
+        return self.__health
+
+    @health.setter
+    def health(self, value):
+        self.__health = max(0, value)
 
     @property
     def state(self):
