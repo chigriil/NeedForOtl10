@@ -70,7 +70,13 @@ class EntitySounds:
         self.__dict__[self.last_playing].stop()
         self.__state = new_state
         self.last_playing = val
-        self.__dict__[self.last_playing].play(-1)
+
+        num_play = -1
+
+        if new_state == State.DYING or new_state == State.WIN:
+            num_play = 1
+
+        self.__dict__[self.last_playing].play(num_play)
 
     def play_single(self, name):
         self.__dict__[name].play()
