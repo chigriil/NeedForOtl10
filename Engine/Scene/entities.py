@@ -81,6 +81,10 @@ class Entity(PhysicalGameObject):
         self.flying_rect = PhysicalRect(0, 0, rects['flying_rect'][0], rects['flying_rect'][1])
         self.landing_rect = PhysicalRect(0, 0, rects['landing_rect'][0], rects['landing_rect'][1])
 
+        self.dying_rect = PhysicalRect(0, 0, rects['dying_rect'][0], rects['dying_rect'][1])
+        self.win_rect = PhysicalRect(0, 0, rects['win_rect'][0], rects['win_rect'][1])
+
+
         # Не меняющиеся атрибуты
         # Свойства сущности
         properties: dict = default_person['properties']
@@ -308,6 +312,13 @@ class Entity(PhysicalGameObject):
         в частности проверяем на FLYING и IDLE
         :return:
         """
+
+        if self.state == State.DYING or self.state == State.WIN:
+            return
+
+        if self.health < 1:
+            self.state = State.DYING
+            return
 
         # новое состояние
         new_state = State.FLYING

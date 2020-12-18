@@ -46,6 +46,11 @@ dying:
   file: 'Resources/Music/States_of_player/dying.ogg'
   volume: 1.0
 
+win:
+  file: 'Resources/Music/States_of_player/win.ogg'
+  volume: 1.0
+
+
 throw:
   file: 'Resources/Music/States_of_player/throw.ogg'
   volume: 1.0

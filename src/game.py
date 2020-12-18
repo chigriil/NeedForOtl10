@@ -17,7 +17,7 @@ from Engine.utils.utils import load_music_from_folder
 from settings import SONG_END, game_music_volume, music_volume, global_volume
 from settings import game_music_path, SCREEN_WIDTH, SCREEN_HEIGHT, DEVMODE
 from .persons import load_characters
-
+from Engine.Scene.states import State
 gameobjects.register()
 load_characters()
 
@@ -196,6 +196,12 @@ class Game(MicroApp):
         self.camera_operator.step(dt)
         for overlay in self.overlays.values():
             overlay.update(dt)
+
+        if self.scene.player.state == State.DYING:
+            self.scene.entities[0].state = State.WIN
+
+        if self.scene.entities[0].state == State.DYING:
+            self.scene.player.state = State.WIN
 
     def handle_events(self):
         for event in pygame.event.get():

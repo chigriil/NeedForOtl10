@@ -88,6 +88,9 @@ class ManualController(EntityController):
 
     def step(self, dt):
 
+        if self.entity.state == State.DYING or self.entity.state == State.WIN:
+            return
+
         pressed_keys = pygame.key.get_pressed()
         new_state = self.entity.state
         velocity = list(self.entity.body.velocity)

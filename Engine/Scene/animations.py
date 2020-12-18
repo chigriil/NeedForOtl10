@@ -5,7 +5,6 @@ TODO: добавить другие виды анимации
 TODO: добавить блокирующий режим (то есть, чтобы анимация гарантировнно доигрывалась до конца, если нужно)
 """
 from dataclasses import dataclass
-from enum import Enum
 from os import PathLike
 from typing import Union
 from warnings import warn
@@ -14,45 +13,8 @@ import pygame
 
 from Engine.utils.exceptions import NotSupportedConfig
 from Engine.utils.exceptions import YouAreTeapot
+from .states import State
 from ..utils.utils import load_yaml, load_json, load_image, pil_to_pygame
-
-
-class State(Enum):
-    """
-    Класс сотояний игрока, названия говорят сами за себя
-    """
-    IDLE = 'idle'  # ничего не делает
-
-    WALKING = 'walking'  # идёт
-
-    RUNNING = 'running'  # бежит
-
-    SITTING = 'sitting'  # сидит на кортах
-
-    SQUATTING = 'squatting'  # двигается на кортах
-
-    LYING = 'lying'  # лежит
-
-    CRAWLING = 'crawling'  # ползёт лёжа
-
-    SOARING = 'soaring'  # парит в воздухе
-
-    JUMPING = 'jumping'  # прыжок
-
-    FLYING = 'flying'  # летит(в свободном падении)
-
-    LANDING = 'landing'  # приземление
-
-    # TODO: удалить следущие поля и методы
-    # непропускемые
-    non_permeable = [JUMPING, LANDING]
-
-    # Группа воздушная
-    air_group = SOARING, JUMPING, FLYING, LANDING
-
-    @classmethod
-    def is_air_group(cls, state):
-        return state in cls.air_group
 
 
 class IncorrectConfig(Exception):
@@ -219,7 +181,7 @@ class PeriodicAnimation:
     """
 
     def __init__(self, frames: list[pygame.Surface] = None, period=1.,
-                 adaptive_width=True, adaptive_height=False, locking=False):
+                 adaptive_width=False, adaptive_height=False, locking=False):
         """
         Конструктор без параметров создаеёт пустой класс,
         который выдаёт зелёный прямоугольник при запросе картинки
@@ -342,7 +304,7 @@ class SemiPeriodicAnimation(PeriodicAnimation):
     """
 
     def __init__(self, non_frames_periodic=None, frames=None, non_periodic_time=1, period=1,
-                 adaptive_width=True, adaptive_height=False, locking=False):
+                 adaptive_width=False, adaptive_height=False, locking=False):
         super(SemiPeriodicAnimation, self).__init__(frames, period, adaptive_width, adaptive_height, locking)
         self.non_periodic_frames = non_frames_periodic
         self.non_periodic_time = non_periodic_time
@@ -365,7 +327,7 @@ class NonPeriodicAnimation(PeriodicAnimation):
     интервал времени между картинками одинаковый
     """
 
-    def __init__(self, frames: list[pygame.Surface] = None, time_length=0.5, adaptive_width=True,
+    def __init__(self, frames: list[pygame.Surface] = None, time_length=0.5, adaptive_width=False,
                  adaptive_height=False, locking=False):
         super(NonPeriodicAnimation, self).__init__(frames=frames,
                                                    period=time_length,
