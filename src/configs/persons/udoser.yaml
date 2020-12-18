@@ -5,4 +5,4 @@ init:
   height: 1.8
   mass: 75
   animations: 'Resources/Animations/udoser.yaml'
-  sounds: 'Resources/Music/States_of_player/udoser.yaml'
+  sounds: 'Resources/Music/States_of_player/configs/udoser.yaml'
