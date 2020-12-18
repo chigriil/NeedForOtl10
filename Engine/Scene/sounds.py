@@ -5,7 +5,7 @@ import pygame
 
 from Engine.Scene.animations import State
 from Engine.utils.utils import load_yaml
-from settings import default_sounds_path
+from settings import default_sounds_path, persons_volume, global_volume, sounds_volume
 
 default_config = load_yaml(default_sounds_path)
 
@@ -52,7 +52,7 @@ class EntitySounds:
         for state, cfg in config.items():
             with open(cfg['file']) as sound_file:
                 self.__dict__[state] = pygame.mixer.Sound(file=sound_file)
-                self.__dict__[state].set_volume(cfg['volume'])
+                self.__dict__[state].set_volume(cfg['volume'] * persons_volume * sounds_volume * global_volume)
 
     @property
     def state(self):

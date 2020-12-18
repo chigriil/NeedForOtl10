@@ -14,7 +14,8 @@ from Engine.apps import MicroApp
 from Engine.gui.in_game_menu import InGameMenu
 from Engine.gui.overlays import FPS, DevMode, HealthBar
 from Engine.utils.utils import load_music_from_folder
-from settings import game_music_path, SCREEN_WIDTH, SCREEN_HEIGHT, DEVMODE, SONG_END, game_music_volume
+from settings import SONG_END, game_music_volume, music_volume, global_volume
+from settings import game_music_path, SCREEN_WIDTH, SCREEN_HEIGHT, DEVMODE
 from .persons import load_characters
 
 gameobjects.register()
@@ -171,7 +172,7 @@ class Game(MicroApp):
             dev_message()
 
         pygame.mixer.music.stop()
-        pygame.mixer.music.set_volume(game_music_volume)
+        pygame.mixer.music.set_volume(game_music_volume * music_volume * global_volume)
         next_song()
 
     def draw(self):
