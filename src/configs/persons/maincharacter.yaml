@@ -5,3 +5,4 @@ init:
   height: 1.8
   mass: 75
   animations: 'Resources/Animations/maincharacter.yaml'
+  sounds: 'Resources/Music/States_of_player/maincharacter.yaml'
