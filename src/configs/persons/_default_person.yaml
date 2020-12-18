@@ -5,6 +5,7 @@ init:
   height: &height 1.8
   mass: 75
   animations: 'Resources/Animations/DanyaPers.yaml'
+  sounds: 'Resources/Music/States_of_player/danilio.yaml'
 
 properties:
   description: null
@@ -32,6 +33,7 @@ hits:
         h: 0.8
       animation: 'udar_1'
       animation_hatting_phase: 0.3
+      sound: 'hand_hit'
 
     hit_2:
       damage: 10
@@ -47,6 +49,7 @@ hits:
         h: 0.8
       animation: 'udar_2'
       animation_hatting_phase: 0.3
+      sound: 'hand_hit'
 
     hit_3:
       damage: 10
@@ -62,6 +65,7 @@ hits:
         h: 0.8
       animation: 'udar_3'
       animation_hatting_phase: 0.3
+      sound: 'hand_hit'
 
   throwing:
     throw_1:
@@ -85,6 +89,7 @@ hits:
 
       animation: 'throw_1'
       animation_hatting_phase: 0.5
+      sound: 'throw'
 
 rects:
   idle_rect:

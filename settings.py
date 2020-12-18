@@ -55,3 +55,9 @@ game_music_volume = 0.1
 
 # Шаг регулировки громкости
 volume_delta = 0.1
+
+# Дефолтные звуки
+default_sounds_path = os.path.join('Resources', 'Music', 'States_of_player', '_default_sounds.yaml')
+
+# ДЕфолтный персонаж
+default_person_path = os.path.join('src', 'configs', 'persons', '_default_person.yaml')

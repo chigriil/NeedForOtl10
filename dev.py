@@ -5,8 +5,10 @@ from settings import *
 from src.game import Game
 
 pygame.mixer.pre_init()
+pygame.mixer.init()
 pygame.init()
 pygame.font.init()
+pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 

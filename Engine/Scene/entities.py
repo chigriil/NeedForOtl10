@@ -16,14 +16,15 @@ from Engine.EntityControllers import ManualController, Idle
 from Engine.Scene.animations import EntityAnimations, State
 from Engine.Scene.game_objects import ObjectRegistry, PhysicalGameObject
 from Engine.utils.physical_primitives import PhysicalRect
-from settings import critical_speed, critical_ground_collision, bounce_correction_speed, critical_reloading, g
+from settings import critical_speed, critical_ground_collision, bounce_correction_speed
+from settings import critical_reloading, g, default_person_path
+from .sounds import EntitySounds
 from ..utils.utils import load_yaml
 
 # Реестр всех персонажей
 PersonRegistry = {}
 
-default_person = load_yaml('src/configs/persons/_default_person.yaml')
-
+default_person = load_yaml(default_person_path)
 
 class Entity(PhysicalGameObject):
     """
@@ -36,7 +37,8 @@ class Entity(PhysicalGameObject):
     TODO: разделить толо игрока на само тело, ноги, руки, голову (нужно для удобной анимации ударов)
     """
 
-    def __init__(self, scene, x=0, y=0, width=0.7, height=1.8, mass=75, brain=Idle, animations=None, **kwargs):
+    def __init__(self, scene, x=0, y=0, width=0.7, height=1.8, mass=75, brain=Idle,
+                 animations=None, sounds=None, **kwargs):
         """
         :param scene: игровая сцена
         :param x: x координата левого нижнего края сущности
@@ -108,6 +110,11 @@ class Entity(PhysicalGameObject):
         self.animations = EntityAnimations(self)
         if animations is not None:
             self.load_animations(animations)
+
+        # Звуки
+        self.sounds = EntitySounds(self)
+        if sounds is not None:
+            self.load_sounds(sounds)
 
     @property
     def state(self):
@@ -213,6 +220,13 @@ class Entity(PhysicalGameObject):
         """
         self.animations.load_animations(file_with_names)
 
+    def load_sounds(self, file_with_names: Union[str, bytes, PathLike[str], PathLike[bytes], int]):
+        """
+        :param file_with_names: путь к конфигурационному файлу
+        :return: None
+        """
+        self.sounds.load_sounds(file_with_names)
+
     def check_scene_border(self, border: PhysicalRect):
         """
         Возвращает сущности в заданые границы
@@ -237,6 +251,9 @@ class Entity(PhysicalGameObject):
             self.animations.current_animation = f'{self.state.value}_{self.horizontal_view_direction}'
         else:
             self.animations.current_animation = f'{self.state.value}_{self.vertical_view_direction}_{self.horizontal_view_direction}'
+
+    def update_sound_state(self):
+        self.sounds.state = self.state
 
     def check_directions(self):
         """
@@ -342,11 +359,17 @@ class Entity(PhysicalGameObject):
         # Обновляем статус анимации
         self.update_animation_state()
 
+        # обноляем статус звуковых эффектов
+        self.update_sound_state()
+
         # Пересчитываем описанный прямоугольник с учётом позиции сущности
         self.body_rect.centre = self.body.position
 
         # Шаг анимации
         self.animations.step(dt)
+
+        # Шаг звуков
+        self.sounds.step(dt)
 
     def __view__(self, camera):
         """
@@ -489,6 +512,9 @@ class BaseCharacter(Entity):
                                   ),
                                   skip=[id(self)])
 
+        # Звук удара
+        self.sounds.play_single(arming_method['sound'])
+
         # Устанавливаем время новое перезараядки
         self.arming_reload = arming_method['reload_time']
 
@@ -609,6 +635,9 @@ class BaseCharacter(Entity):
 
         # Кидание
         self._throw(throw_method, position, velocity, angle)
+
+        # Звук кидания
+        self.sounds.play_single(throw_method['sound'])
 
         # Устанавливаем время новое перезараядки
         self.throwing_reload = throw_method['reload_time']
