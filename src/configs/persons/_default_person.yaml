@@ -128,3 +128,12 @@ rects:
   landing_rect:
     - *width
     - *height
+
+
+  dying_rect:
+    - *width
+    - *height
+
+  win_rect:
+    - *width
+    - *height
