@@ -67,7 +67,7 @@ game_music_path = os.path.join('Resources', 'Music', 'Fight')
 game_sounds_path = os.path.join('Resources', 'Music', 'States_of_player')
 
 # Дефолтные звуки
-default_sounds_path = os.path.join('Resources', 'Music', 'States_of_player', '_default_sounds.yaml')
+default_sounds_path = os.path.join('Resources', 'Music', 'States_of_player', 'configs', '_default_sounds.yaml')
 
 # ДЕфолтный персонаж
 default_person_path = os.path.join('src', 'configs', 'persons', '_default_person.yaml')
