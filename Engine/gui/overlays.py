@@ -56,6 +56,8 @@ class HealthBar(Overlay):
 
         self.entity.full_health = self.entity.health
 
+        self.font = pygame.font.SysFont('Ariel', height)
+
         self.text = self.font.render(str(self.entity.health), True, (0, 0, 0))
 
         self.fps = 10
@@ -86,10 +88,12 @@ class HealthBar(Overlay):
 
         if self.left:
             self.screen.blit(self.text, (self.health_rect.x + self.health_rect.w // 2 -
-                                         self.text.get_width() // 2, self.health_rect.y))
+                                         self.text.get_width() // 2,
+                                         self.health_rect.y + self.health_rect.h // 2 - self.text.get_height() // 2))
         else:
             self.screen.blit(self.text, (self.health_rect.x + self.health_rect.w // 2 -
-                                         self.text.get_width() // 2, self.health_rect.y))
+                                         self.text.get_width() // 2,
+                                         self.health_rect.y + self.health_rect.h // 2 - self.text.get_height() // 2))
             self.health_rect.x = self.outer_health_rect.x + self.outer_health_rect.w - self.health_rect.w
 
 
