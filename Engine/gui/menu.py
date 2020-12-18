@@ -97,7 +97,7 @@ class Menu(MicroApp):
         self.font = pygame.font.SysFont('Comic Sans MS', 50)
 
     def pretty_text_button(self, font=None, text='', buttoncolor=(100, 150, 20), fontcolor=(255, 255, 255),
-                           x=0, y=0, margin=5):
+                           x=0, y=0):
         """
         Рисует прямоугольник цвета buttoncolor с текстом text цвета fontcolor. Возвращает Rect прямоугольника.
         :param font: Sys.Font
@@ -106,7 +106,6 @@ class Menu(MicroApp):
         :param fontcolor: tuple
         :param x: int
         :param y: int
-        :param margin: int
         :return: Rect
         """
         margin = 5 * self.screen_height // 900
@@ -227,11 +226,6 @@ class CustomisationMenu(Menu):
         self.buttoncolor = (15, 29, 219)
         self.font = pygame.font.SysFont('Comic Sans MS', int(70 / 900 * self.screen_height))
         self.titlefont = pygame.font.SysFont('ariel', int(120 / 900 * self.screen_height))
-        self.name_input = InputBox(self.screen,
-                                   self.screen_width * 1 // 2 - (500 * self.screen_width // 1600) // 2,
-                                   self.screen_height * 15 // 24 - (50 * self.screen_height // 900) // 2,
-                                   500 * self.screen_width // 1600,
-                                   50 * self.screen_height // 900)
 
     def draw(self):
         self.screen.fill(self.background_color)
@@ -249,8 +243,8 @@ class CustomisationMenu(Menu):
                                 self.screen_width // 2, self.screen_height * 11 // 24)
 
         self.pretty_text_button(self.font, "Начать игру", self.buttoncolor, self.fontcolor,
-                                self.screen_width // 2, self.screen_height * 18 // 24)
-        if self.name_input.name_recorded:
+                                self.screen_width // 2, self.screen_height * 16 // 24)
+        if self.username != '':
             self.pretty_text_button(self.font, 'Выбор зарегистрирован', self.buttoncolor, self.fontcolor,
                                     self.screen_width // 2, self.screen_height * 20 // 24)
         else:
@@ -267,7 +261,7 @@ class CustomisationMenu(Menu):
                                            self.buttoncolor,
                                            self.fontcolor,
                                            self.screen_width // 2,
-                                           self.screen_height * 18 // 24).collidepoint(event.pos):
+                                           self.screen_height * 16 // 24).collidepoint(event.pos):
                     self.alive = False
 
                 if self.pretty_text_button(self.font, "Dungeon", self.buttoncolor, self.fontcolor,
@@ -283,14 +277,7 @@ class CustomisationMenu(Menu):
                                            self.screen_width // 2, self.screen_height * 11 // 24).collidepoint(event.pos):
                     self.username = ''
 
-            self.name_input.handle_event(event)
-            # Checks for the end of writing
-            if self.name_input.name_recorded:
-                self.name_input.username = self.name_input.name
-            self.name_input.update()
-
         self.draw()
-        self.name_input.draw()
         self.clock.tick(self.FPS)
         pygame.display.flip()
 
