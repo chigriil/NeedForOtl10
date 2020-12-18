@@ -13,7 +13,7 @@ properties:
   resistance: 0.1
   walk_speed: 1.5  # Скорость ходьбы сущности
   run_speed: 4  # Скорость бега сущности
-  jump_speed: 4.5 # Скорость прыжка
+  jump_speed: 8 # Скорость прыжка
 
 hits:
 

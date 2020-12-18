@@ -1,4 +1,5 @@
 import json
+import os
 
 import pygame
 import yaml
@@ -74,3 +75,12 @@ def pil_to_pygame(pil_image):
     """
     return pygame.image.fromstring(
         pil_image.tobytes(), pil_image.size, pil_image.mode).convert_alpha()
+
+
+def load_music_from_folder(path):
+    """
+    Выдаётс список всей музыки из папки
+    :param path: путь до папки
+    :return:
+    """
+    return [os.path.join(path, song_name) for song_name in os.listdir(path)]

@@ -1,0 +1,202 @@
+MainCharacter:
+  brain: ManualController
+  class: MainCharacter
+  vector:
+  - -9.48
+  - -4.419999999999999
+borders:
+  height: 10
+  width: 20
+  x: -10
+  y: -5
+entities:
+  0:
+    brain: Idle
+    class: Difurmen
+    vector:
+    - 8.559999999999997
+    - -4.139999999999999
+invisible_segments:
+- end: !!python/tuple
+  - 10
+  - 0
+  radius: 0
+  start: !!python/tuple
+  - -10
+  - 0
+objects:
+  0:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -2.460000000000001
+      y: -4.939999999999999
+  1:
+    class: Fridge
+    init:
+      angle: 0.0
+      type_: 2
+      x: -1.4200000000000017
+      y: -4.919999999999999
+  2:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -0.6400000000000023
+      y: -4.899999999999999
+  3:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -0.6400000000000006
+      y: -4.899999999999999
+  4:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -0.6400000000000006
+      y: -4.899999999999999
+  5:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -0.6800000000000015
+      y: -3.8999999999999986
+  6:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -0.6400000000000006
+      y: -2.8599999999999994
+  7:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -0.6400000000000006
+      y: -2.8599999999999994
+  8:
+    class: Fridge
+    init:
+      angle: 0.0
+      type_: 2
+      x: 0.41999999999999815
+      y: -4.959999999999999
+  9:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: 1.1799999999999997
+      y: -4.939999999999999
+  10:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -2.700000000000001
+      y: -1.6199999999999992
+  11:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: 1.7399999999999984
+      y: -1.6999999999999993
+  12:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: 2.8200000000000003
+      y: -1.0799999999999992
+  13:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: 3.8200000000000003
+      y: -0.5
+  14:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: 3.8200000000000003
+      y: -0.5
+  15:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: 3.8200000000000003
+      y: -0.4999999999999982
+  16:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: 3.8200000000000003
+      y: -0.4999999999999982
+  17:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: 4.84
+      y: 0.040000000000000924
+  18:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -0.2599999999999998
+      y: 1.4800000000000004
+  19:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -0.27999999999999936
+      y: 2.6000000000000014
+  20:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -3.76
+      y: -1.0199999999999987
+  21:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -3.76
+      y: -1.0199999999999987
+  22:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -4.879999999999999
+      y: -0.35999999999999943
+  23:
+    class: Closet
+    init:
+      angle: 0.0
+      type_: 2
+      x: -5.76
+      y: 0.34000000000000163
+  24:
+    class: Fridge
+    init:
+      angle: 0.0
+      type_: 2
+      x: -7.999999999999998
+      y: -4.699999999999998

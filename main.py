@@ -7,20 +7,22 @@ TODO: Пайгейм медленно рисует, плэтому разреш�
 """
 import sys
 
-
 import pygame
+
 import Engine.utils.__dark_magic__ as dark_magic
 from Engine.apps import App, Init
+from Engine.gui.menu import MainMenu
 from settings import *
 from src.game import LoadingScreen
-from Engine.gui.menu import MainMenu
 
 if sys.hexversion < 0x30900f0:
     raise SystemError("Даня, я знаю это ты. Установи питон 3.9.0 или выше")
 dark_magic.init()
 pygame.mixer.pre_init()
+pygame.mixer.init()
 pygame.init()
 pygame.font.init()
+pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 

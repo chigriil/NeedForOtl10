@@ -3,10 +3,10 @@ MainCharacter:
     init:
       config: config_wasd.yaml
     name: ManualController
-  class: Udoser
+  class: MainCharacter
   vector:
-  - -9.48
-  - -4.419999999999999
+  - 2.6312147556968406
+  - -0.14678649595075122
 borders:
   height: 10
   width: 20
@@ -16,283 +16,251 @@ entities:
   0:
     brain:
       init:
-        config: config_arrows.yaml
+        config: config_wasd.yaml
       name: ManualController
-    class: Difurmen
+    class: Danilio
     vector:
-    - 8.559999999999997
-    - -4.139999999999999
-invisible_segments:
-    {}
+    - 919.838874467007
+    - -253795.82177695772
+invisible_segments: {}
 objects:
   0:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -3.040000000000001
       y: -4.899999999999999
-      lifetime: .inf
   1:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -3.040000000000001
       y: -4.8999999999999995
-      lifetime: .inf
   2:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -3.040000000000001
       y: -4.8999999999999995
-      lifetime: .inf
   3:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -2.0199999999999996
       y: -4.16
-      lifetime: .inf
   4:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -2.0199999999999996
       y: -4.84
-      lifetime: .inf
   5:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -2.0200000000000014
       y: -4.84
-      lifetime: .inf
   6:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -2.0200000000000014
       y: -4.84
-      lifetime: .inf
   7:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -1.0200000000000014
       y: -3.5999999999999996
-      lifetime: .inf
   8:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -0.14000000000000057
       y: -3.1
-      lifetime: .inf
   9:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -2.380000000000001
       y: -0.8199999999999994
-      lifetime: .inf
   10:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -1.8399999999999999
       y: -1.1599999999999993
-      lifetime: .inf
   11:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -2.8200000000000003
       y: -0.6999999999999993
-      lifetime: .inf
   12:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -3.1400000000000006
       y: -0.5
-      lifetime: .inf
   13:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -3.619999999999999
       y: -0.3200000000000003
-      lifetime: .inf
   14:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -4.140000000000001
       y: -0.17999999999999972
-      lifetime: .inf
   15:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -4.959999999999999
       y: 0.14000000000000057
-      lifetime: .inf
   16:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: -5.5600000000000005
       y: 0.4800000000000004
-      lifetime: .inf
   17:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 0.5800000000000001
       y: -3.539999999999999
-      lifetime: .inf
   18:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 1.42
       y: -4.099999999999999
-      lifetime: .inf
   19:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 2.3199999999999985
       y: -4.599999999999999
-      lifetime: .inf
   20:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 3.24
       y: -4.9399999999999995
-      lifetime: .inf
   21:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 3.2399999999999984
       y: -4.9399999999999995
-      lifetime: .inf
   22:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 2.2399999999999984
       y: -4.999999999999999
-      lifetime: .inf
   23:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 1.9199999999999982
       y: -1.2599999999999998
-      lifetime: .inf
   24:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 2.9399999999999977
       y: -0.9399999999999995
-      lifetime: .inf
   25:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 3.8999999999999986
       y: -0.4800000000000004
-      lifetime: .inf
   26:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 3.8999999999999986
       y: -0.4800000000000004
-      lifetime: .inf
   27:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 3.8999999999999986
       y: -0.47999999999999865
-      lifetime: .inf
   28:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 4.919999999999998
       y: 0.040000000000000924
-      lifetime: .inf
   29:
     class: Closet
     init:
       angle: 0.0
-      lifetime: 5
+      lifetime: .inf
       type_: 2
       x: 6.039999999999999
       y: 0.46000000000000085
-      lifetime: .inf
-background: base

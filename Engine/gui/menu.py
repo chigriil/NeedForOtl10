@@ -1,8 +1,12 @@
 import pygame
 import sys
+from random import choice
+
+import pygame
 
 from Engine.apps import MicroApp
-from settings import *
+from Engine.utils.utils import load_music_from_folder
+from settings import SCREEN_WIDTH, SCREEN_HEIGHT, SONG_END, menu_music_path, menu_music_volume
 from src.game import Game
 
 
@@ -113,6 +117,16 @@ class Menu(MicroApp):
         return pygame.Rect((x, y), (text_surface.get_width() + 2 * margin, text_surface.get_height() + 2 * margin))
 
 
+menu_music = load_music_from_folder(menu_music_path)
+pygame.mixer.music.set_endevent(SONG_END)
+
+
+def next_song():
+    pygame.mixer.music.unload()
+    pygame.mixer.music.load(choice(menu_music))
+    pygame.mixer.music.play()
+
+
 class MainMenu(Menu):
     def __init__(self, screen, clock):
         super(MainMenu, self).__init__(screen, clock)
@@ -123,13 +137,18 @@ class MainMenu(Menu):
         self.font = pygame.font.SysFont('Comic Sans MS', int(70 / 900 * self.screen_height))
         self.titlefont = pygame.font.SysFont('ariel', int(300 / 900 * self.screen_height))
 
+        pygame.mixer.music.set_volume(menu_music_volume)
+        next_song()
+
     def draw(self):
         self.screen.fill(self.background_color)
 
         self.pretty_text_button(self.titlefont, "Need for Otl(10)", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height // 7)
+        self.pretty_text_button(self.font, "Выжившие", self.buttoncolor, self.fontcolor,
+                                self.screen_width // 2, self.screen_height * 5 // 12)
         self.pretty_text_button(self.font, "Начать", self.buttoncolor, self.fontcolor,
-                                self.screen_width // 2, self.screen_height * 6 // 12)
+                                self.screen_width // 2, self.screen_height * 7 // 12)
         self.pretty_text_button(self.font, "Выход", self.buttoncolor, self.fontcolor,
                                 self.screen_width // 2, self.screen_height * 9 // 12)
 
@@ -138,20 +157,67 @@ class MainMenu(Menu):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
+            if event.type == SONG_END:
+                next_song()
+
             if event.type == pygame.MOUSEBUTTONDOWN and \
                     self.pretty_text_button(self.font, "Выход", self.buttoncolor, self.fontcolor,
                                             self.screen_width // 2,
                                             self.screen_height * 9 // 12).collidepoint(event.pos):
                 pygame.quit()
                 sys.exit()
+
             if event.type == pygame.MOUSEBUTTONDOWN and \
                     self.pretty_text_button(self.font, "Начать", self.buttoncolor, self.fontcolor,
                                             self.screen_width // 2,
                                             self.screen_height * 6 // 12).collidepoint(event.pos):  # Кнопка Начала
                 self.customisationmenu.run()
+
         self.draw()
         self.clock.tick(self.FPS)
         pygame.display.flip()
+
+
+class LeaderBoard(Menu):
+    def __init__(self, screen, clock):
+        super(LeaderBoard, self).__init__(screen, clock)
+        self.FPS = 10
+        self.fontcolor = (255, 255, 255)
+        self.buttoncolor = (15, 29, 219)
+        self.font = pygame.font.SysFont('Comic Sans MS', 50 / 900 * self.screen_height)
+
+    def run_once(self):
+        self.screen.fill(self.background_color)
+        self.pretty_text_button(self.font, "Обратно в меню",
+                                self.buttoncolor,
+                                self.fontcolor,
+                                self.screen_width // 2,
+                                self.screen_height * 7 // 12)
+        pygame.display.flip()
+
+    def loader(self):
+        pass
+
+    def updater(self):
+        pass
+
+    def on_iteration(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == SONG_END:
+                next_song()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.pretty_text_button(self.font, "Обратно в меню",
+                                           self.buttoncolor,
+                                           self.fontcolor,
+                                           self.screen_width // 2,
+                                           self.screen_height * 7 // 12).collidepoint(event.pos):
+                    self.active = False
 
 
 class CustomisationMenu(Menu):
