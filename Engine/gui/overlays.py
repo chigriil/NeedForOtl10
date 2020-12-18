@@ -44,47 +44,53 @@ class Overlay:
 
 
 class HealthBar(Overlay):
-    def __init__(self, screen, clock, entity, camera, width=200, height=30):
+    def __init__(self, screen, clock, entity, camera, left=True):
         super(HealthBar, self).__init__(screen, clock)
+
+        width = self.screen.get_width() * 22 // 48
+        height = self.screen.get_height() * 3 // 48
 
         self.entity = entity
 
         self.camera = camera
 
-        self.entity.health = 90
-
-        self.entity.full_health = 100
-
-        self.health_rect = pygame.Rect(int(self.screen.get_width() * 1 / 48), int(self.screen.get_height() * 3 / 48),
-                                       width, height)
-        self.outerhealth_rect = pygame.Rect(
-            (int(self.screen.get_width() * 1 / 48), int(self.screen.get_height() * 3 / 48),
-             width, height))
-
-        # self.health_rect = pygame.Rect(self.camera.projection_of_point(self.entity.body_rect.centre)[0],
-        # self.camera.projection_of_point(-1 * self.entity.body_rect.topleft[1] - 0.5)[1],
-        # self.camera.projection_of_length(width),
-        # self.camera.projection_of_length(height))
-
-        # self.font = pygame.font.SysFont('Arial', int(self.camera.projection_of_length(height)))
+        self.entity.full_health = self.entity.health
 
         self.text = self.font.render(str(self.entity.health), True, (0, 0, 0))
 
         self.fps = 10
 
+        self.left = left
+
+        if self.left:
+            self.health_rect = pygame.Rect(int(self.screen.get_width() * 1 / 48),
+                                           int(self.screen.get_height() * 3 / 48),
+                                           width, height)
+            self.outer_health_rect = pygame.Rect(
+                (int(self.screen.get_width() * 1 / 48), int(self.screen.get_height() * 3 / 48),
+                 width, height))
+        else:
+            self.health_rect = pygame.Rect(int(self.screen.get_width() * 1 / 48),
+                                           int(self.screen.get_height() * 3 / 48),
+                                           width, height)
+            self.outer_health_rect = pygame.Rect(
+                (int(self.screen.get_width() * 25 / 48), int(self.screen.get_height() * 3 / 48),
+                 width, height))
+
     def draw(self):
-        self.text = self.font.render(str(self.entity.health), True, (0, 0, 0))
+        self.text = self.font.render(str(round(self.entity.health, 0)), True, (0, 0, 0))
 
-        # self.health_rect.center = (self.camera.projection_of_point(self.entity.body_rect.centre)[0],
-        # self.camera.projection_of_point(-1 * self.entity.body_rect.topleft[1] - 0.5)[1])
-
-        self.health_rect.w = int(self.outerhealth_rect.w * self.entity.health / self.entity.full_health)
-
+        self.health_rect.w = int(self.outer_health_rect.w * self.entity.health / self.entity.full_health)
         pygame.draw.rect(self.screen, (138, 3, 3), self.health_rect)
-        pygame.draw.rect(self.screen, (255, 0, 0), self.outerhealth_rect, 3)
+        pygame.draw.rect(self.screen, (255, 0, 0), self.outer_health_rect, 3)
 
-        self.screen.blit(self.text, (self.health_rect.x + self.health_rect.w // 2 -
-                                     self.text.get_width() // 2, self.health_rect.y))
+        if self.left:
+            self.screen.blit(self.text, (self.health_rect.x + self.health_rect.w // 2 -
+                                         self.text.get_width() // 2, self.health_rect.y))
+        else:
+            self.screen.blit(self.text, (self.health_rect.x + self.health_rect.w // 2 -
+                                         self.text.get_width() // 2, self.health_rect.y))
+            self.health_rect.x = self.outer_health_rect.x + self.outer_health_rect.w - self.health_rect.w
 
 
 class CoolDownOverlay(Overlay):

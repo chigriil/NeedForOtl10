@@ -148,7 +148,8 @@ class Game(MicroApp):
         self.overlays = {
             'FPS': FPS(self.screen, self.clock),
             'DevMode': DevMode(self.screen, self),
-            'HealthBar': HealthBar(self.screen, self.clock, self.scene.player, self.camera)
+            'HealthBar_player_1': HealthBar(self.screen, self.clock, self.scene.player, self.camera, left=True),
+            'HealthBar_player_2': HealthBar(self.screen, self.clock, self.scene.player, self.camera, left=False)
         }
 
         self.buttons = []
