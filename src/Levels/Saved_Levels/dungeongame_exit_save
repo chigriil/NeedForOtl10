@@ -5,8 +5,8 @@ MainCharacter:
     name: ManualController
   class: MainCharacter
   vector:
-  - 2.6312147556968406
-  - -0.14678649595075122
+  - -4.0600000014901205
+  - 0.5199999985098814
 borders:
   height: 10
   width: 20
@@ -16,12 +16,12 @@ entities:
   0:
     brain:
       init:
-        config: config_wasd.yaml
+        config: config_arrows.yaml
       name: ManualController
-    class: Danilio
+    class: Difurmen
     vector:
-    - 919.838874467007
-    - -253795.82177695772
+    - 7.595699724498255
+    - -5.001526758714327
 invisible_segments: {}
 objects:
   0:
