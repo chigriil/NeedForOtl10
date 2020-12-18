@@ -53,6 +53,19 @@ class TargetingMethod(Enum):
     SMOOTH = 'smooth'
 
 
+class MidPoint:
+    """
+    Костыль, который сотвечает, за расчёт средней точки между игроками
+    """
+
+    def __init__(self, player_1: Entity, player_2: Entity):
+        self.player_1 = player_1
+        self.player_2 = player_2
+
+    def get(self):
+        return (self.player_1.body.position + self.player_2.body.position) / 2
+
+
 class Camera:
     """
     Класс камеры, она смотрит на плоскость, с некоторого расстояния
@@ -423,6 +436,8 @@ class Operator:
     def instant_focus(self):
         if isinstance(self.__target, Entity):
             self.camera.focus_rect(self.__target.body_rect)
+        elif isinstance(self.__target, MidPoint):
+            self.camera.focus_point(self.__target.get())
         elif isinstance(self.__target, Vec2d):
             self.camera.focus_point(self.__target)
         elif isinstance(self.__target, PhysicalRect):
@@ -435,6 +450,8 @@ class Operator:
     def smooth_focus(self, dt):
         if isinstance(self.__target, Entity):
             self.__smooth_focus(self.__target.body_rect.centre, dt)
+        elif isinstance(self.__target, MidPoint):
+            self.__smooth_focus(self.__target.get(), dt)
         elif isinstance(self.__target, Vec2d):
             self.__smooth_focus(self.__target, dt)
         elif isinstance(self.__target, PhysicalRect):
