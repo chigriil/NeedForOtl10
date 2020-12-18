@@ -6,8 +6,7 @@ import pygame
 
 from Engine.apps import MicroApp
 from Engine.utils.utils import load_music_from_folder
-from settings import SCREEN_WIDTH, SCREEN_HEIGHT
-from settings import SONG_END, menu_music_path, menu_music_volume, music_volume, global_volume
+from settings import SCREEN_WIDTH, SCREEN_HEIGHT, SONG_END, menu_music_path, menu_music_volume
 from src.game import Game
 
 
@@ -110,6 +109,7 @@ class Menu(MicroApp):
         :param margin: int
         :return: Rect
         """
+        margin = 5 * self.screen_height // 900
         text_surface = font.render(text, True, fontcolor)
         x, y = x - text_surface.get_width() // 2 - margin, y - text_surface.get_height() // 2 - margin
         pygame.draw.rect(self.screen, buttoncolor, pygame.Rect((x, y), (text_surface.get_width() + 2 * margin,
@@ -138,7 +138,7 @@ class MainMenu(Menu):
         self.font = pygame.font.SysFont('Comic Sans MS', int(90 / 900 * self.screen_height))
         self.titlefont = pygame.font.SysFont('ariel', int(300 / 900 * self.screen_height))
 
-        pygame.mixer.music.set_volume(menu_music_volume * music_volume * global_volume)
+        pygame.mixer.music.set_volume(menu_music_volume)
         next_song()
 
     def draw(self):
