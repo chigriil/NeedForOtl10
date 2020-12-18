@@ -8,6 +8,9 @@ from typing import Any
 import pygame
 from pygame import Rect
 
+from Engine.Scene.states import State
+from settings import SCREEN_HEIGHT
+
 
 class Overlay:
     """
@@ -286,3 +289,19 @@ class DevMode(Overlay):
                 (self.screen.get_width() - self.screen.get_width() / 4,
                  self.screen.get_height() / 1.8 + pos * self.font.get_height() * 1.2)
             )
+
+
+class WinHandler(Overlay):
+    def __init__(self, screen, scene):
+        super(WinHandler, self).__init__(screen, scene, SCREEN_HEIGHT/5)
+        self.text = None
+
+    def update(self, dt):
+        if self.data_source.player.state == State.WIN:
+            self.text = 'LEFT WON!'
+        if self.data_source.entities[0].state == State.WIN:
+            self.text = 'LEFT WON!'
+
+    def draw(self):
+        text_surf = self.font.render(self.text, True, (255, 255, 0))
+        self.screen.blit(text_surf, text_surf.get_rect(center=self.screen.get_rect().center).topleft)

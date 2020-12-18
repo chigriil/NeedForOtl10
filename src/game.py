@@ -10,14 +10,15 @@ from pygame.draw import polygon
 import src.gameobjects as gameobjects
 from Engine.Scene.camera import Camera, Operator, TargetingMethod, MidPoint
 from Engine.Scene.gamescene import Level
+from Engine.Scene.states import State
 from Engine.apps import MicroApp
 from Engine.gui.in_game_menu import InGameMenu
-from Engine.gui.overlays import FPS, DevMode, HealthBar
+from Engine.gui.overlays import FPS, DevMode, HealthBar, WinHandler
 from Engine.utils.utils import load_music_from_folder
 from settings import SONG_END, game_music_volume, music_volume, global_volume
 from settings import game_music_path, SCREEN_WIDTH, SCREEN_HEIGHT, DEVMODE
 from .persons import load_characters
-from Engine.Scene.states import State
+
 gameobjects.register()
 load_characters()
 
@@ -163,7 +164,8 @@ class Game(MicroApp):
             'DevMode': DevMode(self.screen, self),
             'HealthBar_player_1': HealthBar(self.screen, self.clock, self.scene.player, self.camera, left=True),
             'HealthBar_player_2': HealthBar(self.screen, self.clock, self.scene.entities[0] if self.scene.entities \
-                else self.scene.player, self.camera, left=False)
+                else self.scene.player, self.camera, left=False),
+            'WinHandler': WinHandler(self.screen, self.scene)
         }
 
         self.buttons = []
