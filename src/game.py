@@ -170,8 +170,9 @@ class Game(MicroApp):
         if DEVMODE:
             dev_message()
 
-        pygame.mixer.music.set_volume(game_music_volume)
         pygame.mixer.music.stop()
+        pygame.mixer.music.set_volume(game_music_volume)
+        next_song()
 
     def draw(self):
         self.camera.view(self.scene)
