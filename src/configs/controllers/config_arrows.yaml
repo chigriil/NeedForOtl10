@@ -1,0 +1,6 @@
+throw: K_KP5
+hand_hit: K_KP0
+walk_left: K_LEFT
+walk_right: K_RIGHT
+run: K_RSHIFT
+jump: K_UP

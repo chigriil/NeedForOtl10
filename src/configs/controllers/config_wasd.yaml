@@ -1,6 +1,6 @@
-- 113
-- 118
-- 97
-- 100
-- 1073742049
-- 32
+throw: K_q
+hand_hit: K_v
+walk_left: K_a
+walk_right: K_d
+run: K_LSHIFT
+jump: K_SPACE

@@ -36,7 +36,7 @@ class Entity(PhysicalGameObject):
     TODO: разделить толо игрока на само тело, ноги, руки, голову (нужно для удобной анимации ударов)
     """
 
-    def __init__(self, scene, x=0, y=0, width=0.7, height=1.8, mass=75, brain=Idle, animations=None):
+    def __init__(self, scene, x=0, y=0, width=0.7, height=1.8, mass=75, brain=Idle, animations=None, **kwargs):
         """
         :param scene: игровая сцена
         :param x: x координата левого нижнего края сущности
@@ -55,7 +55,10 @@ class Entity(PhysicalGameObject):
         # Сцена сущности
         self.scene = scene
         # Мозг сущности
-        self.brain = brain(self)
+        brain_init = {}
+        if 'brain_init' in kwargs:
+            brain_init = kwargs['brain_init']
+        self.brain = brain(self, **brain_init)
 
         # Описанные прямоугольники для разных состояний игрока
         # Нужны для пересчёта геометрии при смене состояния игрока
@@ -373,8 +376,8 @@ class BaseCharacter(Entity):
     """
     configs = default_person
 
-    def __init__(self, scene, x=0, y=0, brain=ManualController):
-        super(BaseCharacter, self).__init__(scene, x, y, brain=brain, **self.configs['init'])
+    def __init__(self, scene, x=0, y=0, brain=ManualController, **kwargs):
+        super(BaseCharacter, self).__init__(scene, x, y, brain=brain, **self.configs['init'], **kwargs)
 
         # Имя персонажа
         self.name = self.__class__.__name__
@@ -483,7 +486,8 @@ class BaseCharacter(Entity):
                                   impulse=(
                                       m * arming_method['impulse'] * cos(arming_method['impulse_angle']),
                                       arming_method['impulse'] * sin(arming_method['impulse_angle'])
-                                  ))
+                                  ),
+                                  skip=[id(self)])
 
         # Устанавливаем время новое перезараядки
         self.arming_reload = arming_method['reload_time']
@@ -610,4 +614,8 @@ class BaseCharacter(Entity):
         self.throwing_reload = throw_method['reload_time']
 
     def save_data(self):
-        return {'class': self.__class__.__name__, 'vector': list(self.position), 'brain': self.brain.__class__.__name__}
+        return {
+            'class': self.__class__.__name__,
+            'vector': list(self.position),
+            'brain': self.brain.save_data()
+        }
