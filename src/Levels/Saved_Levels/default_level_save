@@ -16,7 +16,10 @@ invisible_segments:
 
 
 MainCharacter:
-  brain: ManualController
+  brain:
+    name: ManualController
+    init:
+      config: 'config_wasd.yaml'
   class: MainCharacter
   vector:
   - 0
