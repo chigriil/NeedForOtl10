@@ -486,7 +486,8 @@ class BaseCharacter(Entity):
                                   impulse=(
                                       m * arming_method['impulse'] * cos(arming_method['impulse_angle']),
                                       arming_method['impulse'] * sin(arming_method['impulse_angle'])
-                                  ))
+                                  ),
+                                  skip=[id(self)])
 
         # Устанавливаем время новое перезараядки
         self.arming_reload = arming_method['reload_time']
