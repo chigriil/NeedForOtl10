@@ -28,3 +28,6 @@ def load_image(path: Union[str, bytes, PathLike[str], PathLike[bytes], int]) -> 
 
 
 def pil_to_pygame(pil_image: PIL.PngImagePlugin.PngImageFile) -> pygame.Surface: ...
+
+
+def load_music_from_folder(path: Union[str, bytes, PathLike[str], PathLike[bytes], int]) -> list[str]: ...
